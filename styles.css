@@ -1051,9 +1051,45 @@ h3 {
     text-align: left;
   }
 
-  .hero-card-large,
-  .hero-card-small {
+  .hero-visual {
+    min-height: auto;
+    gap: 14px;
+    padding-top: 18px;
+  }
+
+  .hero-visual::after {
+    top: 18px;
+    right: 18px;
+    width: 96px;
+    height: 96px;
+  }
+
+  .hero-card-large {
+    width: 100%;
     max-width: none;
+    margin-left: 0;
+    justify-self: stretch;
+  }
+
+  .hero-card-large h2 {
+    max-width: 9.5ch;
+    font-size: clamp(1.75rem, 7.8vw, 2.2rem);
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .hero-card-large p {
+    max-width: 30ch;
+  }
+
+  .hero-card-small {
+    width: min(100%, 320px);
+    max-width: 320px;
+    justify-self: start;
+  }
+
+  .hero-card-sage {
+    justify-self: start;
   }
 
   .feature-card,
