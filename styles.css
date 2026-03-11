@@ -1065,14 +1065,15 @@ h3 {
   }
 
   .hero-card-large {
-    width: 100%;
+    width: calc(100% + 10px);
     max-width: none;
     margin-left: 0;
+    margin-right: -10px;
     justify-self: stretch;
   }
 
   .hero-card-large h2 {
-    max-width: 8.6ch;
+    max-width: 10.2ch;
     font-size: clamp(1.5rem, 6.8vw, 1.9rem);
     line-height: 1.04;
     text-wrap: balance;
