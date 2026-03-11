@@ -1072,9 +1072,9 @@ h3 {
   }
 
   .hero-card-large h2 {
-    max-width: 9.5ch;
-    font-size: clamp(1.75rem, 7.8vw, 2.2rem);
-    line-height: 1.02;
+    max-width: 8.6ch;
+    font-size: clamp(1.5rem, 6.8vw, 1.9rem);
+    line-height: 1.04;
     text-wrap: balance;
   }
 
