@@ -427,10 +427,12 @@ h3 {
   border-color: rgba(255, 255, 255, 0.12);
   color: #ffffff;
   box-shadow: 0 22px 56px rgba(8, 63, 109, 0.28);
+  overflow: hidden;
 }
 
 .hero-card-large h2 {
   max-width: 8ch;
+  font-size: clamp(1.8rem, 3vw, 2.55rem);
 }
 
 .hero-card-large p,
@@ -1065,16 +1067,16 @@ h3 {
   }
 
   .hero-card-large {
-    width: calc(100% + 10px);
+    width: calc(100% + 24px);
     max-width: none;
     margin-left: 0;
-    margin-right: -10px;
+    margin-right: -24px;
     justify-self: stretch;
   }
 
   .hero-card-large h2 {
-    max-width: 10.2ch;
-    font-size: clamp(1.5rem, 6.8vw, 1.9rem);
+    max-width: 11ch;
+    font-size: clamp(1.2rem, 5.6vw, 1.55rem);
     line-height: 1.04;
     text-wrap: balance;
   }
