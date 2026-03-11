@@ -11,3 +11,7 @@ Statische Landingpage fuer holidaily pools.
 ## Lokal starten
 
 Die Seite kann direkt im Browser ueber `index.html` geoeffnet werden.
+
+## Deployment
+
+Das Projekt ist fuer statisches Hosting ueber GitHub Pages geeignet.
