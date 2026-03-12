@@ -444,44 +444,6 @@ h3 {
   animation: sunPulse 6s ease-in-out infinite;
 }
 
-.hero-visual-badge {
-  position: absolute;
-  top: 14px;
-  right: 74px;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 144px;
-  height: 144px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid rgba(0, 128, 200, 0.12);
-  box-shadow: 0 18px 34px rgba(0, 112, 175, 0.08);
-  text-align: center;
-}
-
-.hero-visual-badge strong,
-.hero-visual-badge span {
-  display: block;
-}
-
-.hero-visual-badge strong {
-  color: var(--blue);
-  font-family: "brevia", "Inter", sans-serif;
-  font-size: 1.7rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.hero-visual-badge span {
-  margin-top: 4px;
-  color: var(--yellow-dark);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .hero-card {
   position: relative;
   z-index: 1;
@@ -1087,12 +1049,6 @@ h3 {
     height: 208px;
   }
 
-  .hero-visual-badge {
-    right: 40px;
-    width: 116px;
-    height: 116px;
-  }
-
   .split-section,
   .stories-section,
   .cta-section {
@@ -1198,21 +1154,6 @@ h3 {
     right: 18px;
     width: 180px;
     height: 132px;
-  }
-
-  .hero-visual-badge {
-    top: 14px;
-    right: 18px;
-    width: 88px;
-    height: 88px;
-  }
-
-  .hero-visual-badge strong {
-    font-size: 1.08rem;
-  }
-
-  .hero-visual-badge span {
-    font-size: 0.62rem;
   }
 
   .hero-card-large {
