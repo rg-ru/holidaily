@@ -84,6 +84,7 @@ const accountElements = {
   adminChatMeta: document.querySelector("#adminChatMeta"),
   adminChatStatus: document.querySelector("#adminChatStatus"),
   adminChatMessage: document.querySelector("#adminChatMessage"),
+  adminDeleteChatButton: document.querySelector("#adminDeleteChatButton"),
   signupName: document.querySelector("#signupName")
 };
 
@@ -128,6 +129,34 @@ const safeRemove = (key) => {
     return true;
   } catch (error) {
     setFeedback("Lokales Speichern ist in diesem Browser gerade nicht verfuegbar.", "error");
+    return false;
+  }
+};
+
+const safeSessionRead = (key) => {
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch (error) {
+    return null;
+  }
+};
+
+const safeSessionWrite = (key, value) => {
+  try {
+    window.sessionStorage.setItem(key, value);
+    return true;
+  } catch (error) {
+    setFeedback("Die Anmeldung kann in diesem Tab gerade nicht gespeichert werden.", "error");
+    return false;
+  }
+};
+
+const safeSessionRemove = (key) => {
+  try {
+    window.sessionStorage.removeItem(key);
+    return true;
+  } catch (error) {
+    setFeedback("Die Anmeldung kann in diesem Tab gerade nicht entfernt werden.", "error");
     return false;
   }
 };
@@ -342,14 +371,29 @@ const persistAccounts = () =>
     })
   );
 
-const loadSessionEmail = () => normalizeEmail(safeRead(SESSION_KEY) || "");
+const loadSessionEmail = () => {
+  const sessionEmail = normalizeEmail(safeSessionRead(SESSION_KEY) || "");
+
+  if (sessionEmail) {
+    return sessionEmail;
+  }
+
+  const legacyEmail = normalizeEmail(safeRead(SESSION_KEY) || "");
+
+  if (legacyEmail) {
+    safeSessionWrite(SESSION_KEY, legacyEmail);
+    safeRemove(SESSION_KEY);
+  }
+
+  return legacyEmail;
+};
 
 const persistSession = (email) => {
   if (!email) {
-    return safeRemove(SESSION_KEY);
+    return safeSessionRemove(SESSION_KEY) && safeRemove(SESSION_KEY);
   }
 
-  return safeWrite(SESSION_KEY, email);
+  return safeSessionWrite(SESSION_KEY, email) && safeRemove(SESSION_KEY);
 };
 
 const getCurrentUser = () => {
@@ -722,6 +766,7 @@ const renderAdminChatWorkspace = (currentUser, visibleAccounts) => {
     accountElements.adminChatEmptyState.textContent =
       "Aktuell ist kein anderes Konto fuer einen Chat vorhanden.";
     accountElements.adminChatForm.hidden = true;
+    accountElements.adminDeleteChatButton.hidden = true;
     clearElement(accountElements.adminChatThread);
     accountElements.adminChatThread.hidden = true;
     return;
@@ -741,6 +786,7 @@ const renderAdminChatWorkspace = (currentUser, visibleAccounts) => {
   accountElements.adminChatForm.hidden = false;
 
   const hasMessages = selectedAccount.chatMessages.length > 0;
+  accountElements.adminDeleteChatButton.hidden = !hasMessages;
   accountElements.adminChatEmptyState.hidden = hasMessages;
   accountElements.adminChatEmptyState.textContent = hasMessages
     ? ""
@@ -1269,6 +1315,44 @@ if (accountElements.adminChatForm) {
   });
 }
 
+if (accountElements.adminDeleteChatButton) {
+  accountElements.adminDeleteChatButton.addEventListener("click", () => {
+    const currentUser = getCurrentUser();
+
+    if (!hasAdminAccess(currentUser)) {
+      setFeedback("Nur Admins koennen Chats loeschen.", "error");
+      return;
+    }
+
+    const targetAccount = accountState.accounts.find(
+      (account) => account.email === accountState.selectedAdminChatEmail
+    );
+
+    if (!targetAccount || !targetAccount.chatMessages.length) {
+      setFeedback("Es ist kein Chat zum Loeschen ausgewaehlt.", "error");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Soll der komplette Chat mit ${targetAccount.name} dauerhaft geloescht werden?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    targetAccount.chatMessages = [];
+    targetAccount.updatedAt = new Date().toISOString();
+
+    if (!persistAccounts()) {
+      return;
+    }
+
+    renderAccountState();
+    setFeedback(`Der Chat mit ${targetAccount.name} wurde geloescht.`, "success");
+  });
+}
+
 if (accountElements.savedOffersList) {
   accountElements.savedOffersList.addEventListener("click", (event) => {
     const button = event.target.closest("[data-remove-offer]");
@@ -1427,13 +1511,12 @@ if (accountElements.adminAccountsList) {
 }
 
 window.addEventListener("storage", (event) => {
-  if (event.key && event.key !== STORAGE_KEY && event.key !== SESSION_KEY) {
+  if (event.key && event.key !== STORAGE_KEY) {
     return;
   }
 
   const previousAdminInboxSignature = accountState.adminInboxSignature;
   accountState.accounts = loadAccounts();
-  accountState.currentEmail = loadSessionEmail();
   ensureAdminAccount();
   renderAccountState();
 

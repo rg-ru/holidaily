@@ -21,7 +21,7 @@
   <script>
     document.documentElement.classList.add("has-motion");
   </script>
-    <link rel="stylesheet" href="styles.css?v=20260314-2">
+    <link rel="stylesheet" href="styles.css?v=20260314-3">
 </head>
   <body>
   <div class="page-shell">
@@ -468,7 +468,12 @@
                         Waehle ein Nutzerkonto aus der Liste, um den Chatverlauf zu lesen und direkt zu helfen.
                       </p>
                     </div>
-                    <span class="account-chip is-subtle" id="adminChatStatus">Kein Chat aktiv</span>
+                    <div class="admin-chat-actions">
+                      <span class="account-chip is-subtle" id="adminChatStatus">Kein Chat aktiv</span>
+                      <button class="button button-ghost button-small" type="button" id="adminDeleteChatButton" hidden>
+                        Chat loeschen
+                      </button>
+                    </div>
                   </div>
                   <div class="account-empty-state" id="adminChatEmptyState">
                     Noch kein Konto fuer den Chat ausgewaehlt.
@@ -635,6 +640,6 @@
     </span>
     <span class="floating-whatsapp-label">WhatsApp Kontakt</span>
   </a>
-    <script src="app.js?v=20260314-2"></script>
+    <script src="app.js?v=20260314-3"></script>
 </body>
 </html>
