@@ -14,14 +14,14 @@
   <link rel="preconnect" href="https://use.typekit.net">
   <link rel="preconnect" href="https://p.typekit.net" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   >
   <link rel="stylesheet" href="https://use.typekit.net/pjl8cwd.css">
   <script>
     document.documentElement.classList.add("has-motion");
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260312-2">
+  <link rel="stylesheet" href="styles.css?v=20260313-1">
 </head>
   <body>
   <div class="page-shell">
@@ -42,12 +42,21 @@
     <main id="top">
       <section class="hero section">
         <div class="hero-copy motion-reveal motion-up is-visible" style="--delay: 120ms;">
+          <div class="hero-chip-row" aria-label="Leistungen im Ueberblick">
+            <span>Persoenliche Planung</span>
+            <span>Direkter Kontakt</span>
+            <span>Moderne Gartenpools</span>
+          </div>
           <p class="eyebrow">Pools fuer Zuhause</p>
           <h1>Dein eigener Pool beginnt mit der richtigen Beratung.</h1>
           <p class="hero-text">
             holidaily pools begleitet dich von der ersten Idee bis zur passenden Pool-Loesung. Fuer Familien,
             private Gaerten und alle, die Qualitaet, Optik und direkte Ansprechpartner wollen.
           </p>
+          <div class="hero-inline-panel">
+            <p class="hero-inline-label">Projektfokus</p>
+            <p>Von kompakten Mini Pools bis zum grossen Familienbecken wird das Zusammenspiel aus Flaeche, Technik und Look direkt mitgedacht.</p>
+          </div>
           <div class="hero-actions">
             <a class="button button-primary" href="#modelle">Modelle ansehen</a>
             <a class="button button-secondary" href="#kontakt">Kontakt aufnehmen</a>
@@ -69,10 +78,20 @@
         </div>
 
         <div class="hero-visual motion-reveal motion-right is-visible" aria-hidden="true" style="--delay: 220ms;">
+          <div class="hero-visual-backdrop">
+            <span class="hero-orb hero-orb-one"></span>
+            <span class="hero-orb hero-orb-two"></span>
+            <span class="hero-grid-line hero-grid-line-one"></span>
+            <span class="hero-grid-line hero-grid-line-two"></span>
+          </div>
           <div class="hero-card hero-card-large floating-card">
             <span class="card-tag">Beliebt</span>
             <h2>Einbaupool fuer den Familiengarten</h2>
             <p>Klares Design, langlebige Technik und eine Loesung, die sauber in dein Grundstueck integriert wird.</p>
+            <ul class="hero-card-list">
+              <li>Saubere Linienfuehrung im Garten</li>
+              <li>Technik und Ausstattung passend zum Alltag</li>
+            </ul>
           </div>
           <div class="hero-card hero-card-small hero-card-sand floating-card">
             <span class="card-tag">Kompakt</span>
@@ -82,11 +101,30 @@
             <span class="card-tag">Komplett</span>
             <p>Beratung, Auswahl, Zubehoer und direkter Kontakt an einem Ort.</p>
           </div>
+          <div class="hero-detail-strip floating-card">
+            <article>
+              <strong>01</strong>
+              <span>Idee und Bedarf klaeren</span>
+            </article>
+            <article>
+              <strong>02</strong>
+              <span>Pool und Technik abstimmen</span>
+            </article>
+            <article>
+              <strong>03</strong>
+              <span>Sauber in den Garten integrieren</span>
+            </article>
+          </div>
         </div>
       </section>
 
       <section class="trust-band section section-tight motion-reveal motion-up" data-reveal style="--delay: 40ms;">
         <p>Persoenliche Pool-Beratung aus Korschenbroich mit direktem Draht fuer Planung, Auswahl und schnelle Rueckfragen.</p>
+        <div class="trust-points" aria-label="Leistungen">
+          <span>Vor Ort in Korschenbroich</span>
+          <span>E-Mail und WhatsApp</span>
+          <span>Klare Empfehlungen statt Standardangebote</span>
+        </div>
       </section>
 
       <section class="section split-section" id="vorteile">
@@ -154,9 +192,23 @@
 
       <section class="section spotlight-section">
         <div class="spotlight-panel motion-reveal motion-up" data-reveal>
-          <div>
+          <div class="spotlight-intro">
             <p class="eyebrow">Was wir mitdenken</p>
             <h2>Ein guter Pool ist mehr als nur ein Becken im Garten.</h2>
+            <div class="spotlight-metrics">
+              <article>
+                <strong>Flaeche</strong>
+                <span>sauber analysiert</span>
+              </article>
+              <article>
+                <strong>Technik</strong>
+                <span>sinnvoll abgestimmt</span>
+              </article>
+              <article>
+                <strong>Optik</strong>
+                <span>als Teil des Gartens gedacht</span>
+              </article>
+            </div>
           </div>
           <div class="spotlight-list">
             <article>
@@ -212,6 +264,11 @@
               Ob erster Gartenpool, kompaktes Becken oder konkrete Rueckfrage zu Technik und Ausstattung: hier bekommst
               du schnellen, direkten Kontakt ohne Umwege.
             </p>
+            <div class="contact-highlights" aria-label="Kontaktvorteile">
+              <span>Direkter Ansprechpartner</span>
+              <span>WhatsApp und E-Mail</span>
+              <span>Beratung vor Ort moeglich</span>
+            </div>
           </div>
           <article class="contact-card contact-person-card">
             <div class="contact-person-media">
@@ -276,8 +333,69 @@
   </a>
   <script>
     const motionElements = document.querySelectorAll("[data-reveal]");
+    const header = document.querySelector(".site-header");
+    const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
+    const sectionLinks = navLinks
+      .map((link) => ({ link, section: document.querySelector(link.getAttribute("href")) }))
+      .filter(({ section }) => section);
+    const heroVisual = document.querySelector(".hero-visual");
+    const interactiveSurfaces = document.querySelectorAll(
+      ".hero-card, .hero-detail-strip, .hero-stats article, .feature-card, .offer-card, .story-card, .contact-card, .contact-method, .contact-hours, .spotlight-list article, .spotlight-metrics article"
+    );
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
 
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const revealAll = () => {
+      motionElements.forEach((element) => element.classList.add("is-visible"));
+    };
+
+    const syncHeaderState = () => {
+      if (!header) {
+        return;
+      }
+
+      header.classList.toggle("is-scrolled", window.scrollY > 24);
+    };
+
+    const syncActiveNav = () => {
+      if (!sectionLinks.length) {
+        return;
+      }
+
+      const marker = window.scrollY + window.innerHeight * 0.34;
+      let activeLink = null;
+
+      sectionLinks.forEach(({ link, section }) => {
+        if (section.offsetTop <= marker) {
+          activeLink = link;
+        }
+      });
+
+      navLinks.forEach((link) => {
+        link.classList.toggle("is-active", link === activeLink);
+      });
+    };
+
+    let scrollFrame = 0;
+
+    const queueScrollSync = () => {
+      if (scrollFrame) {
+        return;
+      }
+
+      scrollFrame = window.requestAnimationFrame(() => {
+        syncHeaderState();
+        syncActiveNav();
+        scrollFrame = 0;
+      });
+    };
+
+    syncHeaderState();
+    syncActiveNav();
+    window.addEventListener("scroll", queueScrollSync, { passive: true });
+    window.addEventListener("resize", queueScrollSync);
+
+    if (!prefersReducedMotion.matches) {
       const revealObserver = new IntersectionObserver(
         (entries, observer) => {
           entries.forEach((entry) => {
@@ -297,8 +415,95 @@
 
       motionElements.forEach((element) => revealObserver.observe(element));
     } else {
-      motionElements.forEach((element) => element.classList.add("is-visible"));
+      revealAll();
     }
+
+    if (!prefersReducedMotion.matches && hasFinePointer) {
+      interactiveSurfaces.forEach((surface) => {
+        let pointerFrame = 0;
+        let lastEvent;
+
+        const updateGlow = (event) => {
+          const rect = surface.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+
+          surface.style.setProperty("--glow-x", `${x}px`);
+          surface.style.setProperty("--glow-y", `${y}px`);
+          surface.style.setProperty("--glow-alpha", "1");
+        };
+
+        surface.addEventListener("pointerenter", (event) => {
+          updateGlow(event);
+        });
+
+        surface.addEventListener("pointermove", (event) => {
+          lastEvent = event;
+
+          if (pointerFrame) {
+            return;
+          }
+
+          pointerFrame = window.requestAnimationFrame(() => {
+            updateGlow(lastEvent);
+            pointerFrame = 0;
+          });
+        });
+
+        surface.addEventListener("pointerleave", () => {
+          surface.style.setProperty("--glow-alpha", "0");
+        });
+      });
+
+      if (heroVisual) {
+        let heroFrame = 0;
+
+        const setHeroShift = (xRatio, yRatio) => {
+          heroVisual.style.setProperty("--hero-shift-x", `${(xRatio - 0.5) * 24}px`);
+          heroVisual.style.setProperty("--hero-shift-y", `${(yRatio - 0.5) * 18}px`);
+        };
+
+        setHeroShift(0.5, 0.5);
+
+        heroVisual.addEventListener("pointermove", (event) => {
+          const rect = heroVisual.getBoundingClientRect();
+          const xRatio = (event.clientX - rect.left) / rect.width;
+          const yRatio = (event.clientY - rect.top) / rect.height;
+
+          if (heroFrame) {
+            window.cancelAnimationFrame(heroFrame);
+          }
+
+          heroFrame = window.requestAnimationFrame(() => {
+            setHeroShift(xRatio, yRatio);
+          });
+        });
+
+        heroVisual.addEventListener("pointerleave", () => {
+          setHeroShift(0.5, 0.5);
+        });
+      }
+    } else if (heroVisual) {
+      heroVisual.style.setProperty("--hero-shift-x", "0px");
+      heroVisual.style.setProperty("--hero-shift-y", "0px");
+    }
+
+    prefersReducedMotion.addEventListener("change", (event) => {
+      if (!event.matches) {
+        return;
+      }
+
+      revealAll();
+
+      interactiveSurfaces.forEach((surface) => {
+        surface.style.setProperty("--glow-alpha", "0");
+      });
+
+      if (heroVisual) {
+        heroVisual.style.setProperty("--hero-shift-x", "0px");
+        heroVisual.style.setProperty("--hero-shift-y", "0px");
+      }
+    });
   </script>
 </body>
 </html>
