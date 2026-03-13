@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>holidaily pools | Pools fuer Garten, Familie und Zuhause</title>
+  <title>Holidaily pools | Pools für Garten, Familie und Zuhause</title>
   <meta
     name="description"
-    content="holidaily pools verkauft hochwertige Pools mit persoenlicher Beratung, direktem Kontakt und passenden Loesungen fuer Garten, Familie und Zuhause."
+    content="Holidaily pools verkauft hochwertige Pools mit persönlicher Beratung, direktem Kontakt und passenden Lösungen für Garten, Familie und Zuhause."
   >
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
   <script>
     document.documentElement.classList.add("has-motion");
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260313-3">
+  <link rel="stylesheet" href="styles.css?v=20260314-1">
 </head>
   <body>
   <div class="page-shell">
@@ -43,12 +43,12 @@
     <main id="top">
       <section class="hero section">
         <div class="hero-copy motion-reveal motion-up is-visible" style="--delay: 120ms;">
-          <div class="hero-chip-row" aria-label="Leistungen im Ueberblick">
-            <span>Persoenliche Planung</span>
+          <div class="hero-chip-row" aria-label="Leistungen im Überblick">
+            <span>Persönliche Planung</span>
             <span>Direkter Kontakt</span>
             <span>Moderne Gartenpools</span>
           </div>
-          <p class="eyebrow">Pools fuer Zuhause</p>
+          <p class="eyebrow">Pools für Zuhause</p>
           <h1>Dein eigener Pool beginnt mit der richtigen Beratung.</h1>
           <p class="hero-text">
             holidaily pools begleitet dich von der ersten Idee bis zur passenden Pool-Loesung. Fuer Familien,
@@ -233,7 +233,7 @@
           <div class="account-intro">
             <article class="account-highlight motion-reveal motion-up" data-reveal style="--delay: 0ms;">
               <p class="eyebrow">Optional, wenn du speichern willst</p>
-              <h3>Ohne Konto weiterstoebern. Mit Konto Modelle und Projekt-Notizen sichern.</h3>
+              <h3>Ohne Konto weiterstoebern. Mit Konto Modelle, Projekt-Notizen und Website-Chat sichern.</h3>
               <p>
                 Diese Landingpage bleibt statisch. Deshalb werden Konten, gespeicherte Modelle und Notizen lokal in
                 diesem Browser abgelegt. Das ist praktisch fuer Entwuerfe und Demos, aber kein Ersatz fuer ein echtes
@@ -241,7 +241,7 @@
               </p>
               <div class="account-highlight-points" aria-label="Konto-Vorteile">
                 <span>Modelle direkt aus den Karten speichern</span>
-                <span>Projekt-Notizen spaeter wieder aufrufen</span>
+                <span>Direkt ueber die Website chatten</span>
                 <span>Lokalen Adminzugang fuer Browserdaten nutzen</span>
               </div>
             </article>
@@ -292,7 +292,7 @@
               <article class="auth-card">
                 <p class="account-card-kicker">Neu hier?</p>
                 <h3>Konto anlegen</h3>
-                <p>Lege ein lokales Konto an, um Modelle und Notizen fuer spaeter zu speichern.</p>
+                <p>Lege ein lokales Konto an, um Modelle, Notizen und deinen Chatverlauf hier im Browser zu speichern.</p>
                 <form id="signupForm" novalidate>
                   <label for="signupName">
                     Name
@@ -314,7 +314,7 @@
               <article class="auth-card">
                 <p class="account-card-kicker">Bereits vorhanden</p>
                 <h3>Anmelden</h3>
-                <p>Melde dich an, um deine gespeicherten Modelle, Notizen und Adminfunktionen zu nutzen.</p>
+                <p>Melde dich an, um gespeicherte Modelle, Notizen und den Website-Chat zu nutzen.</p>
                 <form id="loginForm" novalidate>
                   <label for="loginEmail">
                     E-Mail
@@ -388,6 +388,36 @@
                   </form>
                   <p class="account-help-text" id="noteMeta">Noch keine Notiz gespeichert.</p>
                 </article>
+
+                <article class="account-card account-card-wide chat-card">
+                  <div class="chat-card-header">
+                    <div>
+                      <p class="account-card-kicker">Website-Chat</p>
+                      <h3>Direkt im Konto schreiben</h3>
+                      <p class="account-help-text">
+                        Schreibe hier direkt an holidaily pools. Der Admin kann im lokalen Adminbereich darauf antworten.
+                      </p>
+                    </div>
+                    <span class="account-chip is-subtle" id="userChatStatus">Noch kein Chat</span>
+                  </div>
+                  <div class="account-empty-state" id="userChatEmptyState">
+                    Noch keine Nachricht vorhanden. Starte den Chat direkt ueber dieses Formular.
+                  </div>
+                  <div class="chat-thread" id="userChatThread" aria-live="polite"></div>
+                  <form class="chat-form" id="userChatForm">
+                    <label for="userChatMessage">
+                      Nachricht
+                      <textarea
+                        id="userChatMessage"
+                        name="userChatMessage"
+                        placeholder="Zum Beispiel: Ich interessiere mich fuer einen Family Pool und moechte zur Groesse beraten werden."
+                      ></textarea>
+                    </label>
+                    <div class="account-form-actions">
+                      <button class="button button-secondary button-small" type="submit">Nachricht senden</button>
+                    </div>
+                  </form>
+                </article>
               </div>
 
               <article class="account-card admin-card" id="adminView" hidden>
@@ -415,6 +445,35 @@
                   </article>
                 </div>
                 <div class="admin-account-list" id="adminAccountsList"></div>
+                <div class="admin-chat-workspace">
+                  <div class="admin-chat-header">
+                    <div>
+                      <p class="account-card-kicker">Chatantworten</p>
+                      <h3 id="adminChatTitle">Chat auswaehlen</h3>
+                      <p class="account-help-text" id="adminChatMeta">
+                        Waehle ein Konto aus der Liste, um den Chatverlauf zu lesen und zu antworten.
+                      </p>
+                    </div>
+                    <span class="account-chip is-subtle" id="adminChatStatus">Kein Chat aktiv</span>
+                  </div>
+                  <div class="account-empty-state" id="adminChatEmptyState">
+                    Noch kein Konto fuer den Chat ausgewaehlt.
+                  </div>
+                  <div class="chat-thread admin-chat-thread" id="adminChatThread" aria-live="polite"></div>
+                  <form class="chat-form" id="adminChatForm" hidden>
+                    <label for="adminChatMessage">
+                      Antwort
+                      <textarea
+                        id="adminChatMessage"
+                        name="adminChatMessage"
+                        placeholder="Zum Beispiel: Danke fuer deine Nachricht. Ich melde mich mit einer konkreten Empfehlung."
+                      ></textarea>
+                    </label>
+                    <div class="account-form-actions">
+                      <button class="button button-primary button-small" type="submit">Antwort senden</button>
+                    </div>
+                  </form>
+                </div>
               </article>
             </div>
           </div>
@@ -562,6 +621,6 @@
     </span>
     <span class="floating-whatsapp-label">WhatsApp Kontakt</span>
   </a>
-  <script src="app.js?v=20260313-1"></script>
+  <script src="app.js?v=20260314-1"></script>
 </body>
 </html>

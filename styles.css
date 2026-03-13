@@ -1519,11 +1519,19 @@ h3 {
   min-height: 160px;
 }
 
+.chat-form textarea {
+  min-height: 132px;
+}
+
 .auth-grid,
 .account-dashboard-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.account-card-wide {
+  grid-column: 1 / -1;
 }
 
 .account-metrics,
@@ -1562,10 +1570,98 @@ h3 {
   gap: 16px;
 }
 
+.chat-card-header,
+.admin-chat-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .account-help-text {
   margin: 0;
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+.chat-thread {
+  display: grid;
+  gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.admin-chat-thread {
+  max-height: 500px;
+}
+
+.chat-message {
+  display: grid;
+  gap: 8px;
+  max-width: min(100%, 620px);
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: var(--shadow-soft);
+}
+
+.chat-message.is-user {
+  margin-left: auto;
+  border-color: rgba(0, 127, 212, 0.2);
+  background: linear-gradient(135deg, rgba(15, 146, 228, 0.98), rgba(0, 95, 170, 0.96));
+  color: #ffffff;
+}
+
+.chat-message.is-admin {
+  margin-right: auto;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(235, 246, 253, 0.94));
+}
+
+.chat-message.is-admin .chat-message-body,
+.chat-message.is-admin .chat-message-meta strong {
+  color: var(--navy);
+}
+
+.chat-message.is-admin .chat-message-meta span {
+  color: var(--muted);
+}
+
+.chat-message.is-user .chat-message-meta strong,
+.chat-message.is-user .chat-message-meta span,
+.chat-message.is-user .chat-message-body {
+  color: #ffffff;
+}
+
+.chat-message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.84rem;
+}
+
+.chat-message-meta strong {
+  font-size: 0.88rem;
+}
+
+.chat-message-meta span {
+  font-weight: 700;
+  text-align: right;
+}
+
+.chat-message-body {
+  margin: 0;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.admin-chat-workspace {
+  display: grid;
+  gap: 16px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(84, 145, 191, 0.18);
 }
 
 .saved-offers-list {
@@ -1685,6 +1781,11 @@ h3 {
 .account-chip.is-default {
   background: rgba(10, 35, 59, 0.86);
   color: #ffffff;
+}
+
+.account-chip.is-alert {
+  background: rgba(246, 179, 28, 0.18);
+  color: #875600;
 }
 
 .account-highlight:hover,
@@ -2288,7 +2389,9 @@ h3 {
 
   .account-status-bar,
   .account-dashboard-header,
-  .admin-account-header {
+  .admin-account-header,
+  .chat-card-header,
+  .admin-chat-header {
     flex-direction: column;
     align-items: start;
   }
@@ -2508,6 +2611,16 @@ h3 {
 
   .saved-offer-item {
     flex-direction: column;
+  }
+
+  .chat-thread,
+  .admin-chat-thread {
+    max-height: 360px;
+  }
+
+  .chat-message-meta {
+    flex-direction: column;
+    align-items: start;
   }
 
   .trust-band {

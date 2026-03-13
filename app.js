@@ -8,7 +8,7 @@ const heroVisual = document.querySelector(".hero-visual");
 const accountSection = document.querySelector("#konto");
 const saveOfferButtons = Array.from(document.querySelectorAll(".save-offer-button"));
 const interactiveSurfaces = document.querySelectorAll(
-  ".hero-card, .hero-detail-strip, .hero-stats article, .feature-card, .offer-card, .story-card, .contact-card, .contact-method, .contact-hours, .spotlight-list article, .spotlight-metrics article, .account-highlight, .account-benefit, .account-shell, .auth-card, .account-card, .account-metric, .saved-offer-item, .admin-account"
+  ".hero-card, .hero-detail-strip, .hero-stats article, .feature-card, .offer-card, .story-card, .contact-card, .contact-method, .contact-hours, .spotlight-list article, .spotlight-metrics article, .account-highlight, .account-benefit, .account-shell, .auth-card, .account-card, .account-metric, .saved-offer-item, .admin-account, .admin-chat-workspace"
 );
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
@@ -23,6 +23,7 @@ const DEFAULT_ADMIN_ACCOUNT = {
   role: "admin",
   savedOffers: [],
   projectNote: "",
+  chatMessages: [],
   createdAt: "2026-03-13T00:00:00.000Z",
   updatedAt: "2026-03-13T00:00:00.000Z",
   noteUpdatedAt: ""
@@ -30,7 +31,8 @@ const DEFAULT_ADMIN_ACCOUNT = {
 const accountState = {
   accounts: [],
   currentEmail: "",
-  pendingOffer: null
+  pendingOffer: null,
+  selectedAdminChatEmail: ""
 };
 
 const accountElements = {
@@ -41,6 +43,8 @@ const accountElements = {
   signupForm: document.querySelector("#signupForm"),
   loginForm: document.querySelector("#loginForm"),
   notesForm: document.querySelector("#notesForm"),
+  userChatForm: document.querySelector("#userChatForm"),
+  adminChatForm: document.querySelector("#adminChatForm"),
   logoutButton: document.querySelector("#logoutButton"),
   statusTitle: document.querySelector("#accountStatusTitle"),
   statusText: document.querySelector("#accountStatusText"),
@@ -54,10 +58,20 @@ const accountElements = {
   savedOffersList: document.querySelector("#savedOffersList"),
   projectNote: document.querySelector("#projectNote"),
   noteMeta: document.querySelector("#noteMeta"),
+  userChatThread: document.querySelector("#userChatThread"),
+  userChatEmptyState: document.querySelector("#userChatEmptyState"),
+  userChatMessage: document.querySelector("#userChatMessage"),
+  userChatStatus: document.querySelector("#userChatStatus"),
   adminAccountCount: document.querySelector("#adminAccountCount"),
   adminAdminCount: document.querySelector("#adminAdminCount"),
   adminSavedCount: document.querySelector("#adminSavedCount"),
   adminAccountsList: document.querySelector("#adminAccountsList"),
+  adminChatThread: document.querySelector("#adminChatThread"),
+  adminChatEmptyState: document.querySelector("#adminChatEmptyState"),
+  adminChatTitle: document.querySelector("#adminChatTitle"),
+  adminChatMeta: document.querySelector("#adminChatMeta"),
+  adminChatStatus: document.querySelector("#adminChatStatus"),
+  adminChatMessage: document.querySelector("#adminChatMessage"),
   signupName: document.querySelector("#signupName")
 };
 
@@ -131,13 +145,16 @@ const hashPassword = (value) => {
   return `fnv1a-${hash.toString(16).padStart(8, "0")}`;
 };
 
-const createAccountId = () => {
+const createIdentifier = (prefix) => {
   if (window.crypto && typeof window.crypto.randomUUID === "function") {
-    return window.crypto.randomUUID();
+    return `${prefix}-${window.crypto.randomUUID()}`;
   }
 
-  return `account-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
 };
+
+const createAccountId = () => createIdentifier("account");
+const createMessageId = () => createIdentifier("message");
 
 const formatDate = (value) => {
   if (!value) {
@@ -174,6 +191,26 @@ const getRoleLabel = (role) => {
   return "Gast";
 };
 
+const applyChipState = (element, label, variant = "") => {
+  if (!element) {
+    return;
+  }
+
+  element.className = "account-chip";
+
+  if (variant) {
+    element.classList.add(variant);
+  }
+
+  element.textContent = label;
+};
+
+const createChip = (label, variant = "") => {
+  const chip = document.createElement("span");
+  applyChipState(chip, label, variant);
+  return chip;
+};
+
 const normalizeSavedOffer = (offer) => {
   if (!offer || typeof offer !== "object") {
     return null;
@@ -190,6 +227,31 @@ const normalizeSavedOffer = (offer) => {
     label: typeof offer.label === "string" && offer.label.trim() ? offer.label.trim() : "Gespeichertes Modell",
     description: typeof offer.description === "string" ? offer.description.trim() : "",
     savedAt: typeof offer.savedAt === "string" ? offer.savedAt : new Date().toISOString()
+  };
+};
+
+const normalizeChatMessage = (message) => {
+  if (!message || typeof message !== "object") {
+    return null;
+  }
+
+  const body = typeof message.body === "string" ? message.body.trim() : "";
+
+  if (!body) {
+    return null;
+  }
+
+  return {
+    id: typeof message.id === "string" && message.id ? message.id : createMessageId(),
+    senderRole: message.senderRole === "admin" ? "admin" : "user",
+    senderName:
+      typeof message.senderName === "string" && message.senderName.trim()
+        ? message.senderName.trim()
+        : message.senderRole === "admin"
+          ? "holidaily Admin"
+          : "Kunde",
+    body,
+    createdAt: typeof message.createdAt === "string" ? message.createdAt : new Date().toISOString()
   };
 };
 
@@ -210,6 +272,12 @@ const normalizeAccount = (account) => {
         .filter(Boolean)
         .filter((entry, index, entries) => entries.findIndex((candidate) => candidate.id === entry.id) === index)
     : [];
+  const chatMessages = Array.isArray(account.chatMessages)
+    ? account.chatMessages
+        .map((entry) => normalizeChatMessage(entry))
+        .filter(Boolean)
+        .sort((left, right) => new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime())
+    : [];
   const createdAt = typeof account.createdAt === "string" ? account.createdAt : new Date().toISOString();
 
   return {
@@ -220,6 +288,7 @@ const normalizeAccount = (account) => {
     role: account.role === "admin" ? "admin" : "user",
     savedOffers,
     projectNote: typeof account.projectNote === "string" ? account.projectNote : "",
+    chatMessages,
     createdAt,
     updatedAt: typeof account.updatedAt === "string" ? account.updatedAt : createdAt,
     noteUpdatedAt: typeof account.noteUpdatedAt === "string" ? account.noteUpdatedAt : ""
@@ -292,6 +361,11 @@ const ensureAdminAccount = () => {
     changed = true;
   }
 
+  if (!Array.isArray(existingAdmin.chatMessages)) {
+    existingAdmin.chatMessages = [];
+    changed = true;
+  }
+
   if (changed) {
     existingAdmin.updatedAt = new Date().toISOString();
     persistAccounts();
@@ -323,6 +397,91 @@ const removeOfferFromUser = (user, offerId) => {
   return true;
 };
 
+const getLastChatMessage = (account) =>
+  account.chatMessages.length ? account.chatMessages[account.chatMessages.length - 1] : null;
+
+const getLatestChatTimestamp = (account) => {
+  const lastMessage = getLastChatMessage(account);
+
+  if (!lastMessage) {
+    return 0;
+  }
+
+  const timestamp = new Date(lastMessage.createdAt).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const getUserChatStatus = (account) => {
+  const lastMessage = getLastChatMessage(account);
+
+  if (!lastMessage) {
+    return {
+      label: "Noch kein Chat",
+      variant: "is-subtle"
+    };
+  }
+
+  if (lastMessage.senderRole === "user") {
+    return {
+      label: "Nachricht gesendet",
+      variant: "is-alert"
+    };
+  }
+
+  return {
+    label: "Antwort vorhanden",
+    variant: "is-admin"
+  };
+};
+
+const getAdminChatStatus = (account) => {
+  const lastMessage = getLastChatMessage(account);
+
+  if (!lastMessage) {
+    return {
+      label: "Noch kein Chat",
+      variant: "is-subtle"
+    };
+  }
+
+  if (lastMessage.senderRole === "user") {
+    return {
+      label: "Antwort noetig",
+      variant: "is-alert"
+    };
+  }
+
+  return {
+    label: "Beantwortet",
+    variant: "is-admin"
+  };
+};
+
+const appendChatMessage = (account, senderRole, body, senderName) => {
+  const trimmedBody = body.trim();
+
+  if (!trimmedBody) {
+    return false;
+  }
+
+  const now = new Date().toISOString();
+  const normalizedMessage = normalizeChatMessage({
+    id: createMessageId(),
+    senderRole,
+    senderName,
+    body: trimmedBody,
+    createdAt: now
+  });
+
+  if (!normalizedMessage) {
+    return false;
+  }
+
+  account.chatMessages.push(normalizedMessage);
+  account.updatedAt = now;
+  return true;
+};
+
 const applyPendingOffer = (user) => {
   if (!accountState.pendingOffer) {
     return null;
@@ -349,16 +508,45 @@ const scrollToAccountSection = () => {
   });
 };
 
-const createChip = (label, variant = "") => {
-  const chip = document.createElement("span");
-  chip.className = "account-chip";
+const renderChatThread = (container, messages, options) => {
+  clearElement(container);
 
-  if (variant) {
-    chip.classList.add(variant);
+  if (!messages.length) {
+    container.hidden = true;
+    return;
   }
 
-  chip.textContent = label;
-  return chip;
+  messages.forEach((message) => {
+    const item = document.createElement("article");
+    item.className = `chat-message is-${message.senderRole}`;
+
+    const meta = document.createElement("div");
+    meta.className = "chat-message-meta";
+
+    const sender = document.createElement("strong");
+
+    if (message.senderRole === options.viewerRole) {
+      sender.textContent = "Du";
+    } else if (message.senderRole === "admin") {
+      sender.textContent = message.senderName || "holidaily Admin";
+    } else {
+      sender.textContent = options.participantName || message.senderName || "Kunde";
+    }
+
+    const timestamp = document.createElement("span");
+    timestamp.textContent = formatDate(message.createdAt);
+
+    const body = document.createElement("p");
+    body.className = "chat-message-body";
+    body.textContent = message.body;
+
+    meta.append(sender, timestamp);
+    item.append(meta, body);
+    container.appendChild(item);
+  });
+
+  container.hidden = false;
+  container.scrollTop = container.scrollHeight;
 };
 
 const renderSavedOffers = (user) => {
@@ -405,6 +593,79 @@ const renderSavedOffers = (user) => {
   });
 };
 
+const renderUserChat = (currentUser) => {
+  const status = getUserChatStatus(currentUser);
+  applyChipState(accountElements.userChatStatus, status.label, status.variant);
+
+  const hasMessages = currentUser.chatMessages.length > 0;
+  accountElements.userChatEmptyState.hidden = hasMessages;
+
+  if (!hasMessages) {
+    clearElement(accountElements.userChatThread);
+    accountElements.userChatThread.hidden = true;
+    return;
+  }
+
+  renderChatThread(accountElements.userChatThread, currentUser.chatMessages, {
+    viewerRole: "user",
+    participantName: "holidaily Admin"
+  });
+};
+
+const renderAdminChatWorkspace = (currentUser, visibleAccounts) => {
+  const chatAccounts = visibleAccounts.filter((account) => account.email !== DEFAULT_ADMIN_ACCOUNT.email);
+  let selectedAccount = chatAccounts.find((account) => account.email === accountState.selectedAdminChatEmail) || null;
+
+  if (!selectedAccount) {
+    selectedAccount = chatAccounts.find((account) => account.chatMessages.length > 0) || chatAccounts[0] || null;
+  }
+
+  if (!selectedAccount) {
+    accountState.selectedAdminChatEmail = "";
+    accountElements.adminChatTitle.textContent = "Chat auswaehlen";
+    accountElements.adminChatMeta.textContent =
+      "Sobald es weitere Konten gibt, kann der Admin hier Antworten ueber den Website-Chat verfassen.";
+    applyChipState(accountElements.adminChatStatus, "Kein Chat aktiv", "is-subtle");
+    accountElements.adminChatEmptyState.hidden = false;
+    accountElements.adminChatEmptyState.textContent =
+      "Aktuell ist kein anderes Konto fuer einen Chat vorhanden.";
+    accountElements.adminChatForm.hidden = true;
+    clearElement(accountElements.adminChatThread);
+    accountElements.adminChatThread.hidden = true;
+    return;
+  }
+
+  accountState.selectedAdminChatEmail = selectedAccount.email;
+  accountElements.adminChatTitle.textContent = `Chat mit ${selectedAccount.name}`;
+
+  const lastMessage = getLastChatMessage(selectedAccount);
+  accountElements.adminChatMeta.textContent = lastMessage
+    ? `${selectedAccount.email} | Letzte Nachricht am ${formatDate(lastMessage.createdAt)}`
+    : `${selectedAccount.email} | Noch keine Nachrichten`;
+
+  const status = getAdminChatStatus(selectedAccount);
+  applyChipState(accountElements.adminChatStatus, status.label, status.variant);
+
+  accountElements.adminChatForm.hidden = false;
+
+  const hasMessages = selectedAccount.chatMessages.length > 0;
+  accountElements.adminChatEmptyState.hidden = hasMessages;
+  accountElements.adminChatEmptyState.textContent = hasMessages
+    ? ""
+    : "Noch keine Nachrichten in diesem Chat. Der Admin kann hier direkt antworten, sobald die Unterhaltung starten soll.";
+
+  if (!hasMessages) {
+    clearElement(accountElements.adminChatThread);
+    accountElements.adminChatThread.hidden = true;
+    return;
+  }
+
+  renderChatThread(accountElements.adminChatThread, selectedAccount.chatMessages, {
+    viewerRole: "admin",
+    participantName: selectedAccount.name
+  });
+};
+
 const renderAdminPanel = (currentUser) => {
   const isAdmin = currentUser && currentUser.role === "admin";
   accountElements.adminView.hidden = !isAdmin;
@@ -413,24 +674,32 @@ const renderAdminPanel = (currentUser) => {
     return;
   }
 
-  const accounts = [...accountState.accounts].sort((left, right) => {
-    if (left.role !== right.role) {
-      return left.role === "admin" ? -1 : 1;
-    }
+  const visibleAccounts = [...accountState.accounts]
+    .filter((account) => account.email !== currentUser.email && account.email !== DEFAULT_ADMIN_ACCOUNT.email)
+    .sort((left, right) => {
+      const chatDifference = getLatestChatTimestamp(right) - getLatestChatTimestamp(left);
 
-    return left.name.localeCompare(right.name, "de-DE");
-  });
-  const totalSavedOffers = accounts.reduce((total, account) => total + account.savedOffers.length, 0);
+      if (chatDifference !== 0) {
+        return chatDifference;
+      }
 
-  accountElements.adminAccountCount.textContent = String(accounts.length);
+      if (left.role !== right.role) {
+        return left.role === "admin" ? -1 : 1;
+      }
+
+      return left.name.localeCompare(right.name, "de-DE");
+    });
+  const totalSavedOffers = accountState.accounts.reduce((total, account) => total + account.savedOffers.length, 0);
+
+  accountElements.adminAccountCount.textContent = String(accountState.accounts.length);
   accountElements.adminAdminCount.textContent = String(
-    accounts.filter((account) => account.role === "admin").length
+    accountState.accounts.filter((account) => account.role === "admin").length
   );
   accountElements.adminSavedCount.textContent = String(totalSavedOffers);
 
   clearElement(accountElements.adminAccountsList);
 
-  accounts.forEach((account) => {
+  visibleAccounts.forEach((account) => {
     const item = document.createElement("article");
     item.className = "admin-account";
 
@@ -438,24 +707,18 @@ const renderAdminPanel = (currentUser) => {
     headerRow.className = "admin-account-header";
 
     const identity = document.createElement("div");
-
     const name = document.createElement("strong");
-    name.textContent = account.name;
-
     const email = document.createElement("p");
+    name.textContent = account.name;
     email.textContent = account.email;
-
     identity.append(name, email);
 
     const chips = document.createElement("div");
     chips.className = "admin-account-meta";
     chips.appendChild(createChip(getRoleLabel(account.role), account.role === "admin" ? "is-admin" : "is-user"));
     chips.appendChild(createChip(`${account.savedOffers.length} Modelle`, "is-muted"));
-
-    if (account.email === DEFAULT_ADMIN_ACCOUNT.email) {
-      chips.appendChild(createChip("Standard Admin", "is-default"));
-    }
-
+    const chatStatus = getAdminChatStatus(account);
+    chips.appendChild(createChip(chatStatus.label, chatStatus.variant));
     headerRow.append(identity, chips);
 
     const detailRow = document.createElement("div");
@@ -476,25 +739,45 @@ const renderAdminPanel = (currentUser) => {
       notePreview.textContent = "Keine Notiz gespeichert.";
     }
 
-    item.append(headerRow, detailRow, notePreview);
+    const chatPreview = document.createElement("p");
+    chatPreview.className = "admin-account-note";
+    const lastMessage = getLastChatMessage(account);
 
-    if (account.email !== DEFAULT_ADMIN_ACCOUNT.email && account.email !== currentUser.email) {
-      const actionRow = document.createElement("div");
-      actionRow.className = "admin-account-actions";
+    if (lastMessage) {
+      const shortenedMessage =
+        lastMessage.body.length > 140 ? `${lastMessage.body.slice(0, 140)}...` : lastMessage.body;
+      const senderLabel = lastMessage.senderRole === "admin" ? "Admin" : account.name;
+      chatPreview.textContent = `Chat: ${senderLabel} am ${formatDate(lastMessage.createdAt)} - ${shortenedMessage}`;
+    } else {
+      chatPreview.textContent = "Noch kein Chat gestartet.";
+    }
 
+    const actionRow = document.createElement("div");
+    actionRow.className = "admin-account-actions";
+
+    const openChatButton = document.createElement("button");
+    openChatButton.className = "button button-ghost button-small";
+    openChatButton.type = "button";
+    openChatButton.dataset.adminAction = "open-chat";
+    openChatButton.dataset.accountEmail = account.email;
+    openChatButton.textContent = "Chat oeffnen";
+    actionRow.appendChild(openChatButton);
+
+    if (account.email !== DEFAULT_ADMIN_ACCOUNT.email) {
       const toggleRoleButton = document.createElement("button");
       toggleRoleButton.className = "button button-ghost button-small";
       toggleRoleButton.type = "button";
       toggleRoleButton.dataset.adminAction = "toggle-role";
       toggleRoleButton.dataset.accountEmail = account.email;
       toggleRoleButton.textContent = account.role === "admin" ? "Admin entfernen" : "Zum Admin machen";
-
       actionRow.appendChild(toggleRoleButton);
-      item.appendChild(actionRow);
     }
 
+    item.append(headerRow, detailRow, notePreview, chatPreview, actionRow);
     accountElements.adminAccountsList.appendChild(item);
   });
+
+  renderAdminChatWorkspace(currentUser, visibleAccounts);
 };
 
 const renderSaveButtons = (currentUser) => {
@@ -510,6 +793,15 @@ const renderSaveButtons = (currentUser) => {
   });
 };
 
+const resetUserOnlyViews = () => {
+  clearElement(accountElements.userChatThread);
+  accountElements.userChatThread.hidden = true;
+  accountElements.userChatEmptyState.hidden = false;
+  accountElements.userChatEmptyState.textContent =
+    "Noch keine Nachricht vorhanden. Starte den Chat direkt ueber dieses Formular.";
+  applyChipState(accountElements.userChatStatus, "Noch kein Chat", "is-subtle");
+};
+
 const renderAccountState = () => {
   const currentUser = getCurrentUser();
   const isLoggedIn = Boolean(currentUser);
@@ -523,8 +815,9 @@ const renderAccountState = () => {
     accountElements.roleBadge.className = "account-role-badge is-guest";
     accountElements.statusTitle.textContent = "Gastmodus aktiv";
     accountElements.statusText.textContent =
-      "Ein Konto ist optional und wird erst benoetigt, wenn du Modelle oder Notizen speichern willst.";
+      "Ein Konto ist optional und wird erst benoetigt, wenn du Modelle, Notizen oder den Chat speichern willst.";
     accountElements.adminView.hidden = true;
+    resetUserOnlyViews();
     renderSaveButtons(null);
     return;
   }
@@ -534,8 +827,8 @@ const renderAccountState = () => {
   accountElements.roleBadge.classList.add(isAdmin ? "is-admin" : "is-user");
   accountElements.statusTitle.textContent = `${currentUser.name} ist angemeldet`;
   accountElements.statusText.textContent = isAdmin
-    ? "Adminzugang aktiv. Du kannst lokale Konten, Rollen und gespeicherte Modelle auf diesem Geraet einsehen."
-    : "Konto aktiv. Du kannst Modelle speichern und Projekt-Notizen dauerhaft in diesem Browser hinterlegen.";
+    ? "Adminzugang aktiv. Du kannst lokale Konten, Rollen, Modelle und Website-Chats auf diesem Geraet verwalten."
+    : "Konto aktiv. Du kannst Modelle speichern, Projekt-Notizen sichern und direkt ueber die Website chatten.";
 
   accountElements.dashboardHeading.textContent = `Hallo ${currentUser.name}`;
   accountElements.dashboardMeta.textContent = `${currentUser.email} | Konto erstellt am ${formatDate(
@@ -550,6 +843,7 @@ const renderAccountState = () => {
     : "Noch keine Notiz gespeichert.";
 
   renderSavedOffers(currentUser);
+  renderUserChat(currentUser);
   renderAdminPanel(currentUser);
   renderSaveButtons(currentUser);
 };
@@ -642,6 +936,7 @@ if (accountElements.signupForm) {
       role: "user",
       savedOffers: [],
       projectNote: "",
+      chatMessages: [],
       createdAt: now,
       updatedAt: now,
       noteUpdatedAt: ""
@@ -666,7 +961,7 @@ if (accountElements.signupForm) {
     setFeedback(
       pendingOfferResult && pendingOfferResult.saved
         ? `Konto erstellt und "${pendingOfferResult.label}" direkt gespeichert.`
-        : "Konto erstellt. Du kannst jetzt Modelle speichern und Notizen sichern.",
+        : "Konto erstellt. Du kannst jetzt Modelle, Notizen und den Website-Chat nutzen.",
       "success"
     );
   });
@@ -747,6 +1042,76 @@ if (accountElements.notesForm) {
 
     renderAccountState();
     setFeedback(note ? "Projekt-Notiz gespeichert." : "Projekt-Notiz geleert.", "success");
+  });
+}
+
+if (accountElements.userChatForm) {
+  accountElements.userChatForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const currentUser = getCurrentUser();
+
+    if (!currentUser) {
+      setFeedback("Bitte zuerst anmelden, um den Website-Chat zu nutzen.", "error");
+      scrollToAccountSection();
+      return;
+    }
+
+    const message = accountElements.userChatMessage.value.trim();
+
+    if (!message) {
+      setFeedback("Bitte zuerst eine Nachricht eingeben.", "error");
+      return;
+    }
+
+    appendChatMessage(currentUser, "user", message, currentUser.name);
+
+    if (!persistAccounts()) {
+      return;
+    }
+
+    accountElements.userChatForm.reset();
+    renderAccountState();
+    setFeedback("Nachricht im Website-Chat gesendet.", "success");
+  });
+}
+
+if (accountElements.adminChatForm) {
+  accountElements.adminChatForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const currentUser = getCurrentUser();
+
+    if (!currentUser || currentUser.role !== "admin") {
+      setFeedback("Nur Admins koennen hier antworten.", "error");
+      return;
+    }
+
+    const targetAccount = accountState.accounts.find(
+      (account) => account.email === accountState.selectedAdminChatEmail
+    );
+
+    if (!targetAccount) {
+      setFeedback("Bitte zuerst ein Konto fuer den Chat auswaehlen.", "error");
+      return;
+    }
+
+    const message = accountElements.adminChatMessage.value.trim();
+
+    if (!message) {
+      setFeedback("Bitte zuerst eine Antwort eingeben.", "error");
+      return;
+    }
+
+    appendChatMessage(targetAccount, "admin", message, currentUser.name);
+
+    if (!persistAccounts()) {
+      return;
+    }
+
+    accountElements.adminChatForm.reset();
+    renderAccountState();
+    setFeedback(`Antwort an ${targetAccount.name} gesendet.`, "success");
   });
 }
 
@@ -831,19 +1196,35 @@ if (accountElements.adminAccountsList) {
     const currentUser = getCurrentUser();
 
     if (!currentUser || currentUser.role !== "admin") {
-      setFeedback("Nur Admins koennen Rollen verwalten.", "error");
+      setFeedback("Nur Admins koennen Konten verwalten.", "error");
       return;
     }
 
     const targetEmail = normalizeEmail(button.dataset.accountEmail || "");
     const targetAccount = accountState.accounts.find((account) => account.email === targetEmail);
 
-    if (!targetAccount || targetAccount.email === DEFAULT_ADMIN_ACCOUNT.email || targetAccount.email === currentUser.email) {
+    if (!targetAccount || targetAccount.email === currentUser.email) {
       setFeedback("Dieses Konto kann nicht angepasst werden.", "error");
       return;
     }
 
+    if (button.dataset.adminAction === "open-chat") {
+      accountState.selectedAdminChatEmail = targetAccount.email;
+      renderAccountState();
+
+      if (accountElements.adminChatMessage) {
+        accountElements.adminChatMessage.focus();
+      }
+
+      return;
+    }
+
     if (button.dataset.adminAction === "toggle-role") {
+      if (targetAccount.email === DEFAULT_ADMIN_ACCOUNT.email) {
+        setFeedback("Das Standard-Adminkonto kann nicht geaendert werden.", "error");
+        return;
+      }
+
       targetAccount.role = targetAccount.role === "admin" ? "user" : "admin";
       targetAccount.updatedAt = new Date().toISOString();
 
