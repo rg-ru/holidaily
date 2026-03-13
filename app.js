@@ -15,24 +15,31 @@ const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
 
 const STORAGE_KEY = "holidaily-local-accounts-v1";
 const SESSION_KEY = "holidaily-local-session-v1";
-const DEFAULT_ADMIN_ACCOUNT = {
-  id: "holidaily-admin",
-  name: "holidaily Admin",
-  email: "admin@holidaily.local",
-  passwordHash: "fnv1a-b68f0594",
-  role: "admin",
-  savedOffers: [],
-  projectNote: "",
-  chatMessages: [],
-  createdAt: "2026-03-13T00:00:00.000Z",
-  updatedAt: "2026-03-13T00:00:00.000Z",
-  noteUpdatedAt: ""
-};
+// Only seeded support accounts can ever hold admin access in this local demo.
+const SEEDED_ADMIN_ACCOUNTS = [
+  {
+    id: "holidaily-admin",
+    name: "holidaily Admin",
+    email: "admin@holidaily.local",
+    passwordHash: "fnv1a-349655e6",
+    role: "admin",
+    savedOffers: [],
+    projectNote: "",
+    chatMessages: [],
+    createdAt: "2026-03-13T00:00:00.000Z",
+    updatedAt: "2026-03-14T00:00:00.000Z",
+    noteUpdatedAt: "",
+    lockedAt: ""
+  }
+];
+const DEFAULT_ADMIN_ACCOUNT = SEEDED_ADMIN_ACCOUNTS[0];
 const accountState = {
   accounts: [],
   currentEmail: "",
   pendingOffer: null,
-  selectedAdminChatEmail: ""
+  selectedAdminChatEmail: "",
+  lockedNotice: "",
+  adminInboxSignature: ""
 };
 
 const accountElements = {
@@ -63,8 +70,13 @@ const accountElements = {
   userChatMessage: document.querySelector("#userChatMessage"),
   userChatStatus: document.querySelector("#userChatStatus"),
   adminAccountCount: document.querySelector("#adminAccountCount"),
-  adminAdminCount: document.querySelector("#adminAdminCount"),
+  adminPendingChatCount: document.querySelector("#adminPendingChatCount"),
+  adminLockedCount: document.querySelector("#adminLockedCount"),
   adminSavedCount: document.querySelector("#adminSavedCount"),
+  adminAlert: document.querySelector("#adminAlert"),
+  adminAlertTitle: document.querySelector("#adminAlertTitle"),
+  adminAlertText: document.querySelector("#adminAlertText"),
+  adminAlertCount: document.querySelector("#adminAlertCount"),
   adminAccountsList: document.querySelector("#adminAccountsList"),
   adminChatThread: document.querySelector("#adminChatThread"),
   adminChatEmptyState: document.querySelector("#adminChatEmptyState"),
@@ -134,6 +146,15 @@ const safeJsonParse = (value, fallback) => {
 
 const normalizeEmail = (value) => value.trim().toLowerCase();
 
+const isSeededAdminEmail = (value) =>
+  SEEDED_ADMIN_ACCOUNTS.some((account) => account.email === normalizeEmail(String(value || "")));
+
+const isSeededAdminAccount = (account) => Boolean(account) && isSeededAdminEmail(account.email);
+
+const hasAdminAccess = (account) => Boolean(account) && account.role === "admin" && isSeededAdminAccount(account);
+
+const isLockedAccount = (account) => Boolean(account) && !isSeededAdminAccount(account) && Boolean(account.lockedAt);
+
 const hashPassword = (value) => {
   let hash = 2166136261;
 
@@ -155,6 +176,11 @@ const createIdentifier = (prefix) => {
 
 const createAccountId = () => createIdentifier("account");
 const createMessageId = () => createIdentifier("message");
+const cloneSeededAdminAccount = (account) => ({
+  ...account,
+  savedOffers: [...account.savedOffers],
+  chatMessages: [...account.chatMessages]
+});
 
 const formatDate = (value) => {
   if (!value) {
@@ -279,19 +305,21 @@ const normalizeAccount = (account) => {
         .sort((left, right) => new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime())
     : [];
   const createdAt = typeof account.createdAt === "string" ? account.createdAt : new Date().toISOString();
+  const lockedAt = typeof account.lockedAt === "string" ? account.lockedAt : "";
 
   return {
     id: typeof account.id === "string" && account.id ? account.id : createAccountId(),
     name: typeof account.name === "string" && account.name.trim() ? account.name.trim() : email.split("@")[0],
     email,
     passwordHash: typeof account.passwordHash === "string" ? account.passwordHash : "",
-    role: account.role === "admin" ? "admin" : "user",
+    role: account.role === "admin" && isSeededAdminEmail(email) ? "admin" : "user",
     savedOffers,
     projectNote: typeof account.projectNote === "string" ? account.projectNote : "",
     chatMessages,
     createdAt,
     updatedAt: typeof account.updatedAt === "string" ? account.updatedAt : createdAt,
-    noteUpdatedAt: typeof account.noteUpdatedAt === "string" ? account.noteUpdatedAt : ""
+    noteUpdatedAt: typeof account.noteUpdatedAt === "string" ? account.noteUpdatedAt : "",
+    lockedAt
   };
 };
 
@@ -332,42 +360,64 @@ const getCurrentUser = () => {
     persistSession("");
   }
 
+  if (user && isLockedAccount(user)) {
+    accountState.currentEmail = "";
+    persistSession("");
+    accountState.lockedNotice =
+      "Dein Konto wurde vom Support voruebergehend gesperrt. Bitte melde dich direkt bei holidaily pools.";
+    return null;
+  }
+
   return user;
 };
 
 const ensureAdminAccount = () => {
-  const existingAdmin = accountState.accounts.find((account) => account.email === DEFAULT_ADMIN_ACCOUNT.email);
-
-  if (!existingAdmin) {
-    accountState.accounts.push({ ...DEFAULT_ADMIN_ACCOUNT });
-    persistAccounts();
-    return;
-  }
-
   let changed = false;
 
-  if (existingAdmin.role !== "admin") {
-    existingAdmin.role = "admin";
-    changed = true;
-  }
+  SEEDED_ADMIN_ACCOUNTS.forEach((seededAdmin) => {
+    const existingAdmin = accountState.accounts.find((account) => account.email === seededAdmin.email);
 
-  if (!existingAdmin.passwordHash) {
-    existingAdmin.passwordHash = DEFAULT_ADMIN_ACCOUNT.passwordHash;
-    changed = true;
-  }
+    if (!existingAdmin) {
+      accountState.accounts.push(cloneSeededAdminAccount(seededAdmin));
+      changed = true;
+      return;
+    }
 
-  if (!existingAdmin.name) {
-    existingAdmin.name = DEFAULT_ADMIN_ACCOUNT.name;
-    changed = true;
-  }
+    if (existingAdmin.role !== "admin") {
+      existingAdmin.role = "admin";
+      changed = true;
+    }
 
-  if (!Array.isArray(existingAdmin.chatMessages)) {
-    existingAdmin.chatMessages = [];
-    changed = true;
-  }
+    if (existingAdmin.passwordHash !== seededAdmin.passwordHash) {
+      existingAdmin.passwordHash = seededAdmin.passwordHash;
+      changed = true;
+    }
+
+    if (!existingAdmin.name) {
+      existingAdmin.name = seededAdmin.name;
+      changed = true;
+    }
+
+    if (!Array.isArray(existingAdmin.chatMessages)) {
+      existingAdmin.chatMessages = [];
+      changed = true;
+    }
+
+    if (existingAdmin.lockedAt) {
+      existingAdmin.lockedAt = "";
+      changed = true;
+    }
+  });
+
+  accountState.accounts.forEach((account) => {
+    if (account.role === "admin" && !isSeededAdminAccount(account)) {
+      account.role = "user";
+      account.updatedAt = new Date().toISOString();
+      changed = true;
+    }
+  });
 
   if (changed) {
-    existingAdmin.updatedAt = new Date().toISOString();
     persistAccounts();
   }
 };
@@ -409,6 +459,44 @@ const getLatestChatTimestamp = (account) => {
 
   const timestamp = new Date(lastMessage.createdAt).getTime();
   return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
+const accountNeedsAdminReply = (account) => {
+  const lastMessage = getLastChatMessage(account);
+  return Boolean(lastMessage && lastMessage.senderRole === "user");
+};
+
+const getManagedAccounts = (currentUser) => {
+  const currentEmail = currentUser ? currentUser.email : "";
+
+  return accountState.accounts.filter(
+    (account) => account.email !== currentEmail && !isSeededAdminAccount(account)
+  );
+};
+
+const getPendingReplyAccounts = (accounts) =>
+  [...accounts].filter((account) => accountNeedsAdminReply(account)).sort((left, right) => {
+    return getLatestChatTimestamp(right) - getLatestChatTimestamp(left);
+  });
+
+const createAdminInboxSignature = (accounts) =>
+  accounts
+    .map((account) => {
+      const lastMessage = getLastChatMessage(account);
+      return lastMessage ? `${account.email}:${lastMessage.id}` : "";
+    })
+    .filter(Boolean)
+    .join("|");
+
+const syncAdminInboxSignature = (currentUser) => {
+  if (!hasAdminAccess(currentUser)) {
+    accountState.adminInboxSignature = "";
+    return [];
+  }
+
+  const pendingAccounts = getPendingReplyAccounts(getManagedAccounts(currentUser));
+  accountState.adminInboxSignature = createAdminInboxSignature(pendingAccounts);
+  return pendingAccounts;
 };
 
 const getUserChatStatus = (account) => {
@@ -613,11 +701,15 @@ const renderUserChat = (currentUser) => {
 };
 
 const renderAdminChatWorkspace = (currentUser, visibleAccounts) => {
-  const chatAccounts = visibleAccounts.filter((account) => account.email !== DEFAULT_ADMIN_ACCOUNT.email);
+  const chatAccounts = visibleAccounts;
   let selectedAccount = chatAccounts.find((account) => account.email === accountState.selectedAdminChatEmail) || null;
 
   if (!selectedAccount) {
-    selectedAccount = chatAccounts.find((account) => account.chatMessages.length > 0) || chatAccounts[0] || null;
+    selectedAccount =
+      getPendingReplyAccounts(chatAccounts)[0] ||
+      chatAccounts.find((account) => account.chatMessages.length > 0) ||
+      chatAccounts[0] ||
+      null;
   }
 
   if (!selectedAccount) {
@@ -666,36 +758,73 @@ const renderAdminChatWorkspace = (currentUser, visibleAccounts) => {
   });
 };
 
-const renderAdminPanel = (currentUser) => {
-  const isAdmin = currentUser && currentUser.role === "admin";
-  accountElements.adminView.hidden = !isAdmin;
-
-  if (!isAdmin) {
+const renderAdminAlert = (pendingAccounts) => {
+  if (!accountElements.adminAlert) {
     return;
   }
 
-  const visibleAccounts = [...accountState.accounts]
-    .filter((account) => account.email !== currentUser.email && account.email !== DEFAULT_ADMIN_ACCOUNT.email)
+  const hasPending = pendingAccounts.length > 0;
+  accountElements.adminAlert.hidden = false;
+  accountElements.adminAlert.classList.toggle("is-alert", hasPending);
+
+  if (!hasPending) {
+    accountElements.adminAlertTitle.textContent = "Keine offenen Hilfeanfragen";
+    accountElements.adminAlertText.textContent =
+      "Sobald jemand im Website-Chat schreibt, erscheint die Anfrage hier fuer den Support.";
+    applyChipState(accountElements.adminAlertCount, "0 offen", "is-subtle");
+    return;
+  }
+
+  const latestAccount = pendingAccounts[0];
+  const latestMessage = getLastChatMessage(latestAccount);
+  const pendingLabel = pendingAccounts.length === 1 ? "1 Hilfeanfrage offen" : `${pendingAccounts.length} Hilfeanfragen offen`;
+  accountElements.adminAlertTitle.textContent = pendingLabel;
+  accountElements.adminAlertText.textContent = latestMessage
+    ? `Neueste Nachricht von ${latestAccount.name} am ${formatDate(
+        latestMessage.createdAt
+      )}. Oeffne den Chat, um direkt zu helfen.`
+    : "Es wartet mindestens eine neue Nachricht auf eine Antwort.";
+  applyChipState(accountElements.adminAlertCount, `${pendingAccounts.length} offen`, "is-alert");
+};
+
+const renderAdminPanel = (currentUser) => {
+  const isAdmin = hasAdminAccess(currentUser);
+  accountElements.adminView.hidden = !isAdmin;
+
+  if (!isAdmin) {
+    accountState.selectedAdminChatEmail = "";
+    return;
+  }
+
+  const visibleAccounts = [...getManagedAccounts(currentUser)]
     .sort((left, right) => {
+      const pendingDifference = Number(accountNeedsAdminReply(right)) - Number(accountNeedsAdminReply(left));
+
+      if (pendingDifference !== 0) {
+        return pendingDifference;
+      }
+
       const chatDifference = getLatestChatTimestamp(right) - getLatestChatTimestamp(left);
 
       if (chatDifference !== 0) {
         return chatDifference;
       }
 
-      if (left.role !== right.role) {
-        return left.role === "admin" ? -1 : 1;
+      if (isLockedAccount(left) !== isLockedAccount(right)) {
+        return isLockedAccount(left) ? 1 : -1;
       }
 
       return left.name.localeCompare(right.name, "de-DE");
     });
+  const pendingReplyAccounts = getPendingReplyAccounts(visibleAccounts);
+  const lockedAccountsCount = visibleAccounts.filter((account) => isLockedAccount(account)).length;
   const totalSavedOffers = accountState.accounts.reduce((total, account) => total + account.savedOffers.length, 0);
 
   accountElements.adminAccountCount.textContent = String(accountState.accounts.length);
-  accountElements.adminAdminCount.textContent = String(
-    accountState.accounts.filter((account) => account.role === "admin").length
-  );
+  accountElements.adminPendingChatCount.textContent = String(pendingReplyAccounts.length);
+  accountElements.adminLockedCount.textContent = String(lockedAccountsCount);
   accountElements.adminSavedCount.textContent = String(totalSavedOffers);
+  renderAdminAlert(pendingReplyAccounts);
 
   clearElement(accountElements.adminAccountsList);
 
@@ -715,7 +844,8 @@ const renderAdminPanel = (currentUser) => {
 
     const chips = document.createElement("div");
     chips.className = "admin-account-meta";
-    chips.appendChild(createChip(getRoleLabel(account.role), account.role === "admin" ? "is-admin" : "is-user"));
+    chips.appendChild(createChip(getRoleLabel(account.role), "is-user"));
+    chips.appendChild(createChip(isLockedAccount(account) ? "Gesperrt" : "Aktiv", isLockedAccount(account) ? "is-locked" : "is-subtle"));
     chips.appendChild(createChip(`${account.savedOffers.length} Modelle`, "is-muted"));
     const chatStatus = getAdminChatStatus(account);
     chips.appendChild(createChip(chatStatus.label, chatStatus.variant));
@@ -763,15 +893,21 @@ const renderAdminPanel = (currentUser) => {
     openChatButton.textContent = "Chat oeffnen";
     actionRow.appendChild(openChatButton);
 
-    if (account.email !== DEFAULT_ADMIN_ACCOUNT.email) {
-      const toggleRoleButton = document.createElement("button");
-      toggleRoleButton.className = "button button-ghost button-small";
-      toggleRoleButton.type = "button";
-      toggleRoleButton.dataset.adminAction = "toggle-role";
-      toggleRoleButton.dataset.accountEmail = account.email;
-      toggleRoleButton.textContent = account.role === "admin" ? "Admin entfernen" : "Zum Admin machen";
-      actionRow.appendChild(toggleRoleButton);
-    }
+    const toggleLockButton = document.createElement("button");
+    toggleLockButton.className = "button button-ghost button-small";
+    toggleLockButton.type = "button";
+    toggleLockButton.dataset.adminAction = "toggle-lock";
+    toggleLockButton.dataset.accountEmail = account.email;
+    toggleLockButton.textContent = isLockedAccount(account) ? "Entsperren" : "Sperren";
+    actionRow.appendChild(toggleLockButton);
+
+    const deleteAccountButton = document.createElement("button");
+    deleteAccountButton.className = "button button-ghost button-small";
+    deleteAccountButton.type = "button";
+    deleteAccountButton.dataset.adminAction = "delete-account";
+    deleteAccountButton.dataset.accountEmail = account.email;
+    deleteAccountButton.textContent = "Konto loeschen";
+    actionRow.appendChild(deleteAccountButton);
 
     item.append(headerRow, detailRow, notePreview, chatPreview, actionRow);
     accountElements.adminAccountsList.appendChild(item);
@@ -805,12 +941,13 @@ const resetUserOnlyViews = () => {
 const renderAccountState = () => {
   const currentUser = getCurrentUser();
   const isLoggedIn = Boolean(currentUser);
-  const isAdmin = currentUser && currentUser.role === "admin";
+  const isAdmin = hasAdminAccess(currentUser);
 
   accountElements.guestView.hidden = isLoggedIn;
   accountElements.userView.hidden = !isLoggedIn;
 
   if (!isLoggedIn) {
+    accountState.adminInboxSignature = "";
     accountElements.roleBadge.textContent = "Gast";
     accountElements.roleBadge.className = "account-role-badge is-guest";
     accountElements.statusTitle.textContent = "Gastmodus aktiv";
@@ -819,6 +956,12 @@ const renderAccountState = () => {
     accountElements.adminView.hidden = true;
     resetUserOnlyViews();
     renderSaveButtons(null);
+
+    if (accountState.lockedNotice) {
+      setFeedback(accountState.lockedNotice, "error");
+      accountState.lockedNotice = "";
+    }
+
     return;
   }
 
@@ -827,7 +970,7 @@ const renderAccountState = () => {
   accountElements.roleBadge.classList.add(isAdmin ? "is-admin" : "is-user");
   accountElements.statusTitle.textContent = `${currentUser.name} ist angemeldet`;
   accountElements.statusText.textContent = isAdmin
-    ? "Adminzugang aktiv. Du kannst lokale Konten, Rollen, Modelle und Website-Chats auf diesem Geraet verwalten."
+    ? "Adminzugang aktiv. Du kannst Nutzerkonten verwalten, Chats beantworten und offene Hilfeanfragen priorisieren."
     : "Konto aktiv. Du kannst Modelle speichern, Projekt-Notizen sichern und direkt ueber die Website chatten.";
 
   accountElements.dashboardHeading.textContent = `Hallo ${currentUser.name}`;
@@ -846,6 +989,7 @@ const renderAccountState = () => {
   renderUserChat(currentUser);
   renderAdminPanel(currentUser);
   renderSaveButtons(currentUser);
+  syncAdminInboxSignature(currentUser);
 };
 
 const initializeAccounts = () => {
@@ -976,6 +1120,11 @@ if (accountElements.loginForm) {
     const password = String(formData.get("password") || "");
     const account = accountState.accounts.find((entry) => entry.email === email);
 
+    if (account && isLockedAccount(account)) {
+      setFeedback("Dieses Konto wurde vom Support gesperrt und kann gerade nicht genutzt werden.", "error");
+      return;
+    }
+
     if (!account || account.passwordHash !== hashPassword(password)) {
       setFeedback("Die Anmeldedaten stimmen nicht.", "error");
       return;
@@ -995,12 +1144,17 @@ if (accountElements.loginForm) {
     }
 
     renderAccountState();
-    setFeedback(
-      pendingOfferResult && pendingOfferResult.saved
-        ? `Angemeldet und "${pendingOfferResult.label}" in deiner Merkliste abgelegt.`
-        : `Angemeldet als ${account.name}.`,
-      "success"
-    );
+    const pendingReplyCount = hasAdminAccess(account) ? getPendingReplyAccounts(getManagedAccounts(account)).length : 0;
+    const loginMessage = pendingOfferResult && pendingOfferResult.saved
+      ? `Angemeldet und "${pendingOfferResult.label}" in deiner Merkliste abgelegt.`
+      : `Angemeldet als ${account.name}.`;
+    const adminHelpMessage = hasAdminAccess(account)
+      ? pendingReplyCount
+        ? ` ${pendingReplyCount} Hilfeanfrage${pendingReplyCount === 1 ? "" : "n"} warten im Website-Chat.`
+        : " Keine offenen Hilfeanfragen im Website-Chat."
+      : "";
+
+    setFeedback(`${loginMessage}${adminHelpMessage}`, "success");
   });
 }
 
@@ -1082,7 +1236,7 @@ if (accountElements.adminChatForm) {
 
     const currentUser = getCurrentUser();
 
-    if (!currentUser || currentUser.role !== "admin") {
+    if (!hasAdminAccess(currentUser)) {
       setFeedback("Nur Admins koennen hier antworten.", "error");
       return;
     }
@@ -1195,7 +1349,7 @@ if (accountElements.adminAccountsList) {
 
     const currentUser = getCurrentUser();
 
-    if (!currentUser || currentUser.role !== "admin") {
+    if (!hasAdminAccess(currentUser)) {
       setFeedback("Nur Admins koennen Konten verwalten.", "error");
       return;
     }
@@ -1219,13 +1373,13 @@ if (accountElements.adminAccountsList) {
       return;
     }
 
-    if (button.dataset.adminAction === "toggle-role") {
-      if (targetAccount.email === DEFAULT_ADMIN_ACCOUNT.email) {
-        setFeedback("Das Standard-Adminkonto kann nicht geaendert werden.", "error");
+    if (button.dataset.adminAction === "toggle-lock") {
+      if (isSeededAdminAccount(targetAccount)) {
+        setFeedback("Freigegebene Supportkonten koennen hier nicht gesperrt werden.", "error");
         return;
       }
 
-      targetAccount.role = targetAccount.role === "admin" ? "user" : "admin";
+      targetAccount.lockedAt = targetAccount.lockedAt ? "" : new Date().toISOString();
       targetAccount.updatedAt = new Date().toISOString();
 
       if (!persistAccounts()) {
@@ -1233,7 +1387,41 @@ if (accountElements.adminAccountsList) {
       }
 
       renderAccountState();
-      setFeedback(`${targetAccount.name} ist jetzt ${getRoleLabel(targetAccount.role)}.`, "success");
+      setFeedback(
+        targetAccount.lockedAt
+          ? `${targetAccount.name} wurde gesperrt.`
+          : `${targetAccount.name} wurde wieder entsperrt.`,
+        "success"
+      );
+      return;
+    }
+
+    if (button.dataset.adminAction === "delete-account") {
+      if (isSeededAdminAccount(targetAccount)) {
+        setFeedback("Freigegebene Supportkonten koennen hier nicht geloescht werden.", "error");
+        return;
+      }
+
+      const confirmed = window.confirm(
+        `Soll das Konto von ${targetAccount.name} mit allen gespeicherten Modellen, Notizen und Chatnachrichten geloescht werden?`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      accountState.accounts = accountState.accounts.filter((account) => account.email !== targetAccount.email);
+
+      if (accountState.selectedAdminChatEmail === targetAccount.email) {
+        accountState.selectedAdminChatEmail = "";
+      }
+
+      if (!persistAccounts()) {
+        return;
+      }
+
+      renderAccountState();
+      setFeedback(`${targetAccount.name} wurde geloescht.`, "success");
     }
   });
 }
@@ -1243,10 +1431,25 @@ window.addEventListener("storage", (event) => {
     return;
   }
 
+  const previousAdminInboxSignature = accountState.adminInboxSignature;
   accountState.accounts = loadAccounts();
   accountState.currentEmail = loadSessionEmail();
   ensureAdminAccount();
   renderAccountState();
+
+  const currentUser = getCurrentUser();
+
+  if (
+    hasAdminAccess(currentUser) &&
+    previousAdminInboxSignature &&
+    previousAdminInboxSignature !== accountState.adminInboxSignature
+  ) {
+    const pendingAccounts = getPendingReplyAccounts(getManagedAccounts(currentUser));
+
+    if (pendingAccounts.length) {
+      setFeedback(`Neue Hilfeanfrage von ${pendingAccounts[0].name} im Website-Chat eingegangen.`, "info");
+    }
+  }
 });
 
 if (!prefersReducedMotion.matches) {

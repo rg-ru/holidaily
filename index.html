@@ -21,7 +21,7 @@
   <script>
     document.documentElement.classList.add("has-motion");
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260314-1">
+    <link rel="stylesheet" href="styles.css?v=20260314-2">
 </head>
   <body>
   <div class="page-shell">
@@ -227,7 +227,7 @@
       <section class="section account-section" id="konto">
         <div class="section-heading motion-reveal motion-up" data-reveal>
           <p class="eyebrow">Konto & Speicherliste</p>
-          <h2>Optionales Konto fuer Merkliste, Notizen und einen lokalen Adminbereich.</h2>
+          <h2>Optionales Konto fuer Merkliste, Notizen, Website-Chat und einen geschuetzten Supportbereich.</h2>
         </div>
         <div class="account-grid">
           <div class="account-intro">
@@ -242,7 +242,7 @@
               <div class="account-highlight-points" aria-label="Konto-Vorteile">
                 <span>Modelle direkt aus den Karten speichern</span>
                 <span>Direkt ueber die Website chatten</span>
-                <span>Lokalen Adminzugang fuer Browserdaten nutzen</span>
+                <span>Geschuetzten Supportzugang fuer Hilfeanfragen nutzen</span>
               </div>
             </article>
             <article class="account-benefit motion-reveal motion-up" data-reveal style="--delay: 80ms;">
@@ -262,16 +262,16 @@
             </article>
             <article class="account-benefit account-benefit-admin motion-reveal motion-up" data-reveal style="--delay: 240ms;">
               <p class="account-card-kicker">Admin</p>
-              <h3>Voreingestelltes Adminkonto</h3>
+              <h3>Adminzugang nur fuer freigegebene Supportkonten</h3>
               <p>
-                Dieses lokale Adminkonto zeigt alle Konten, gespeicherten Modelle und Rollen, die in diesem Browser
-                angelegt wurden.
+                Der Supportbereich ist nicht oeffentlich sichtbar. Nur hinterlegte Adminkonten duerfen Nutzerkonten
+                verwalten, Chats beantworten und Hilfeanfragen bearbeiten.
               </p>
-              <div class="account-admin-credentials" aria-label="Lokale Admin-Zugangsdaten">
-                <span>Admin E-Mail</span>
-                <code>admin@holidaily.local</code>
-                <span>Passwort</span>
-                <code>HolidailyAdmin2026!</code>
+              <div class="account-admin-credentials" aria-label="Admin-Hinweise">
+                <span>Zugriff</span>
+                <code>Nur intern freigegeben</code>
+                <span>Verwaltung</span>
+                <code>Nutzer, Sperren, Loeschungen, Chat-Hilfe</code>
               </div>
             </article>
           </div>
@@ -394,8 +394,8 @@
                     <div>
                       <p class="account-card-kicker">Website-Chat</p>
                       <h3>Direkt im Konto schreiben</h3>
-                      <p class="account-help-text">
-                        Schreibe hier direkt an holidaily pools. Der Admin kann im lokalen Adminbereich darauf antworten.
+                    <p class="account-help-text">
+                        Schreibe hier direkt an holidaily pools. Freigegebene Supportadmins koennen im geschuetzten Bereich antworten.
                       </p>
                     </div>
                     <span class="account-chip is-subtle" id="userChatStatus">Noch kein Chat</span>
@@ -426,7 +426,7 @@
                     <p class="account-card-kicker">Adminbereich</p>
                     <h3>Lokale Konten auf diesem Geraet</h3>
                     <p class="account-help-text">
-                      Diese Uebersicht zeigt nur Konten, die in diesem Browser gespeichert wurden.
+                      Diese Uebersicht zeigt nur Nutzerkonten, die in diesem Browser gespeichert wurden.
                     </p>
                   </div>
                 </div>
@@ -436,13 +436,27 @@
                     <strong id="adminAccountCount">0</strong>
                   </article>
                   <article class="account-metric">
-                    <span>Admins</span>
-                    <strong id="adminAdminCount">0</strong>
+                    <span>Offene Hilfechats</span>
+                    <strong id="adminPendingChatCount">0</strong>
+                  </article>
+                  <article class="account-metric">
+                    <span>Gesperrte Konten</span>
+                    <strong id="adminLockedCount">0</strong>
                   </article>
                   <article class="account-metric">
                     <span>Gespeicherte Modelle</span>
                     <strong id="adminSavedCount">0</strong>
                   </article>
+                </div>
+                <div class="admin-alert" id="adminAlert">
+                  <div>
+                    <p class="account-card-kicker">Hilfeanfragen</p>
+                    <h3 id="adminAlertTitle">Keine offenen Hilfeanfragen</h3>
+                    <p class="account-help-text" id="adminAlertText">
+                      Sobald jemand im Website-Chat schreibt, erscheint die Anfrage hier fuer den Support.
+                    </p>
+                  </div>
+                  <span class="account-chip is-subtle" id="adminAlertCount">0 offen</span>
                 </div>
                 <div class="admin-account-list" id="adminAccountsList"></div>
                 <div class="admin-chat-workspace">
@@ -451,7 +465,7 @@
                       <p class="account-card-kicker">Chatantworten</p>
                       <h3 id="adminChatTitle">Chat auswaehlen</h3>
                       <p class="account-help-text" id="adminChatMeta">
-                        Waehle ein Konto aus der Liste, um den Chatverlauf zu lesen und zu antworten.
+                        Waehle ein Nutzerkonto aus der Liste, um den Chatverlauf zu lesen und direkt zu helfen.
                       </p>
                     </div>
                     <span class="account-chip is-subtle" id="adminChatStatus">Kein Chat aktiv</span>
@@ -621,6 +635,6 @@
     </span>
     <span class="floating-whatsapp-label">WhatsApp Kontakt</span>
   </a>
-  <script src="app.js?v=20260314-1"></script>
+    <script src="app.js?v=20260314-2"></script>
 </body>
 </html>

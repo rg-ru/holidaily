@@ -1537,7 +1537,7 @@ h3 {
 .account-metrics,
 .admin-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
 }
 
@@ -1664,6 +1664,22 @@ h3 {
   border-top: 1px solid rgba(84, 145, 191, 0.18);
 }
 
+.admin-alert {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 22px;
+  border: 1px solid rgba(84, 145, 191, 0.22);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(235, 246, 253, 0.88));
+}
+
+.admin-alert.is-alert {
+  border-color: rgba(246, 179, 28, 0.42);
+  background: linear-gradient(135deg, rgba(255, 248, 230, 0.98), rgba(255, 255, 255, 0.96));
+}
+
 .saved-offers-list {
   display: grid;
   gap: 12px;
@@ -1786,6 +1802,11 @@ h3 {
 .account-chip.is-alert {
   background: rgba(246, 179, 28, 0.18);
   color: #875600;
+}
+
+.account-chip.is-locked {
+  background: rgba(155, 48, 37, 0.14);
+  color: #8f2f24;
 }
 
 .account-highlight:hover,
@@ -2390,6 +2411,7 @@ h3 {
   .account-status-bar,
   .account-dashboard-header,
   .admin-account-header,
+  .admin-alert,
   .chat-card-header,
   .admin-chat-header {
     flex-direction: column;
