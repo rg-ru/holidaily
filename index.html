@@ -21,7 +21,7 @@
   <script>
     document.documentElement.classList.add("has-motion");
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260313-2">
+  <link rel="stylesheet" href="styles.css?v=20260313-3">
 </head>
   <body>
   <div class="page-shell">
@@ -33,6 +33,7 @@
       <nav class="site-nav" aria-label="Hauptnavigation">
         <a href="#modelle">Modelle</a>
         <a href="#vorteile">Vorteile</a>
+        <a href="#konto">Konto</a>
         <a href="#referenzen">Referenzen</a>
         <a href="#kontakt">Kontakt</a>
       </nav>
@@ -166,6 +167,17 @@
               <li>Flexible Groessen und Ausstattungen</li>
               <li>Geeignet fuer regelmaessige Nutzung im Alltag</li>
             </ul>
+            <div class="offer-actions">
+              <button
+                class="button button-ghost button-small save-offer-button"
+                type="button"
+                data-save-offer="classic-pool"
+                data-offer-label="Classic Pool"
+                data-offer-description="Der klassische Einbaupool fuer den Garten"
+              >
+                Im Konto speichern
+              </button>
+            </div>
           </article>
           <article class="offer-card offer-card-highlight motion-reveal motion-up" data-reveal style="--delay: 120ms;">
             <p class="offer-label">Family Pool</p>
@@ -176,6 +188,17 @@
               <li>Optionen fuer Abdeckung, Einstieg und Technik</li>
               <li>Beratung passend zu Nutzung und Budget</li>
             </ul>
+            <div class="offer-actions">
+              <button
+                class="button button-ghost button-small save-offer-button"
+                type="button"
+                data-save-offer="family-pool"
+                data-offer-label="Family Pool"
+                data-offer-description="Mehr Platz, mehr Komfort, mehr gemeinsame Zeit"
+              >
+                Im Konto speichern
+              </button>
+            </div>
           </article>
           <article class="offer-card motion-reveal motion-up" data-reveal style="--delay: 240ms;">
             <p class="offer-label">Mini Pool</p>
@@ -186,7 +209,215 @@
               <li>Reduzierte Optik mit klarem Design</li>
               <li>Schneller zur passenden Loesung</li>
             </ul>
+            <div class="offer-actions">
+              <button
+                class="button button-ghost button-small save-offer-button"
+                type="button"
+                data-save-offer="mini-pool"
+                data-offer-label="Mini Pool"
+                data-offer-description="Starke Wirkung auf kleinerer Flaeche"
+              >
+                Im Konto speichern
+              </button>
+            </div>
           </article>
+        </div>
+      </section>
+
+      <section class="section account-section" id="konto">
+        <div class="section-heading motion-reveal motion-up" data-reveal>
+          <p class="eyebrow">Konto & Speicherliste</p>
+          <h2>Optionales Konto fuer Merkliste, Notizen und einen lokalen Adminbereich.</h2>
+        </div>
+        <div class="account-grid">
+          <div class="account-intro">
+            <article class="account-highlight motion-reveal motion-up" data-reveal style="--delay: 0ms;">
+              <p class="eyebrow">Optional, wenn du speichern willst</p>
+              <h3>Ohne Konto weiterstoebern. Mit Konto Modelle und Projekt-Notizen sichern.</h3>
+              <p>
+                Diese Landingpage bleibt statisch. Deshalb werden Konten, gespeicherte Modelle und Notizen lokal in
+                diesem Browser abgelegt. Das ist praktisch fuer Entwuerfe und Demos, aber kein Ersatz fuer ein echtes
+                Backend.
+              </p>
+              <div class="account-highlight-points" aria-label="Konto-Vorteile">
+                <span>Modelle direkt aus den Karten speichern</span>
+                <span>Projekt-Notizen spaeter wieder aufrufen</span>
+                <span>Lokalen Adminzugang fuer Browserdaten nutzen</span>
+              </div>
+            </article>
+            <article class="account-benefit motion-reveal motion-up" data-reveal style="--delay: 80ms;">
+              <p class="account-card-kicker">Merkliste</p>
+              <h3>Poolmodelle sichern</h3>
+              <p>
+                Classic Pool, Family Pool und Mini Pool koennen direkt in dein Konto gespeichert und spaeter wieder
+                verglichen werden.
+              </p>
+            </article>
+            <article class="account-benefit motion-reveal motion-up" data-reveal style="--delay: 160ms;">
+              <p class="account-card-kicker">Notizen</p>
+              <h3>Projektstand festhalten</h3>
+              <p>
+                Notiere Gartenmasse, Technikwuensche, Budget oder offene Fragen und halte deinen aktuellen Stand fest.
+              </p>
+            </article>
+            <article class="account-benefit account-benefit-admin motion-reveal motion-up" data-reveal style="--delay: 240ms;">
+              <p class="account-card-kicker">Admin</p>
+              <h3>Voreingestelltes Adminkonto</h3>
+              <p>
+                Dieses lokale Adminkonto zeigt alle Konten, gespeicherten Modelle und Rollen, die in diesem Browser
+                angelegt wurden.
+              </p>
+              <div class="account-admin-credentials" aria-label="Lokale Admin-Zugangsdaten">
+                <span>Admin E-Mail</span>
+                <code>admin@holidaily.local</code>
+                <span>Passwort</span>
+                <code>HolidailyAdmin2026!</code>
+              </div>
+            </article>
+          </div>
+          <div class="account-shell motion-reveal motion-up" data-reveal style="--delay: 120ms;">
+            <div class="account-status-bar">
+              <div>
+                <p class="account-status-label">Konto-Status</p>
+                <strong id="accountStatusTitle">Gastmodus aktiv</strong>
+                <p id="accountStatusText">
+                  Ein Konto ist optional und wird erst benoetigt, wenn du Modelle oder Notizen speichern willst.
+                </p>
+              </div>
+              <span class="account-role-badge is-guest" id="accountRoleBadge">Gast</span>
+            </div>
+            <p class="account-feedback" id="accountFeedback" role="status" aria-live="polite"></p>
+
+            <div class="auth-grid" id="guestView">
+              <article class="auth-card">
+                <p class="account-card-kicker">Neu hier?</p>
+                <h3>Konto anlegen</h3>
+                <p>Lege ein lokales Konto an, um Modelle und Notizen fuer spaeter zu speichern.</p>
+                <form id="signupForm" novalidate>
+                  <label for="signupName">
+                    Name
+                    <input id="signupName" name="name" type="text" autocomplete="name" required>
+                  </label>
+                  <label for="signupEmail">
+                    E-Mail
+                    <input id="signupEmail" name="email" type="email" autocomplete="email" required>
+                  </label>
+                  <label for="signupPassword">
+                    Passwort
+                    <input id="signupPassword" name="password" type="password" autocomplete="new-password" minlength="8" required>
+                  </label>
+                  <div class="account-form-actions">
+                    <button class="button button-primary button-small" type="submit">Konto erstellen</button>
+                  </div>
+                </form>
+              </article>
+              <article class="auth-card">
+                <p class="account-card-kicker">Bereits vorhanden</p>
+                <h3>Anmelden</h3>
+                <p>Melde dich an, um deine gespeicherten Modelle, Notizen und Adminfunktionen zu nutzen.</p>
+                <form id="loginForm" novalidate>
+                  <label for="loginEmail">
+                    E-Mail
+                    <input id="loginEmail" name="email" type="email" autocomplete="email" required>
+                  </label>
+                  <label for="loginPassword">
+                    Passwort
+                    <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+                  </label>
+                  <div class="account-form-actions">
+                    <button class="button button-secondary button-small" type="submit">Anmelden</button>
+                  </div>
+                </form>
+              </article>
+            </div>
+
+            <div class="account-dashboard" id="userView" hidden>
+              <div class="account-dashboard-header">
+                <div>
+                  <p class="account-card-kicker">Mein Bereich</p>
+                  <h3 id="dashboardHeading">Willkommen</h3>
+                  <p class="account-help-text" id="dashboardMeta"></p>
+                </div>
+                <div class="account-form-actions">
+                  <button class="button button-ghost button-small" type="button" id="logoutButton">Abmelden</button>
+                </div>
+              </div>
+
+              <div class="account-metrics">
+                <article class="account-metric">
+                  <span>Gespeicherte Modelle</span>
+                  <strong id="metricSavedCount">0</strong>
+                </article>
+                <article class="account-metric">
+                  <span>Rolle</span>
+                  <strong id="metricRole">Gast</strong>
+                </article>
+                <article class="account-metric">
+                  <span>Letzte Aenderung</span>
+                  <strong id="metricUpdatedAt">-</strong>
+                </article>
+              </div>
+
+              <div class="account-dashboard-grid">
+                <article class="account-card">
+                  <p class="account-card-kicker">Gespeichert</p>
+                  <h3>Deine Merkliste</h3>
+                  <p>Gespeicherte Poolmodelle erscheinen hier und koennen jederzeit wieder entfernt werden.</p>
+                  <div class="account-empty-state" id="savedEmptyState">
+                    Noch nichts gespeichert. Nutze die Buttons bei den Poolmodellen, um deine Merkliste zu fuellen.
+                  </div>
+                  <ul class="saved-offers-list" id="savedOffersList" aria-live="polite"></ul>
+                </article>
+
+                <article class="account-card">
+                  <p class="account-card-kicker">Notizen</p>
+                  <h3>Projekt-Notiz</h3>
+                  <p>Halte Abmessungen, Budget oder Fragen fuer das naechste Gespraech direkt im Konto fest.</p>
+                  <form class="account-note-form" id="notesForm">
+                    <label for="projectNote">
+                      Notiz
+                      <textarea
+                        id="projectNote"
+                        name="projectNote"
+                        placeholder="Zum Beispiel: Family Pool mit Abdeckung pruefen, Gartenmasse am Wochenende nachmessen."
+                      ></textarea>
+                    </label>
+                    <div class="account-form-actions">
+                      <button class="button button-secondary button-small" type="submit">Notiz speichern</button>
+                    </div>
+                  </form>
+                  <p class="account-help-text" id="noteMeta">Noch keine Notiz gespeichert.</p>
+                </article>
+              </div>
+
+              <article class="account-card admin-card" id="adminView" hidden>
+                <div class="admin-header">
+                  <div>
+                    <p class="account-card-kicker">Adminbereich</p>
+                    <h3>Lokale Konten auf diesem Geraet</h3>
+                    <p class="account-help-text">
+                      Diese Uebersicht zeigt nur Konten, die in diesem Browser gespeichert wurden.
+                    </p>
+                  </div>
+                </div>
+                <div class="admin-stats">
+                  <article class="account-metric">
+                    <span>Konten</span>
+                    <strong id="adminAccountCount">0</strong>
+                  </article>
+                  <article class="account-metric">
+                    <span>Admins</span>
+                    <strong id="adminAdminCount">0</strong>
+                  </article>
+                  <article class="account-metric">
+                    <span>Gespeicherte Modelle</span>
+                    <strong id="adminSavedCount">0</strong>
+                  </article>
+                </div>
+                <div class="admin-account-list" id="adminAccountsList"></div>
+              </article>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -331,179 +562,6 @@
     </span>
     <span class="floating-whatsapp-label">WhatsApp Kontakt</span>
   </a>
-  <script>
-    const motionElements = document.querySelectorAll("[data-reveal]");
-    const header = document.querySelector(".site-header");
-    const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
-    const sectionLinks = navLinks
-      .map((link) => ({ link, section: document.querySelector(link.getAttribute("href")) }))
-      .filter(({ section }) => section);
-    const heroVisual = document.querySelector(".hero-visual");
-    const interactiveSurfaces = document.querySelectorAll(
-      ".hero-card, .hero-detail-strip, .hero-stats article, .feature-card, .offer-card, .story-card, .contact-card, .contact-method, .contact-hours, .spotlight-list article, .spotlight-metrics article"
-    );
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
-
-    const revealAll = () => {
-      motionElements.forEach((element) => element.classList.add("is-visible"));
-    };
-
-    const syncHeaderState = () => {
-      if (!header) {
-        return;
-      }
-
-      header.classList.toggle("is-scrolled", window.scrollY > 24);
-    };
-
-    const syncActiveNav = () => {
-      if (!sectionLinks.length) {
-        return;
-      }
-
-      const marker = window.scrollY + window.innerHeight * 0.34;
-      let activeLink = null;
-
-      sectionLinks.forEach(({ link, section }) => {
-        if (section.offsetTop <= marker) {
-          activeLink = link;
-        }
-      });
-
-      navLinks.forEach((link) => {
-        link.classList.toggle("is-active", link === activeLink);
-      });
-    };
-
-    let scrollFrame = 0;
-
-    const queueScrollSync = () => {
-      if (scrollFrame) {
-        return;
-      }
-
-      scrollFrame = window.requestAnimationFrame(() => {
-        syncHeaderState();
-        syncActiveNav();
-        scrollFrame = 0;
-      });
-    };
-
-    syncHeaderState();
-    syncActiveNav();
-    window.addEventListener("scroll", queueScrollSync, { passive: true });
-    window.addEventListener("resize", queueScrollSync);
-
-    if (!prefersReducedMotion.matches) {
-      const revealObserver = new IntersectionObserver(
-        (entries, observer) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) {
-              return;
-            }
-
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          });
-        },
-        {
-          threshold: 0.18,
-          rootMargin: "0px 0px -8% 0px"
-        }
-      );
-
-      motionElements.forEach((element) => revealObserver.observe(element));
-    } else {
-      revealAll();
-    }
-
-    if (!prefersReducedMotion.matches && hasFinePointer) {
-      interactiveSurfaces.forEach((surface) => {
-        let pointerFrame = 0;
-        let lastEvent;
-
-        const updateGlow = (event) => {
-          const rect = surface.getBoundingClientRect();
-          const x = event.clientX - rect.left;
-          const y = event.clientY - rect.top;
-
-          surface.style.setProperty("--glow-x", `${x}px`);
-          surface.style.setProperty("--glow-y", `${y}px`);
-          surface.style.setProperty("--glow-alpha", "1");
-        };
-
-        surface.addEventListener("pointerenter", (event) => {
-          updateGlow(event);
-        });
-
-        surface.addEventListener("pointermove", (event) => {
-          lastEvent = event;
-
-          if (pointerFrame) {
-            return;
-          }
-
-          pointerFrame = window.requestAnimationFrame(() => {
-            updateGlow(lastEvent);
-            pointerFrame = 0;
-          });
-        });
-
-        surface.addEventListener("pointerleave", () => {
-          surface.style.setProperty("--glow-alpha", "0");
-        });
-      });
-
-      if (heroVisual) {
-        let heroFrame = 0;
-
-        const setHeroShift = (xRatio, yRatio) => {
-          heroVisual.style.setProperty("--hero-shift-x", `${(xRatio - 0.5) * 24}px`);
-          heroVisual.style.setProperty("--hero-shift-y", `${(yRatio - 0.5) * 18}px`);
-        };
-
-        setHeroShift(0.5, 0.5);
-
-        heroVisual.addEventListener("pointermove", (event) => {
-          const rect = heroVisual.getBoundingClientRect();
-          const xRatio = (event.clientX - rect.left) / rect.width;
-          const yRatio = (event.clientY - rect.top) / rect.height;
-
-          if (heroFrame) {
-            window.cancelAnimationFrame(heroFrame);
-          }
-
-          heroFrame = window.requestAnimationFrame(() => {
-            setHeroShift(xRatio, yRatio);
-          });
-        });
-
-        heroVisual.addEventListener("pointerleave", () => {
-          setHeroShift(0.5, 0.5);
-        });
-      }
-    } else if (heroVisual) {
-      heroVisual.style.setProperty("--hero-shift-x", "0px");
-      heroVisual.style.setProperty("--hero-shift-y", "0px");
-    }
-
-    prefersReducedMotion.addEventListener("change", (event) => {
-      if (!event.matches) {
-        return;
-      }
-
-      revealAll();
-
-      interactiveSurfaces.forEach((surface) => {
-        surface.style.setProperty("--glow-alpha", "0");
-      });
-
-      if (heroVisual) {
-        heroVisual.style.setProperty("--hero-shift-x", "0px");
-        heroVisual.style.setProperty("--hero-shift-y", "0px");
-      }
-    });
-  </script>
+  <script src="app.js?v=20260313-1"></script>
 </body>
 </html>
