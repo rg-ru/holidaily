@@ -52,10 +52,6 @@ body {
     linear-gradient(180deg, #ffffff 0%, #f8fcff 18%, #eaf5fc 54%, #f6fbff 100%);
 }
 
-body.menu-open {
-  overflow: hidden;
-}
-
 body::before,
 body::after {
   content: "";
@@ -228,80 +224,6 @@ img {
     0 20px 34px rgba(13, 126, 197, 0.28);
 }
 
-.site-header-actions {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex: 1 1 auto;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 20px;
-}
-
-.header-cta {
-  flex-shrink: 0;
-}
-
-.nav-toggle {
-  display: none;
-  position: relative;
-  z-index: 2;
-  align-items: center;
-  gap: 12px;
-  min-height: 52px;
-  padding: 0 16px;
-  border: 1px solid rgba(84, 145, 191, 0.22);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.74);
-  box-shadow: 0 14px 28px rgba(7, 30, 55, 0.08);
-  color: var(--navy);
-  cursor: pointer;
-  font: inherit;
-}
-
-.nav-toggle:hover {
-  transform: translateY(-1px);
-}
-
-.nav-toggle:focus-visible {
-  outline: 3px solid rgba(13, 126, 197, 0.25);
-  outline-offset: 3px;
-}
-
-.nav-toggle-label {
-  font-family: "brevia", "Manrope", sans-serif;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.nav-toggle-bars {
-  display: grid;
-  gap: 4px;
-}
-
-.nav-toggle-bar {
-  display: block;
-  width: 18px;
-  height: 2px;
-  border-radius: 999px;
-  background: currentColor;
-  transition: transform 220ms ease, opacity 220ms ease;
-}
-
-.site-header.is-menu-open .nav-toggle-bar:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
-}
-
-.site-header.is-menu-open .nav-toggle-bar:nth-child(2) {
-  opacity: 0;
-}
-
-.site-header.is-menu-open .nav-toggle-bar:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
-}
-
 .site-nav {
   position: relative;
   z-index: 1;
@@ -317,7 +239,6 @@ img {
   text-decoration: none;
   font-size: 0.94rem;
   font-weight: 700;
-  white-space: nowrap;
   transition: color 180ms ease, transform 180ms ease;
 }
 
@@ -594,12 +515,6 @@ h3 {
 .button-ghost:hover {
   background: rgba(255, 255, 255, 0.94);
   box-shadow: var(--shadow-soft);
-}
-
-.button-small {
-  min-height: 48px;
-  padding: 0 18px;
-  font-size: 0.93rem;
 }
 
 .floating-whatsapp {
@@ -1095,8 +1010,7 @@ h3 {
 
 .split-section,
 .stories-section,
-.cta-section,
-.account-section {
+.cta-section {
   position: relative;
   overflow: hidden;
   padding-inline: 36px;
@@ -1108,8 +1022,7 @@ h3 {
 
 .split-section::before,
 .stories-section::before,
-.cta-section::before,
-.account-section::before {
+.cta-section::before {
   content: "";
   position: absolute;
   top: -100px;
@@ -1123,8 +1036,7 @@ h3 {
 
 .split-section::after,
 .stories-section::after,
-.cta-section::after,
-.account-section::after {
+.cta-section::after {
   content: "";
   position: absolute;
   left: -70px;
@@ -1308,647 +1220,6 @@ h3 {
 .offer-card-highlight li::before {
   background: var(--yellow);
   box-shadow: 0 0 0 6px rgba(243, 178, 59, 0.12);
-}
-
-.offer-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: auto;
-  padding-top: 24px;
-}
-
-.save-offer-button.is-saved {
-  border-color: rgba(0, 127, 212, 0.18);
-  background: linear-gradient(135deg, rgba(16, 147, 229, 0.98), rgba(0, 95, 170, 0.96));
-  color: #ffffff;
-  box-shadow: 0 18px 30px rgba(0, 95, 170, 0.22);
-}
-
-.save-offer-button.is-saved:hover {
-  background: linear-gradient(135deg, rgba(0, 138, 226, 0.98), rgba(0, 82, 148, 0.96));
-}
-
-.offer-card-highlight .save-offer-button {
-  border-color: rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
-
-.offer-card-highlight .save-offer-button:hover {
-  background: rgba(255, 255, 255, 0.16);
-  box-shadow: none;
-}
-
-.offer-card-highlight .save-offer-button.is-saved {
-  border-color: transparent;
-  background: linear-gradient(135deg, #ffd161 0%, #f6b31c 45%, #de9800 100%);
-  color: #6b4400;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 18px 30px rgba(243, 178, 59, 0.24);
-}
-
-.account-section {
-  padding-top: 36px;
-}
-
-.account-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
-  gap: 24px;
-  align-items: start;
-}
-
-.account-intro,
-.account-dashboard {
-  display: grid;
-  gap: 18px;
-}
-
-.account-highlight,
-.account-benefit,
-.account-shell,
-.auth-card,
-.account-card,
-.account-metric,
-.saved-offer-item,
-.admin-account {
-  --glow-x: 50%;
-  --glow-y: 50%;
-  --glow-alpha: 0;
-  --glow-rgb: 89 210 229;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease, --glow-alpha 260ms ease;
-}
-
-.account-benefit,
-.auth-card,
-.account-card,
-.account-metric,
-.saved-offer-item,
-.admin-account {
-  background:
-    radial-gradient(circle at var(--glow-x) var(--glow-y), rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.3)) 0, transparent 42%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(238, 247, 254, 0.92));
-}
-
-.account-shell {
-  display: grid;
-  gap: 18px;
-  padding: 24px;
-  border-radius: var(--radius-xl);
-  background:
-    radial-gradient(circle at var(--glow-x) var(--glow-y), rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.28)) 0, transparent 42%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(234, 245, 252, 0.94));
-}
-
-.account-highlight {
-  padding: 32px;
-  border-color: rgba(255, 255, 255, 0.08);
-  background:
-    radial-gradient(circle at 100% 0, rgba(246, 179, 28, 0.24), rgba(246, 179, 28, 0) 28%),
-    radial-gradient(circle at var(--glow-x) var(--glow-y), rgb(255 255 255 / calc(var(--glow-alpha) * 0.18)) 0, transparent 42%),
-    linear-gradient(140deg, rgba(6, 24, 43, 0.98), rgba(0, 93, 159, 0.94));
-  box-shadow: var(--shadow-strong);
-  color: #ffffff;
-}
-
-.account-highlight .eyebrow {
-  color: rgba(255, 255, 255, 0.66);
-}
-
-.account-highlight h3 {
-  max-width: 11ch;
-  color: #ffffff;
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-}
-
-.account-highlight p {
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.account-highlight-points {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 24px;
-}
-
-.account-highlight-points span {
-  padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  font-size: 0.84rem;
-  font-weight: 700;
-}
-
-.account-card-kicker,
-.account-status-label {
-  margin: 0;
-  color: var(--yellow-dark);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.account-benefit,
-.auth-card,
-.account-card {
-  display: grid;
-  gap: 14px;
-  padding: 24px;
-}
-
-.account-benefit-admin {
-  background:
-    radial-gradient(circle at var(--glow-x) var(--glow-y), rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.3)) 0, transparent 42%),
-    linear-gradient(180deg, rgba(255, 249, 228, 0.97), rgba(238, 247, 254, 0.94));
-}
-
-.account-benefit p,
-.auth-card p,
-.account-card p,
-.account-shell p,
-.admin-account p {
-  margin: 0;
-  line-height: 1.7;
-  color: var(--muted);
-}
-
-.account-benefit h3,
-.auth-card h3,
-.account-card h3 {
-  margin-top: 2px;
-}
-
-.account-admin-credentials {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px 12px;
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 20px;
-  background: rgba(10, 35, 59, 0.88);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.account-admin-credentials span {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.account-admin-credentials code {
-  padding: 4px 0;
-  color: #ffffff;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  word-break: break-word;
-}
-
-.account-status-bar {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 20px 22px;
-  border: 1px solid var(--line);
-  border-radius: 28px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(230, 243, 252, 0.78));
-}
-
-.account-status-bar strong {
-  display: block;
-  margin-top: 8px;
-  color: var(--navy);
-  font-family: "brevia", "Manrope", sans-serif;
-  font-size: 1.5rem;
-}
-
-.account-status-bar p {
-  margin-top: 10px;
-  max-width: 48ch;
-  color: var(--muted-strong);
-}
-
-.account-role-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 16px;
-  border-radius: 999px;
-  font-size: 0.84rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.account-role-badge.is-guest {
-  background: rgba(255, 255, 255, 0.86);
-  color: var(--muted-strong);
-}
-
-.account-role-badge.is-user {
-  background: rgba(0, 127, 212, 0.12);
-  color: var(--blue-dark);
-}
-
-.account-role-badge.is-admin {
-  background: linear-gradient(135deg, rgba(255, 209, 97, 0.98), rgba(246, 179, 28, 0.92));
-  color: #6d4600;
-}
-
-.account-feedback {
-  min-height: 24px;
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--muted-strong);
-}
-
-.account-feedback.is-error {
-  color: #b14a2a;
-}
-
-.account-feedback.is-success {
-  color: #0d7e65;
-}
-
-.account-feedback.is-info {
-  color: var(--blue-dark);
-}
-
-.auth-card form,
-.account-note-form {
-  display: grid;
-  gap: 14px;
-}
-
-.account-note-form textarea {
-  min-height: 160px;
-}
-
-.chat-form textarea {
-  min-height: 132px;
-}
-
-.auth-grid,
-.account-dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.account-card-wide {
-  grid-column: 1 / -1;
-}
-
-.account-metrics,
-.admin-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-}
-
-.account-metric {
-  padding: 18px 20px;
-}
-
-.account-metric span {
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.account-metric strong {
-  display: block;
-  margin-top: 10px;
-  color: var(--navy);
-  font-family: "brevia", "Manrope", sans-serif;
-  font-size: 1.42rem;
-}
-
-.account-dashboard-header,
-.admin-header,
-.admin-account-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.chat-card-header,
-.admin-chat-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.support-chat-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-}
-
-.admin-chat-actions {
-  display: grid;
-  justify-items: end;
-  gap: 10px;
-}
-
-.support-chat-meta {
-  display: grid;
-  justify-items: end;
-  gap: 10px;
-}
-
-.support-chat-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  gap: 18px;
-}
-
-.support-chat-form,
-.support-chat-history {
-  display: grid;
-  gap: 14px;
-}
-
-.support-chat-feedback {
-  margin: 0;
-  min-height: 1.2rem;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.support-chat-feedback.is-error {
-  color: #a63223;
-}
-
-.support-chat-feedback.is-success {
-  color: #1f734d;
-}
-
-.support-chat-feedback.is-info {
-  color: var(--blue-dark);
-}
-
-.account-help-text {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-.chat-thread {
-  display: grid;
-  gap: 12px;
-  max-height: 420px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.admin-chat-thread {
-  max-height: 500px;
-}
-
-.chat-message {
-  display: grid;
-  gap: 8px;
-  max-width: min(100%, 620px);
-  padding: 16px 18px;
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  box-shadow: var(--shadow-soft);
-}
-
-.chat-message.is-user {
-  margin-left: auto;
-  border-color: rgba(0, 127, 212, 0.2);
-  background: linear-gradient(135deg, rgba(15, 146, 228, 0.98), rgba(0, 95, 170, 0.96));
-  color: #ffffff;
-}
-
-.chat-message.is-admin {
-  margin-right: auto;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(235, 246, 253, 0.94));
-}
-
-.chat-message.is-admin .chat-message-body,
-.chat-message.is-admin .chat-message-meta strong {
-  color: var(--navy);
-}
-
-.chat-message.is-admin .chat-message-meta span {
-  color: var(--muted);
-}
-
-.chat-message.is-user .chat-message-meta strong,
-.chat-message.is-user .chat-message-meta span,
-.chat-message.is-user .chat-message-body {
-  color: #ffffff;
-}
-
-.chat-message-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 0.84rem;
-}
-
-.chat-message-meta strong {
-  font-size: 0.88rem;
-}
-
-.chat-message-meta span {
-  font-weight: 700;
-  text-align: right;
-}
-
-.chat-message-body {
-  margin: 0;
-  line-height: 1.7;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.admin-chat-workspace {
-  display: grid;
-  gap: 16px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(84, 145, 191, 0.18);
-}
-
-.admin-alert {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 20px 22px;
-  border: 1px solid rgba(84, 145, 191, 0.22);
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(235, 246, 253, 0.88));
-}
-
-.admin-alert.is-alert {
-  border-color: rgba(246, 179, 28, 0.42);
-  background: linear-gradient(135deg, rgba(255, 248, 230, 0.98), rgba(255, 255, 255, 0.96));
-}
-
-.saved-offers-list {
-  display: grid;
-  gap: 12px;
-  margin: 18px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.saved-offer-item {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 18px;
-  border-radius: 22px;
-}
-
-.saved-offer-copy {
-  display: grid;
-  gap: 6px;
-}
-
-.saved-offer-copy strong {
-  color: var(--navy);
-  font-size: 1.06rem;
-}
-
-.saved-offer-copy p {
-  color: var(--muted-strong);
-}
-
-.saved-offer-meta {
-  color: var(--muted);
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-
-.account-empty-state {
-  margin-top: 18px;
-  padding: 18px;
-  border: 1px dashed rgba(84, 145, 191, 0.44);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.58);
-  color: var(--muted);
-}
-
-.account-form-actions,
-.admin-account-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.admin-card {
-  gap: 18px;
-}
-
-.admin-account-list {
-  display: grid;
-  gap: 12px;
-}
-
-.admin-account {
-  display: grid;
-  gap: 14px;
-  padding: 18px;
-  border-radius: 22px;
-}
-
-.admin-account strong {
-  color: var(--navy);
-  font-size: 1.02rem;
-}
-
-.admin-account-details,
-.admin-account-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.admin-account-note {
-  margin: 0;
-  color: var(--muted);
-}
-
-.account-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(0, 127, 212, 0.08);
-  color: var(--blue-dark);
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.account-chip.is-admin {
-  background: rgba(246, 179, 28, 0.16);
-  color: #7b5200;
-}
-
-.account-chip.is-user {
-  background: rgba(0, 127, 212, 0.12);
-  color: var(--blue-dark);
-}
-
-.account-chip.is-muted,
-.account-chip.is-subtle {
-  background: rgba(20, 49, 75, 0.06);
-  color: var(--muted-strong);
-}
-
-.account-chip.is-default {
-  background: rgba(10, 35, 59, 0.86);
-  color: #ffffff;
-}
-
-.account-chip.is-alert {
-  background: rgba(246, 179, 28, 0.18);
-  color: #875600;
-}
-
-.account-chip.is-locked {
-  background: rgba(155, 48, 37, 0.14);
-  color: #8f2f24;
-}
-
-.account-highlight:hover,
-.account-benefit:hover,
-.account-shell:hover,
-.auth-card:hover,
-.account-card:hover,
-.account-metric:hover,
-.saved-offer-item:hover,
-.admin-account:hover {
-  transform: translateY(-6px);
-  border-color: var(--line-strong);
-  box-shadow: 0 24px 42px rgba(7, 30, 55, 0.16);
 }
 
 .spotlight-panel,
@@ -2175,8 +1446,7 @@ h3 {
   transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease, --glow-alpha 260ms ease;
 }
 
-.contact-card label,
-.account-shell label {
+.contact-card label {
   display: grid;
   gap: 8px;
   font-size: 0.92rem;
@@ -2254,7 +1524,6 @@ h3 {
   color: var(--muted-strong);
   text-decoration: none;
   font-weight: 700;
-  overflow-wrap: anywhere;
 }
 
 .contact-method a:hover {
@@ -2311,9 +1580,7 @@ h3 {
 }
 
 .contact-card input,
-.contact-card textarea,
-.account-shell input,
-.account-shell textarea {
+.contact-card textarea {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid var(--line);
@@ -2325,16 +1592,13 @@ h3 {
 }
 
 .contact-card input:focus,
-.contact-card textarea:focus,
-.account-shell input:focus,
-.account-shell textarea:focus {
+.contact-card textarea:focus {
   outline: none;
   border-color: rgba(0, 128, 200, 0.4);
   box-shadow: 0 0 0 4px rgba(29, 161, 235, 0.12);
 }
 
-.contact-card textarea,
-.account-shell textarea {
+.contact-card textarea {
   resize: vertical;
   min-height: 120px;
 }
@@ -2429,14 +1693,9 @@ h3 {
     gap: 16px;
   }
 
-  .site-header-actions {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px 20px;
-  }
-
   .site-nav {
+    order: 3;
+    width: 100%;
     flex-wrap: wrap;
     gap: 12px 18px;
   }
@@ -2446,10 +1705,7 @@ h3 {
   .cta-panel,
   .feature-grid,
   .offer-grid,
-  .story-grid,
-  .account-grid,
-  .auth-grid,
-  .account-dashboard-grid {
+  .story-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2514,8 +1770,7 @@ h3 {
 
   .split-section,
   .stories-section,
-  .cta-section,
-  .account-section {
+  .cta-section {
     padding-inline: 24px;
   }
 
@@ -2538,90 +1793,12 @@ h3 {
   .contact-person-media img {
     max-width: 280px;
   }
-
-  .account-highlight h3 {
-    max-width: none;
-  }
-
-  .account-status-bar,
-  .account-dashboard-header,
-  .admin-account-header,
-  .admin-alert,
-  .support-chat-header,
-  .chat-card-header,
-  .admin-chat-header {
-    flex-direction: column;
-    align-items: start;
-  }
-
-  .admin-chat-actions {
-    justify-items: start;
-  }
-
-  .support-chat-meta {
-    justify-items: start;
-  }
-}
-
-@media (max-width: 820px) {
-  .nav-toggle {
-    display: inline-flex;
-    margin-left: auto;
-  }
-
-  .site-header-actions {
-    width: 100%;
-    display: grid;
-    gap: 12px;
-    margin-top: 6px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(84, 145, 191, 0.18);
-  }
-
-  .has-js .site-header-actions {
-    display: none;
-  }
-
-  .has-js .site-header.is-menu-open .site-header-actions {
-    display: grid;
-  }
-
-  .site-nav {
-    display: grid;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .site-nav a {
-    display: flex;
-    align-items: center;
-    min-height: 52px;
-    padding: 0 16px;
-    border: 1px solid rgba(84, 145, 191, 0.16);
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.7);
-  }
-
-  .site-nav a::after {
-    left: 16px;
-    bottom: 11px;
-    width: calc(100% - 32px);
-  }
-
-  .site-nav a.is-active {
-    border-color: rgba(0, 127, 212, 0.2);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(231, 244, 252, 0.92));
-  }
-
-  .header-cta {
-    width: 100%;
-  }
 }
 
 @media (max-width: 640px) {
   .page-shell {
     width: min(calc(100% - 18px), var(--container));
-    padding-bottom: 82px;
+    padding-bottom: 68px;
   }
 
   .section {
@@ -2642,20 +1819,6 @@ h3 {
     font-size: 0.9rem;
   }
 
-  .hero {
-    gap: 24px;
-  }
-
-  .hero-chip-row {
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-
-  .hero-chip-row span {
-    padding: 8px 12px;
-    font-size: 0.76rem;
-  }
-
   h1 {
     max-width: 10ch;
     font-size: clamp(2.9rem, 13vw, 4.2rem);
@@ -2668,8 +1831,7 @@ h3 {
 
   .split-section,
   .stories-section,
-  .cta-section,
-  .account-section {
+  .cta-section {
     padding-inline: 18px;
   }
 
@@ -2679,10 +1841,7 @@ h3 {
   }
 
   .hero-actions,
-  .contact-actions,
-  .offer-actions,
-  .account-form-actions,
-  .admin-account-actions {
+  .contact-actions {
     display: grid;
   }
 
@@ -2690,24 +1849,18 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .support-chat-layout {
-    grid-template-columns: 1fr;
-  }
-
   .floating-whatsapp {
-    right: calc(12px + env(safe-area-inset-right));
-    bottom: calc(12px + env(safe-area-inset-bottom));
-    width: 56px;
+    right: 12px;
+    bottom: 12px;
     min-height: 56px;
-    padding: 0;
-    gap: 0;
-    justify-content: center;
-    border-radius: 50%;
+    padding-right: 16px;
+    padding-left: 12px;
+    gap: 10px;
   }
 
   .floating-whatsapp-icon {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
   }
 
   .floating-whatsapp-icon svg {
@@ -2716,7 +1869,7 @@ h3 {
   }
 
   .floating-whatsapp-label {
-    display: none;
+    font-size: 0.9rem;
   }
 
   .contact-hours-grid {
@@ -2748,12 +1901,6 @@ h3 {
     right: 18px;
     width: 190px;
     height: 190px;
-  }
-
-  .hero-orb-two,
-  .hero-card-sand,
-  .hero-card-sage {
-    display: none;
   }
 
   .hero-grid-line-one,
@@ -2809,14 +1956,7 @@ h3 {
   .spotlight-panel,
   .cta-panel,
   .contact-card,
-  .hero-card,
-  .account-highlight,
-  .account-shell,
-  .auth-card,
-  .account-card,
-  .account-benefit,
-  .account-metric,
-  .admin-account {
+  .hero-card {
     padding: 22px;
     border-radius: 24px;
   }
@@ -2843,118 +1983,11 @@ h3 {
     min-width: 100%;
   }
 
-  .account-metrics,
-  .admin-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .account-admin-credentials {
-    grid-template-columns: 1fr;
-  }
-
-  .account-status-bar {
-    padding: 18px;
-  }
-
-  .saved-offer-item {
-    flex-direction: column;
-  }
-
-  .chat-thread,
-  .admin-chat-thread {
-    max-height: 360px;
-  }
-
-  .chat-message-meta {
-    flex-direction: column;
-    align-items: start;
-  }
-
-  .contact-card input,
-  .contact-card textarea,
-  .account-shell input,
-  .account-shell textarea {
-    font-size: 16px;
-  }
-
-  .floating-card,
-  body::before,
-  body::after {
-    animation: none;
-  }
-
-  .site-header,
-  .hero-inline-panel,
-  .hero-card,
-  .hero-detail-strip {
-    backdrop-filter: none;
-  }
-
   .trust-band {
     padding: 20px 18px;
   }
 
   .trust-band p {
     font-size: 0.94rem;
-  }
-}
-
-@media (max-width: 420px) {
-  .page-shell {
-    width: min(calc(100% - 14px), var(--container));
-  }
-
-  .brand {
-    gap: 10px;
-  }
-
-  .brand-mark {
-    width: 40px;
-    height: 40px;
-    border-radius: 15px;
-  }
-
-  .brand-text {
-    font-size: 1rem;
-  }
-
-  .nav-toggle {
-    min-height: 48px;
-    padding: 0 14px;
-    gap: 10px;
-  }
-
-  .nav-toggle-label {
-    font-size: 0.76rem;
-  }
-
-  h1 {
-    font-size: clamp(2.45rem, 14vw, 3.4rem);
-  }
-
-  .hero-chip-row span {
-    padding: 8px 11px;
-    font-size: 0.74rem;
-  }
-
-  .feature-card,
-  .offer-card,
-  .story-card,
-  .spotlight-panel,
-  .cta-panel,
-  .contact-card,
-  .hero-card,
-  .account-highlight,
-  .account-shell,
-  .auth-card,
-  .account-card,
-  .account-benefit,
-  .account-metric,
-  .admin-account {
-    padding: 20px;
-  }
-
-  .hero-visual {
-    padding: 16px;
   }
 }

@@ -34,11 +34,3 @@ bin/
 ### Project artifacts ###
 playwright-audit/
 *.zip
-
-### Node ###
-node_modules/
-.env
-
-### Runtime data ###
-data/*.sqlite
-data/*.sqlite-*
