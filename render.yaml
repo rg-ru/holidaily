@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: holidaily-chat-api-rgru
+    runtime: node
+    plan: starter
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    disk:
+      name: chat-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: true
+      - key: CHAT_DB_PATH
+        value: /var/data/chat-support.sqlite
+      - key: ALLOWED_WEB_ORIGINS
+        value: https://rg-ru.github.io
+      - key: ADMIN_COOKIE_SAME_SITE
+        value: none
+      - key: ADMIN_COOKIE_SECURE
+        value: true
+      - key: ADMIN_SESSION_TTL_HOURS
+        value: 12
+      - key: ADMIN_EMAIL
+        value: dan.siemens@outlook.de
+      - key: ADMIN_NAME
+        value: Dan Siemens
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_SESSION_SECRET
+        generateValue: true

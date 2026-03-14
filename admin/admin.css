@@ -84,6 +84,11 @@ a {
   padding: 8px 4px;
 }
 
+.sidebar-header > div:first-child {
+  display: grid;
+  gap: 6px;
+}
+
 .eyebrow {
   margin: 0 0 10px;
   color: var(--accent);

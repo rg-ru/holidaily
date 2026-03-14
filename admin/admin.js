@@ -18,6 +18,7 @@ const resolveBackendBaseUrl = () => {
 };
 
 const ADMIN_API_BASE = `${resolveBackendBaseUrl()}/api/admin`;
+const ADMIN_POLL_INTERVAL_MS = 8000;
 
 const adminElements = {
   loginView: document.querySelector("#adminLoginView"),
@@ -46,7 +47,9 @@ const adminElements = {
   replyForm: document.querySelector("#adminReplyForm"),
   replyMessage: document.querySelector("#adminReplyMessage"),
   deleteConversationButton: document.querySelector("#adminDeleteConversationButton"),
-  dashboardFeedback: document.querySelector("#adminDashboardFeedback")
+  dashboardFeedback: document.querySelector("#adminDashboardFeedback"),
+  refreshButton: document.querySelector("#adminRefreshButton"),
+  liveStatus: document.querySelector("#adminLiveStatus")
 };
 
 const adminState = {
@@ -61,7 +64,10 @@ const adminState = {
   selectedConversation: null,
   selectedConversationId: "",
   statusFilter: "all",
-  search: ""
+  search: "",
+  pollTimer: 0,
+  lastSnapshotByConversationId: new Map(),
+  baseDocumentTitle: document.title
 };
 
 const setNotice = (element, message, tone = "info") => {
@@ -138,6 +144,80 @@ const clearElement = (element) => {
 const setAuthenticatedView = (isAuthenticated) => {
   adminElements.loginView.hidden = isAuthenticated;
   adminElements.dashboard.hidden = !isAuthenticated;
+};
+
+const setLiveStatus = (message, tone = "info") => {
+  setNotice(adminElements.liveStatus, message, tone);
+};
+
+const formatTime = (value) => {
+  if (!value) {
+    return "--:--";
+  }
+
+  const parsed = new Date(value);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return "--:--";
+  }
+
+  return new Intl.DateTimeFormat("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(parsed);
+};
+
+const buildConversationSnapshot = (conversation) =>
+  [
+    conversation.id,
+    conversation.status,
+    conversation.lastMessageAt,
+    conversation.lastSenderType,
+    conversation.messageCount
+  ].join("|");
+
+const updateConversationSnapshots = (conversations) => {
+  adminState.lastSnapshotByConversationId = new Map(
+    conversations.map((conversation) => [conversation.id, buildConversationSnapshot(conversation)])
+  );
+};
+
+const getIncomingUserMessages = (conversations) =>
+  conversations.filter((conversation) => {
+    const nextSnapshot = buildConversationSnapshot(conversation);
+    const previousSnapshot = adminState.lastSnapshotByConversationId.get(conversation.id);
+
+    return previousSnapshot !== nextSnapshot && conversation.lastSenderType === "user";
+  });
+
+const updateDocumentTitle = (incomingCount = 0) => {
+  document.title =
+    incomingCount > 0
+      ? `(${incomingCount}) Neue Nachricht${incomingCount === 1 ? "" : "en"} | ${adminState.baseDocumentTitle}`
+      : adminState.baseDocumentTitle;
+};
+
+const stopPolling = () => {
+  if (adminState.pollTimer) {
+    window.clearInterval(adminState.pollTimer);
+    adminState.pollTimer = 0;
+  }
+};
+
+const startPolling = () => {
+  stopPolling();
+  setLiveStatus(
+    `Live-Aktualisierung aktiv. Neue Chats werden alle ${Math.round(ADMIN_POLL_INTERVAL_MS / 1000)} Sekunden geladen.`,
+    "info"
+  );
+
+  adminState.pollTimer = window.setInterval(() => {
+    if (!adminState.adminUser) {
+      return;
+    }
+
+    loadConversations({ preserveSelection: true, silent: true, detectIncoming: true });
+  }, ADMIN_POLL_INTERVAL_MS);
 };
 
 const apiRequest = async (path, options = {}) => {
@@ -309,7 +389,11 @@ const loadConversation = async (conversationId, { silent = false } = {}) => {
   }
 };
 
-const loadConversations = async ({ preserveSelection = true, silent = false } = {}) => {
+const loadConversations = async ({
+  preserveSelection = true,
+  silent = false,
+  detectIncoming = false
+} = {}) => {
   const params = new URLSearchParams();
 
   if (adminState.statusFilter && adminState.statusFilter !== "all") {
@@ -322,15 +406,19 @@ const loadConversations = async ({ preserveSelection = true, silent = false } = 
 
   try {
     const payload = await apiRequest(`/conversations?${params.toString()}`);
-    adminState.conversations = payload.conversations || [];
+    const nextConversations = payload.conversations || [];
+    const incomingUserMessages = detectIncoming ? getIncomingUserMessages(nextConversations) : [];
+
+    adminState.conversations = nextConversations;
     adminState.stats = payload.stats || adminState.stats;
     renderStats();
     renderConversationList();
+    updateConversationSnapshots(nextConversations);
 
     const nextConversationId =
       preserveSelection && adminState.selectedConversationId
         ? adminState.selectedConversationId
-        : adminState.conversations[0]?.id || "";
+        : nextConversations[0]?.id || "";
 
     if (nextConversationId) {
       await loadConversation(nextConversationId, { silent: true });
@@ -340,10 +428,29 @@ const loadConversations = async ({ preserveSelection = true, silent = false } = 
       renderConversationDetail();
     }
 
+    setLiveStatus(`Zuletzt aktualisiert: ${formatTime(new Date().toISOString())}`, "info");
+
+    if (incomingUserMessages.length > 0) {
+      updateDocumentTitle(incomingUserMessages.length);
+      setNotice(
+        adminElements.dashboardFeedback,
+        `Neue Nutzer-Nachricht${incomingUserMessages.length === 1 ? "" : "en"} eingegangen.`,
+        "success"
+      );
+      return;
+    }
+
+    updateDocumentTitle(0);
+
     if (!silent) {
       setNotice(adminElements.dashboardFeedback, "Konversationsliste aktualisiert.", "info");
     }
   } catch (error) {
+    updateDocumentTitle(0);
+    if (!adminState.adminUser) {
+      stopPolling();
+    }
+    setLiveStatus("Live-Aktualisierung pausiert. Verbindung zur Admin-API fehlgeschlagen.", "error");
     setNotice(adminElements.dashboardFeedback, error.message, "error");
   }
 };
@@ -355,7 +462,11 @@ const initializeSession = async () => {
     adminElements.sessionMeta.textContent = `${payload.adminUser.name} | ${payload.adminUser.email}`;
     setAuthenticatedView(true);
     await loadConversations({ preserveSelection: false, silent: true });
+    startPolling();
   } catch (error) {
+    stopPolling();
+    updateDocumentTitle(0);
+    setLiveStatus("Keine aktive Admin-Sitzung.", "info");
     setAuthenticatedView(false);
   }
 };
@@ -380,6 +491,7 @@ if (adminElements.loginForm) {
       setAuthenticatedView(true);
       adminElements.loginForm.reset();
       await loadConversations({ preserveSelection: false, silent: true });
+      startPolling();
     } catch (error) {
       setNotice(adminElements.loginFeedback, error.message, "error");
     }
@@ -397,6 +509,10 @@ adminElements.logoutButton?.addEventListener("click", async () => {
   adminState.conversations = [];
   adminState.selectedConversation = null;
   adminState.selectedConversationId = "";
+  adminState.lastSnapshotByConversationId = new Map();
+  stopPolling();
+  updateDocumentTitle(0);
+  setLiveStatus("Live-Aktualisierung pausiert. Bitte erneut anmelden.", "info");
   renderConversationList();
   renderConversationDetail();
   renderStats();
@@ -409,6 +525,10 @@ adminElements.filterForm?.addEventListener("submit", async (event) => {
   adminState.statusFilter = adminElements.statusFilter.value;
   adminState.search = adminElements.searchInput.value.trim();
   await loadConversations({ preserveSelection: false, silent: true });
+});
+
+adminElements.refreshButton?.addEventListener("click", async () => {
+  await loadConversations({ preserveSelection: true, silent: false, detectIncoming: true });
 });
 
 adminElements.conversationList?.addEventListener("click", async (event) => {

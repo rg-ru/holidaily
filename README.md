@@ -65,9 +65,28 @@ Wichtig:
 
 - Die Landingpage und das Admin-Frontend koennen damit als statische Dateien auf GitHub Pages veroeffentlicht werden.
 - Der Express-/SQLite-Teil laeuft nicht auf GitHub Pages. Fuer den echten Support-Chat braucht es weiter einen Node.js-Host fuer `server/index.js`.
-- Damit Nachrichten von GitHub Pages wirklich gesendet werden, muss `site-config.js` auf deine Backend-URL zeigen.
+- Der Pages-Workflow erzeugt `site-config.js` automatisch mit `BACKEND_BASE_URL`. Standard-Fallback ist `https://holidaily-chat-api-rgru.onrender.com`.
 - Falls Website/Admin auf einer anderen Domain als das Backend laufen, muessen auf dem Backend `ALLOWED_WEB_ORIGINS`, `ADMIN_COOKIE_SAME_SITE=none` und `ADMIN_COOKIE_SECURE=true` gesetzt werden.
 - Falls die Repository-Einstellung fuer Pages noch nicht aktiv ist, muss unter GitHub einmalig `Settings -> Pages -> Build and deployment -> Source -> GitHub Actions` gesetzt werden.
+
+## Render Deploy
+
+Die produktive Chat-API ist fuer Render vorbereitet ueber [render.yaml](/C:/Users/dansi/Downloads/holidaily/render.yaml).
+
+Empfohlener Ablauf:
+
+1. In Render `New +` -> `Blueprint` waehlen und dieses Repository verbinden.
+2. Render liest `render.yaml` ein und erstellt einen Node-Webservice mit persistentem Disk fuer SQLite.
+3. Beim ersten Deploy nur noch das geheime Feld `ADMIN_PASSWORD` setzen.
+4. Wenn Render den vorgeschlagenen Host `https://holidaily-chat-api-rgru.onrender.com` verwenden kann, ist keine weitere Aenderung noetig.
+5. Falls Render eine andere URL vergibt, in GitHub unter `Settings -> Secrets and variables -> Actions -> Variables` die Variable `BACKEND_BASE_URL` auf diese URL setzen und den Pages-Workflow erneut ausfuehren.
+
+Render-Details im Repo:
+
+- Persistente SQLite-DB ueber `/var/data/chat-support.sqlite`
+- CORS fuer `https://rg-ru.github.io`
+- Sichere Admin-Cookies fuer Cross-Origin-Login von GitHub Pages zum Backend
+- Admin-E-Mail auf `dan.siemens@outlook.de` vorbelegt, Passwort bleibt als Render-Secret ausserhalb von Git
 
 ## REST-Endpunkte
 
