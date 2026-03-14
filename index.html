@@ -157,7 +157,13 @@
           <h2>Drei Poolrichtungen fuer unterschiedliche Anforderungen.</h2>
         </div>
         <div class="offer-grid">
-          <article class="offer-card motion-reveal motion-up" data-reveal style="--delay: 0ms;">
+          <article
+            class="offer-card motion-reveal motion-up"
+            data-reveal
+            data-model-id="classic-pool"
+            data-model-name="Classic Pool"
+            style="--delay: 0ms;"
+          >
             <p class="offer-label">Classic Pool</p>
             <h3>Der klassische Einbaupool fuer den Garten</h3>
             <p>Ideal fuer Familien und alle, die eine dauerhafte, hochwertige Pool-Loesung suchen.</p>
@@ -166,8 +172,19 @@
               <li>Flexible Groessen und Ausstattungen</li>
               <li>Geeignet fuer regelmaessige Nutzung im Alltag</li>
             </ul>
+            <div class="offer-card-actions">
+              <button class="button button-ghost button-small model-save-button" type="button" data-model-id="classic-pool">
+                Modell merken
+              </button>
+            </div>
           </article>
-          <article class="offer-card offer-card-highlight motion-reveal motion-up" data-reveal style="--delay: 120ms;">
+          <article
+            class="offer-card offer-card-highlight motion-reveal motion-up"
+            data-reveal
+            data-model-id="family-pool"
+            data-model-name="Family Pool"
+            style="--delay: 120ms;"
+          >
             <p class="offer-label">Family Pool</p>
             <h3>Mehr Platz, mehr Komfort, mehr gemeinsame Zeit</h3>
             <p>Pool-Loesungen mit Fokus auf Sicherheit, Komfort und sinnvolle Nutzung fuer Familiengaerten.</p>
@@ -176,8 +193,19 @@
               <li>Optionen fuer Abdeckung, Einstieg und Technik</li>
               <li>Beratung passend zu Nutzung und Budget</li>
             </ul>
+            <div class="offer-card-actions">
+              <button class="button button-ghost button-small model-save-button" type="button" data-model-id="family-pool">
+                Modell merken
+              </button>
+            </div>
           </article>
-          <article class="offer-card motion-reveal motion-up" data-reveal style="--delay: 240ms;">
+          <article
+            class="offer-card motion-reveal motion-up"
+            data-reveal
+            data-model-id="mini-pool"
+            data-model-name="Mini Pool"
+            style="--delay: 240ms;"
+          >
             <p class="offer-label">Mini Pool</p>
             <h3>Starke Wirkung auf kleinerer Flaeche</h3>
             <p>Kompakte Pools fuer moderne Gaerten, Innenhoefe oder Projekte mit wenig Platz.</p>
@@ -186,6 +214,11 @@
               <li>Reduzierte Optik mit klarem Design</li>
               <li>Schneller zur passenden Loesung</li>
             </ul>
+            <div class="offer-card-actions">
+              <button class="button button-ghost button-small model-save-button" type="button" data-model-id="mini-pool">
+                Modell merken
+              </button>
+            </div>
           </article>
         </div>
       </section>
@@ -321,6 +354,132 @@
           </article>
         </div>
       </section>
+
+      <section class="section account-section" id="konto">
+        <div class="section-heading motion-reveal motion-up" data-reveal>
+          <p class="eyebrow">Login & Speicherbereich</p>
+          <h2>Ganz unten kannst du dich einloggen und eigene Inhalte sichern.</h2>
+        </div>
+        <div class="account-shell">
+          <article class="account-intro-card motion-reveal motion-up" data-reveal style="--delay: 0ms;">
+            <p class="eyebrow">Persoenlicher Bereich</p>
+            <h3>Pool-Modelle merken, Notizen sammeln und spaeter wieder aufrufen.</h3>
+            <p>
+              Der Bereich ist fuer Interessenten gedacht, die sich Modelle vormerken oder Projektideen festhalten wollen,
+              bevor es in die konkrete Beratung geht.
+            </p>
+            <div class="account-benefits" aria-label="Vorteile des Kontos">
+              <article>
+                <strong>Modelle speichern</strong>
+                <span>Merke dir Classic Pool, Family Pool oder Mini Pool direkt auf der Seite.</span>
+              </article>
+              <article>
+                <strong>Eigene Notizen</strong>
+                <span>Halte Masse, Technikwuensche oder Designideen fuer spaeter fest.</span>
+              </article>
+              <article>
+                <strong>Schneller Wiedereinstieg</strong>
+                <span>Beim naechsten Besuch kannst du direkt mit deinen gemerkten Punkten weitermachen.</span>
+              </article>
+            </div>
+          </article>
+
+          <article class="account-card motion-reveal motion-up" data-reveal style="--delay: 120ms;">
+            <div class="account-status-row">
+              <div>
+                <p class="account-kicker">Dein holidaily Konto</p>
+                <h3 id="accountTitle">Einloggen oder Konto anlegen</h3>
+              </div>
+              <span class="account-status-badge" id="accountStatusBadge">Nicht eingeloggt</span>
+            </div>
+
+            <p class="account-card-copy" id="accountStatusText">
+              Melde dich an, um Pool-Modelle zu speichern und eigene Notizen dauerhaft auf diesem Browser zu sichern.
+            </p>
+
+            <div class="account-mode-toggle" id="accountModeToggle" aria-label="Login oder Registrierung">
+              <button class="account-mode-button is-active" type="button" data-auth-mode="login" aria-pressed="true">
+                Einloggen
+              </button>
+              <button class="account-mode-button" type="button" data-auth-mode="register" aria-pressed="false">
+                Konto anlegen
+              </button>
+            </div>
+
+            <form class="account-auth-form" id="accountAuthForm">
+              <label class="account-field account-name-field" id="accountNameField" hidden>
+                <span>Name</span>
+                <input type="text" id="accountNameInput" autocomplete="name" placeholder="Dein Name">
+              </label>
+
+              <label class="account-field">
+                <span>E-Mail</span>
+                <input type="email" id="accountEmailInput" autocomplete="email" placeholder="name@example.com" required>
+              </label>
+
+              <label class="account-field">
+                <span>Passwort</span>
+                <input
+                  type="password"
+                  id="accountPasswordInput"
+                  autocomplete="current-password"
+                  placeholder="Mindestens 6 Zeichen"
+                  required
+                  minlength="6"
+                >
+              </label>
+
+              <div class="account-form-actions">
+                <button class="button button-primary" type="submit" id="accountSubmitButton">Einloggen</button>
+                <button class="button button-ghost" type="button" id="accountLogoutButton" hidden>Abmelden</button>
+              </div>
+            </form>
+
+            <p class="account-feedback" id="accountFeedback" role="status" aria-live="polite" hidden></p>
+
+            <div class="account-storage" id="accountStorage" hidden>
+              <section class="account-storage-block">
+                <div class="account-storage-heading">
+                  <h4>Gespeicherte Pool-Modelle</h4>
+                  <span id="savedModelCount">0 Modelle</span>
+                </div>
+                <div class="saved-model-list" id="savedModelList">
+                  <p class="account-empty-state">Noch keine Modelle gespeichert.</p>
+                </div>
+              </section>
+
+              <section class="account-storage-block">
+                <div class="account-storage-heading">
+                  <h4>Notizen</h4>
+                  <span id="savedNoteCount">0 Notizen</span>
+                </div>
+
+                <form class="note-form" id="noteForm">
+                  <label class="account-field">
+                    <span>Neue Notiz</span>
+                    <textarea
+                      id="noteInput"
+                      placeholder="Zum Beispiel: Family Pool mit heller Innenfarbe, Abdeckung und flacher Treppe merken."
+                    ></textarea>
+                  </label>
+                  <div class="account-form-actions">
+                    <button class="button button-secondary" type="submit">Notiz speichern</button>
+                  </div>
+                </form>
+
+                <div class="note-list" id="noteList">
+                  <p class="account-empty-state">Noch keine Notizen gespeichert.</p>
+                </div>
+              </section>
+            </div>
+
+            <p class="account-storage-note">
+              Hinweis: Da die Seite weiter statisch gehostet wird, bleiben Login, gemerkte Modelle und Notizen nur auf
+              diesem Browser und diesem Geraet gespeichert.
+            </p>
+          </article>
+        </div>
+      </section>
     </main>
   </div>
   <a
@@ -342,10 +501,36 @@
       .filter(({ section }) => section);
     const heroVisual = document.querySelector(".hero-visual");
     const interactiveSurfaces = document.querySelectorAll(
-      ".hero-card, .hero-detail-strip, .hero-stats article, .feature-card, .offer-card, .story-card, .contact-card, .contact-method, .contact-hours, .spotlight-list article, .spotlight-metrics article"
+      ".hero-card, .hero-detail-strip, .hero-stats article, .feature-card, .offer-card, .story-card, .contact-card, .contact-method, .contact-hours, .spotlight-list article, .spotlight-metrics article, .account-card, .account-intro-card, .account-storage-block, .saved-model-chip, .note-item"
     );
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
+    const accountSection = document.querySelector("#konto");
+    const saveModelButtons = Array.from(document.querySelectorAll(".model-save-button"));
+    const authModeToggle = document.querySelector("#accountModeToggle");
+    const authModeButtons = Array.from(document.querySelectorAll(".account-mode-button"));
+    const accountAuthForm = document.querySelector("#accountAuthForm");
+    const accountStorage = document.querySelector("#accountStorage");
+    const accountTitle = document.querySelector("#accountTitle");
+    const accountStatusBadge = document.querySelector("#accountStatusBadge");
+    const accountStatusText = document.querySelector("#accountStatusText");
+    const accountNameField = document.querySelector("#accountNameField");
+    const accountNameInput = document.querySelector("#accountNameInput");
+    const accountEmailInput = document.querySelector("#accountEmailInput");
+    const accountPasswordInput = document.querySelector("#accountPasswordInput");
+    const accountSubmitButton = document.querySelector("#accountSubmitButton");
+    const accountLogoutButton = document.querySelector("#accountLogoutButton");
+    const accountFeedback = document.querySelector("#accountFeedback");
+    const savedModelList = document.querySelector("#savedModelList");
+    const savedModelCount = document.querySelector("#savedModelCount");
+    const noteForm = document.querySelector("#noteForm");
+    const noteInput = document.querySelector("#noteInput");
+    const noteList = document.querySelector("#noteList");
+    const savedNoteCount = document.querySelector("#savedNoteCount");
+    const accountStorageNote = document.querySelector(".account-storage-note");
+    const ACCOUNTS_STORAGE_KEY = "holidaily-accounts-v1";
+    const SESSION_STORAGE_KEY = "holidaily-session-v1";
+    let authMode = "login";
 
     const revealAll = () => {
       motionElements.forEach((element) => element.classList.add("is-visible"));
@@ -489,6 +674,537 @@
       heroVisual.style.setProperty("--hero-shift-x", "0px");
       heroVisual.style.setProperty("--hero-shift-y", "0px");
     }
+
+    const createNode = (tagName, className, text) => {
+      const element = document.createElement(tagName);
+
+      if (className) {
+        element.className = className;
+      }
+
+      if (typeof text === "string") {
+        element.textContent = text;
+      }
+
+      return element;
+    };
+
+    const readStoredJson = (storageKey, fallbackValue) => {
+      try {
+        const rawValue = window.localStorage.getItem(storageKey);
+
+        if (!rawValue) {
+          return fallbackValue;
+        }
+
+        const parsedValue = JSON.parse(rawValue);
+        return parsedValue && typeof parsedValue === "object" ? parsedValue : fallbackValue;
+      } catch (error) {
+        return fallbackValue;
+      }
+    };
+
+    const writeStoredJson = (storageKey, value) => {
+      window.localStorage.setItem(storageKey, JSON.stringify(value));
+    };
+
+    const normalizeEmail = (value) => value.trim().toLowerCase();
+
+    const loadAccounts = () => readStoredJson(ACCOUNTS_STORAGE_KEY, {});
+
+    const getSafeUserData = (userRecord = {}) => ({
+      name: typeof userRecord.name === "string" ? userRecord.name : "",
+      passwordHash: typeof userRecord.passwordHash === "string" ? userRecord.passwordHash : "",
+      savedModels: Array.isArray(userRecord.savedModels) ? userRecord.savedModels : [],
+      notes: Array.isArray(userRecord.notes) ? userRecord.notes : []
+    });
+
+    const saveAccounts = (accounts) => {
+      writeStoredJson(ACCOUNTS_STORAGE_KEY, accounts);
+    };
+
+    const getSessionEmail = () => normalizeEmail(window.localStorage.getItem(SESSION_STORAGE_KEY) || "");
+
+    const setSessionEmail = (email) => {
+      if (!email) {
+        window.localStorage.removeItem(SESSION_STORAGE_KEY);
+        return;
+      }
+
+      window.localStorage.setItem(SESSION_STORAGE_KEY, normalizeEmail(email));
+    };
+
+    const getCurrentUser = () => {
+      const sessionEmail = getSessionEmail();
+
+      if (!sessionEmail) {
+        return null;
+      }
+
+      const accounts = loadAccounts();
+      const userRecord = accounts[sessionEmail];
+
+      if (!userRecord) {
+        setSessionEmail("");
+        return null;
+      }
+
+      return {
+        email: sessionEmail,
+        ...getSafeUserData(userRecord)
+      };
+    };
+
+    const hashPassword = async (password) => {
+      if (!window.crypto || !window.crypto.subtle) {
+        return password;
+      }
+
+      const encodedPassword = new TextEncoder().encode(password);
+      const hashBuffer = await window.crypto.subtle.digest("SHA-256", encodedPassword);
+
+      return Array.from(new Uint8Array(hashBuffer))
+        .map((value) => value.toString(16).padStart(2, "0"))
+        .join("");
+    };
+
+    const formatCount = (count, singular, plural) => `${count} ${count === 1 ? singular : plural}`;
+
+    const formatDate = (value) =>
+      new Intl.DateTimeFormat("de-DE", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(new Date(value));
+
+    const createNoteId = () => {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+
+      return `note-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    };
+
+    const setFeedback = (message, type = "") => {
+      if (!accountFeedback) {
+        return;
+      }
+
+      accountFeedback.textContent = message;
+      accountFeedback.hidden = !message;
+      accountFeedback.classList.remove("is-error", "is-success");
+
+      if (type) {
+        accountFeedback.classList.add(type === "error" ? "is-error" : "is-success");
+      }
+    };
+
+    const persistCurrentUser = (updater) => {
+      const sessionEmail = getSessionEmail();
+
+      if (!sessionEmail) {
+        return null;
+      }
+
+      const accounts = loadAccounts();
+      const currentRecord = getSafeUserData(accounts[sessionEmail]);
+      const nextRecord = updater(currentRecord);
+
+      accounts[sessionEmail] = {
+        name: nextRecord.name,
+        passwordHash: nextRecord.passwordHash,
+        savedModels: nextRecord.savedModels,
+        notes: nextRecord.notes
+      };
+
+      saveAccounts(accounts);
+
+      return {
+        email: sessionEmail,
+        ...accounts[sessionEmail]
+      };
+    };
+
+    const setAuthMode = (nextMode) => {
+      authMode = nextMode === "register" ? "register" : "login";
+
+      authModeButtons.forEach((button) => {
+        const isActive = button.dataset.authMode === authMode;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+
+      if (accountNameField) {
+        accountNameField.hidden = authMode !== "register";
+      }
+
+      if (accountNameInput) {
+        accountNameInput.required = authMode === "register";
+      }
+
+      if (accountPasswordInput) {
+        accountPasswordInput.autocomplete = authMode === "register" ? "new-password" : "current-password";
+      }
+
+      if (accountSubmitButton) {
+        accountSubmitButton.textContent = authMode === "register" ? "Konto anlegen" : "Einloggen";
+      }
+    };
+
+    const updateModelButtons = (currentUser) => {
+      const savedModelIds = new Set((currentUser?.savedModels || []).map((model) => model.id));
+
+      saveModelButtons.forEach((button) => {
+        const modelId = button.dataset.modelId;
+        const isSaved = savedModelIds.has(modelId);
+
+        button.textContent = isSaved ? "Gemerkt" : "Modell merken";
+        button.classList.toggle("is-saved", isSaved);
+        button.setAttribute("aria-pressed", String(isSaved));
+      });
+    };
+
+    const renderSavedModels = (currentUser) => {
+      if (!savedModelList || !savedModelCount) {
+        return;
+      }
+
+      const savedModels = currentUser?.savedModels || [];
+      savedModelCount.textContent = formatCount(savedModels.length, "Modell", "Modelle");
+      savedModelList.innerHTML = "";
+
+      if (!savedModels.length) {
+        savedModelList.appendChild(createNode("p", "account-empty-state", "Noch keine Modelle gespeichert."));
+        return;
+      }
+
+      savedModels.forEach((model) => {
+        const item = createNode("article", "saved-model-chip");
+        const info = createNode("div", "saved-model-copy");
+        const title = createNode("strong", "", model.name);
+        const meta = createNode("span", "", `Gespeichert am ${formatDate(model.savedAt)}`);
+        const removeButton = createNode("button", "saved-model-remove", "Entfernen");
+
+        removeButton.type = "button";
+        removeButton.dataset.removeModelId = model.id;
+
+        info.append(title, meta);
+        item.append(info, removeButton);
+        savedModelList.appendChild(item);
+      });
+    };
+
+    const renderNotes = (currentUser) => {
+      if (!noteList || !savedNoteCount) {
+        return;
+      }
+
+      const notes = currentUser?.notes || [];
+      savedNoteCount.textContent = formatCount(notes.length, "Notiz", "Notizen");
+      noteList.innerHTML = "";
+
+      if (!notes.length) {
+        noteList.appendChild(createNode("p", "account-empty-state", "Noch keine Notizen gespeichert."));
+        return;
+      }
+
+      notes.forEach((note) => {
+        const item = createNode("article", "note-item");
+        const text = createNode("p", "note-text", note.text);
+        const footer = createNode("div", "note-item-footer");
+        const meta = createNode("span", "note-date", formatDate(note.createdAt));
+        const removeButton = createNode("button", "note-remove", "Loeschen");
+
+        removeButton.type = "button";
+        removeButton.dataset.noteId = note.id;
+
+        footer.append(meta, removeButton);
+        item.append(text, footer);
+        noteList.appendChild(item);
+      });
+    };
+
+    const renderAccount = () => {
+      const currentUser = getCurrentUser();
+      const isLoggedIn = Boolean(currentUser);
+
+      if (accountTitle) {
+        accountTitle.textContent = isLoggedIn
+          ? `Hallo ${currentUser.name || currentUser.email}`
+          : authMode === "register"
+            ? "Konto anlegen"
+            : "Einloggen oder Konto anlegen";
+      }
+
+      if (accountStatusBadge) {
+        accountStatusBadge.textContent = isLoggedIn ? "Eingeloggt" : "Nicht eingeloggt";
+        accountStatusBadge.classList.toggle("is-active", isLoggedIn);
+      }
+
+      if (accountStatusText) {
+        accountStatusText.textContent = isLoggedIn
+          ? "Du kannst jetzt Pool-Modelle merken, Notizen speichern und deine Auswahl spaeter wieder aufrufen."
+          : "Melde dich an, um Pool-Modelle zu speichern und eigene Notizen dauerhaft auf diesem Browser zu sichern.";
+      }
+
+      if (accountStorage) {
+        accountStorage.hidden = !isLoggedIn;
+      }
+
+      if (authModeToggle) {
+        authModeToggle.hidden = isLoggedIn;
+      }
+
+      if (accountNameField) {
+        accountNameField.hidden = isLoggedIn || authMode !== "register";
+      }
+
+      if (accountAuthForm) {
+        accountAuthForm.classList.toggle("is-logged-in", isLoggedIn);
+      }
+
+      if (accountEmailInput) {
+        accountEmailInput.disabled = isLoggedIn;
+        accountEmailInput.value = isLoggedIn ? currentUser.email : accountEmailInput.value;
+      }
+
+      if (accountPasswordInput) {
+        accountPasswordInput.disabled = isLoggedIn;
+        accountPasswordInput.value = isLoggedIn ? "******" : "";
+      }
+
+      if (accountNameInput) {
+        accountNameInput.disabled = isLoggedIn;
+        accountNameInput.value = isLoggedIn ? currentUser.name : accountNameInput.value;
+      }
+
+      if (accountSubmitButton) {
+        accountSubmitButton.hidden = isLoggedIn;
+      }
+
+      if (accountLogoutButton) {
+        accountLogoutButton.hidden = !isLoggedIn;
+      }
+
+      if (accountStorageNote) {
+        accountStorageNote.textContent = isLoggedIn
+          ? "Hinweis: Die gespeicherten Inhalte liegen lokal in diesem Browser. Auf einem anderen Geraet sind sie nicht automatisch verfuegbar."
+          : "Hinweis: Da die Seite weiter statisch gehostet wird, bleiben Login, gemerkte Modelle und Notizen nur auf diesem Browser und diesem Geraet gespeichert.";
+      }
+
+      renderSavedModels(currentUser);
+      renderNotes(currentUser);
+      updateModelButtons(currentUser);
+    };
+
+    const requireLogin = (message) => {
+      setFeedback(message, "error");
+
+      if (accountSection) {
+        accountSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      if (accountEmailInput) {
+        window.setTimeout(() => accountEmailInput.focus(), 180);
+      }
+    };
+
+    saveModelButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const currentUser = getCurrentUser();
+        const modelCard = button.closest(".offer-card");
+        const modelId = button.dataset.modelId || modelCard?.dataset.modelId || "";
+        const modelName = modelCard?.dataset.modelName || "Pool-Modell";
+
+        if (!currentUser) {
+          requireLogin("Bitte zuerst einloggen, damit du Modelle speichern kannst.");
+          return;
+        }
+
+        const savedModel = currentUser.savedModels.find((model) => model.id === modelId);
+
+        persistCurrentUser((userRecord) => ({
+          ...userRecord,
+          savedModels: savedModel
+            ? userRecord.savedModels.filter((model) => model.id !== modelId)
+            : [
+                ...userRecord.savedModels,
+                {
+                  id: modelId,
+                  name: modelName,
+                  savedAt: new Date().toISOString()
+                }
+              ]
+        }));
+
+        setFeedback(
+          savedModel ? `${modelName} wurde aus deiner Merkliste entfernt.` : `${modelName} wurde gespeichert.`,
+          "success"
+        );
+        renderAccount();
+      });
+    });
+
+    authModeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setFeedback("");
+        setAuthMode(button.dataset.authMode || "login");
+        renderAccount();
+      });
+    });
+
+    if (accountAuthForm) {
+      accountAuthForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (getCurrentUser()) {
+          return;
+        }
+
+        const email = normalizeEmail(accountEmailInput?.value || "");
+        const password = accountPasswordInput?.value || "";
+        const name = (accountNameInput?.value || "").trim();
+
+        if (!email) {
+          setFeedback("Bitte gib eine gueltige E-Mail-Adresse ein.", "error");
+          return;
+        }
+
+        if (password.length < 6) {
+          setFeedback("Das Passwort muss mindestens 6 Zeichen lang sein.", "error");
+          return;
+        }
+
+        accountSubmitButton.disabled = true;
+
+        try {
+          const accounts = loadAccounts();
+          const passwordHash = await hashPassword(password);
+
+          if (authMode === "register") {
+            if (accounts[email]) {
+              setFeedback("Zu dieser E-Mail gibt es bereits ein Konto. Bitte logge dich ein.", "error");
+              return;
+            }
+
+            accounts[email] = {
+              name: name || email.split("@")[0],
+              passwordHash,
+              savedModels: [],
+              notes: []
+            };
+
+            saveAccounts(accounts);
+            setSessionEmail(email);
+            setFeedback("Konto angelegt und direkt eingeloggt.", "success");
+          } else {
+            const existingUser = accounts[email];
+
+            if (!existingUser) {
+              setFeedback("Kein Konto zu dieser E-Mail gefunden. Bitte zuerst registrieren.", "error");
+              return;
+            }
+
+            if (getSafeUserData(existingUser).passwordHash !== passwordHash) {
+              setFeedback("Das Passwort passt nicht zu diesem Konto.", "error");
+              return;
+            }
+
+            setSessionEmail(email);
+            setFeedback("Erfolgreich eingeloggt.", "success");
+          }
+
+          renderAccount();
+        } finally {
+          accountSubmitButton.disabled = false;
+        }
+      });
+    }
+
+    if (accountLogoutButton) {
+      accountLogoutButton.addEventListener("click", () => {
+        setSessionEmail("");
+        if (accountAuthForm) {
+          accountAuthForm.reset();
+        }
+        setAuthMode("login");
+        setFeedback("Du wurdest abgemeldet.", "success");
+        renderAccount();
+      });
+    }
+
+    if (noteForm) {
+      noteForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const currentUser = getCurrentUser();
+        const noteText = (noteInput?.value || "").trim();
+
+        if (!currentUser) {
+          requireLogin("Bitte zuerst einloggen, damit du Notizen speichern kannst.");
+          return;
+        }
+
+        if (noteText.length < 3) {
+          setFeedback("Bitte schreibe eine etwas aussagekraeftigere Notiz.", "error");
+          return;
+        }
+
+        persistCurrentUser((userRecord) => ({
+          ...userRecord,
+          notes: [
+            {
+              id: createNoteId(),
+              text: noteText,
+              createdAt: new Date().toISOString()
+            },
+            ...userRecord.notes
+          ]
+        }));
+
+        noteForm.reset();
+        setFeedback("Notiz gespeichert.", "success");
+        renderAccount();
+      });
+    }
+
+    if (savedModelList) {
+      savedModelList.addEventListener("click", (event) => {
+        const removeButton = event.target.closest("[data-remove-model-id]");
+
+        if (!removeButton) {
+          return;
+        }
+
+        persistCurrentUser((userRecord) => ({
+          ...userRecord,
+          savedModels: userRecord.savedModels.filter((model) => model.id !== removeButton.dataset.removeModelId)
+        }));
+
+        setFeedback("Modell aus der Merkliste entfernt.", "success");
+        renderAccount();
+      });
+    }
+
+    if (noteList) {
+      noteList.addEventListener("click", (event) => {
+        const removeButton = event.target.closest("[data-note-id]");
+
+        if (!removeButton) {
+          return;
+        }
+
+        persistCurrentUser((userRecord) => ({
+          ...userRecord,
+          notes: userRecord.notes.filter((note) => note.id !== removeButton.dataset.noteId)
+        }));
+
+        setFeedback("Notiz geloescht.", "success");
+        renderAccount();
+      });
+    }
+
+    setAuthMode("login");
+    renderAccount();
 
     prefersReducedMotion.addEventListener("change", (event) => {
       if (!event.matches) {
