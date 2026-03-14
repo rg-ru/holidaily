@@ -517,69 +517,6 @@ h3 {
   box-shadow: var(--shadow-soft);
 }
 
-.floating-whatsapp {
-  position: fixed;
-  right: max(24px, calc((100vw - var(--container)) / 2 + 12px));
-  bottom: 24px;
-  z-index: 40;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 64px;
-  padding: 0 22px 0 16px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  background: linear-gradient(135deg, #29d96b, #149a4d);
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: 800;
-  box-shadow: 0 22px 38px rgba(18, 122, 66, 0.26);
-  transition: transform 180ms ease, box-shadow 180ms ease;
-}
-
-.floating-whatsapp::before {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
-  pointer-events: none;
-}
-
-.floating-whatsapp:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 24px 42px rgba(18, 122, 66, 0.34);
-}
-
-.floating-whatsapp:focus-visible {
-  outline: 3px solid rgba(255, 255, 255, 0.95);
-  outline-offset: 3px;
-}
-
-.floating-whatsapp-icon,
-.floating-whatsapp-label {
-  position: relative;
-  z-index: 1;
-}
-
-.floating-whatsapp-icon {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.floating-whatsapp-icon svg {
-  width: 22px;
-  height: 22px;
-}
-
-.floating-whatsapp-label {
-  line-height: 1.1;
-}
-
 .hero-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1847,29 +1784,6 @@ h3 {
 
   .hero-stats {
     grid-template-columns: 1fr;
-  }
-
-  .floating-whatsapp {
-    right: 12px;
-    bottom: 12px;
-    min-height: 56px;
-    padding-right: 16px;
-    padding-left: 12px;
-    gap: 10px;
-  }
-
-  .floating-whatsapp-icon {
-    width: 34px;
-    height: 34px;
-  }
-
-  .floating-whatsapp-icon svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .floating-whatsapp-label {
-    font-size: 0.9rem;
   }
 
   .contact-hours-grid {
