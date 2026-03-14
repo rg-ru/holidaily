@@ -517,50 +517,6 @@ h3 {
   box-shadow: var(--shadow-soft);
 }
 
-.floating-whatsapp-icon-link {
-  position: fixed;
-  left: max(24px, calc((100vw - var(--container)) / 2 + 12px));
-  bottom: 24px;
-  z-index: 60;
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  background: linear-gradient(135deg, #29d96b, #149a4d);
-  color: #ffffff;
-  box-shadow: 0 22px 38px rgba(18, 122, 66, 0.26);
-  text-decoration: none;
-  transition: transform 180ms ease, box-shadow 180ms ease;
-}
-
-.floating-whatsapp-icon-link::before {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
-  pointer-events: none;
-}
-
-.floating-whatsapp-icon-link:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 24px 42px rgba(18, 122, 66, 0.34);
-}
-
-.floating-whatsapp-icon-link:focus-visible {
-  outline: 3px solid rgba(255, 255, 255, 0.95);
-  outline-offset: 3px;
-}
-
-.floating-whatsapp-icon-link svg {
-  position: relative;
-  z-index: 1;
-  width: 30px;
-  height: 30px;
-}
-
 .hero-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1828,18 +1784,6 @@ h3 {
 
   .hero-stats {
     grid-template-columns: 1fr;
-  }
-
-  .floating-whatsapp-icon-link {
-    left: 12px;
-    bottom: 12px;
-    width: 56px;
-    height: 56px;
-  }
-
-  .floating-whatsapp-icon-link svg {
-    width: 24px;
-    height: 24px;
   }
 
   .contact-hours-grid {
