@@ -521,7 +521,7 @@ h3 {
   position: fixed;
   left: max(24px, calc((100vw - var(--container)) / 2 + 12px));
   bottom: 24px;
-  z-index: 40;
+  z-index: 60;
   display: grid;
   place-items: center;
   width: 64px;
