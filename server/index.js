@@ -89,7 +89,7 @@ app.use(
   })
 );
 
-["styles.css", "app.js", "support-chat.js", "site-config.js"].forEach((fileName) => {
+["styles.css", "app.js", "support-chat.js", "site-config.js", "chat-local-fallback.js"].forEach((fileName) => {
   app.get(`/${fileName}`, (req, res) => {
     res.sendFile(path.join(config.projectRoot, fileName));
   });

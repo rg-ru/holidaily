@@ -2,6 +2,7 @@ const SUPPORT_CHAT_SESSION_KEY = "holidaily-support-chat-session-v1";
 const LOCAL_ACCOUNT_STORAGE_KEY = "holidaily-local-accounts-v1";
 const LOCAL_ACCOUNT_SESSION_KEY = "holidaily-local-session-v1";
 const CHAT_POLL_INTERVAL_MS = 15000;
+const supportFallback = window.HolidailySupportFallback || null;
 
 const normalizeBaseUrl = (value) => {
   const normalizedValue = String(value || "").trim();
@@ -44,7 +45,8 @@ const supportState = {
   conversationToken: "",
   conversation: null,
   pollTimer: 0,
-  requestInFlight: false
+  requestInFlight: false,
+  transportMode: "api"
 };
 
 const safeLocalRead = (key) => {
@@ -111,6 +113,10 @@ const setSupportFeedback = (message, tone = "info") => {
   if (message) {
     supportElements.feedback.classList.add(`is-${tone}`);
   }
+};
+
+const setTransportMode = (mode) => {
+  supportState.transportMode = mode;
 };
 
 const applyChipState = (element, label, variant = "") => {
@@ -366,8 +372,35 @@ const apiRequest = async (path, options = {}) => {
       throw new Error(message);
     }
 
+    setTransportMode("api");
     return payload;
   } catch (error) {
+    if (error instanceof TypeError && supportFallback?.enabled) {
+      setTransportMode("fallback");
+
+      if (path === "/conversations" && (options.method || "GET") === "POST") {
+        return supportFallback.createConversation(options.body || {});
+      }
+
+      const conversationMatch = path.match(/^\/([^/]+)$/);
+      const messageMatch = path.match(/^\/([^/]+)\/messages$/);
+
+      if (conversationMatch && (options.method || "GET") === "GET") {
+        return supportFallback.getPublicConversation({
+          conversationId: conversationMatch[1],
+          conversationToken: supportState.conversationToken
+        });
+      }
+
+      if (messageMatch && (options.method || "GET") === "POST") {
+        return supportFallback.addPublicMessage({
+          conversationId: messageMatch[1],
+          conversationToken: supportState.conversationToken,
+          ...(options.body || {})
+        });
+      }
+    }
+
     if (error instanceof TypeError) {
       throw new Error(
         "Der Support-Server ist nicht erreichbar. Pruefe site-config.js oder ob der Node-Server laeuft."
@@ -395,7 +428,12 @@ const fetchConversation = async ({ silent = false } = {}) => {
     renderConversation();
 
     if (!silent) {
-      setSupportFeedback("Konversation aktualisiert.", "info");
+      setSupportFeedback(
+        supportState.transportMode === "fallback"
+          ? "Konversation lokal in diesem Browser aktualisiert."
+          : "Konversation aktualisiert.",
+        "info"
+      );
     }
   } catch (error) {
     resetSession();
@@ -452,7 +490,12 @@ const sendMessage = async () => {
 
     renderConversation();
     supportElements.messageInput.value = "";
-    setSupportFeedback("Nachricht gesendet. Der Support sieht die Anfrage jetzt im Admin-Bereich.", "success");
+    setSupportFeedback(
+      supportState.transportMode === "fallback"
+        ? "Nachricht gesendet. Der Chat laeuft aktuell lokal in diesem Browser."
+        : "Nachricht gesendet. Der Support sieht die Anfrage jetzt im Admin-Bereich.",
+      "success"
+    );
   } catch (error) {
     setSupportFeedback(error.message, "error");
   } finally {

@@ -33,6 +33,7 @@ jobs:
           cp index.html dist/
           cp styles.css dist/
           cp app.js dist/
+          cp chat-local-fallback.js dist/
           cp support-chat.js dist/
           cp .nojekyll dist/
           cp -R assets dist/assets

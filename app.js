@@ -23,9 +23,9 @@ const SESSION_KEY = "holidaily-local-session-v1";
 const SEEDED_ADMIN_ACCOUNTS = [
   {
     id: "holidaily-admin",
-    name: "holidaily Admin",
-    email: "admin@holidaily.local",
-    passwordHash: "fnv1a-349655e6",
+    name: "Dan Siemens",
+    email: "dan.siemens@outlook.de",
+    passwordHash: "fnv1a-784af754",
     role: "admin",
     savedOffers: [],
     projectNote: "",

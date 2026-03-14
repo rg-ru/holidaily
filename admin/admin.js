@@ -19,6 +19,7 @@ const resolveBackendBaseUrl = () => {
 
 const ADMIN_API_BASE = `${resolveBackendBaseUrl()}/api/admin`;
 const ADMIN_POLL_INTERVAL_MS = 8000;
+const adminFallback = window.HolidailySupportFallback || null;
 
 const adminElements = {
   loginView: document.querySelector("#adminLoginView"),
@@ -67,7 +68,8 @@ const adminState = {
   search: "",
   pollTimer: 0,
   lastSnapshotByConversationId: new Map(),
-  baseDocumentTitle: document.title
+  baseDocumentTitle: document.title,
+  transportMode: "api"
 };
 
 const setNotice = (element, message, tone = "info") => {
@@ -146,6 +148,10 @@ const setAuthenticatedView = (isAuthenticated) => {
   adminElements.dashboard.hidden = !isAuthenticated;
 };
 
+const setTransportMode = (mode) => {
+  adminState.transportMode = mode;
+};
+
 const setLiveStatus = (message, tone = "info") => {
   setNotice(adminElements.liveStatus, message, tone);
 };
@@ -207,7 +213,9 @@ const stopPolling = () => {
 const startPolling = () => {
   stopPolling();
   setLiveStatus(
-    `Live-Aktualisierung aktiv. Neue Chats werden alle ${Math.round(ADMIN_POLL_INTERVAL_MS / 1000)} Sekunden geladen.`,
+    adminState.transportMode === "fallback"
+      ? "Lokaler Browser-Fallback aktiv. Neue Chats werden in diesem Browser synchronisiert."
+      : `Live-Aktualisierung aktiv. Neue Chats werden alle ${Math.round(ADMIN_POLL_INTERVAL_MS / 1000)} Sekunden geladen.`,
     "info"
   );
 
@@ -245,8 +253,71 @@ const apiRequest = async (path, options = {}) => {
       throw new Error(payload?.error?.message || "API-Anfrage fehlgeschlagen.");
     }
 
+    setTransportMode("api");
     return payload;
   } catch (error) {
+    if (error instanceof TypeError && adminFallback?.enabled) {
+      setTransportMode("fallback");
+
+      if (path === "/auth/session" && (options.method || "GET") === "GET") {
+        const adminUser = adminFallback.readAdminSession();
+
+        if (!adminUser) {
+          throw new Error("Keine aktive Admin-Sitzung.");
+        }
+
+        return { adminUser };
+      }
+
+      if (path === "/auth/login" && (options.method || "GET") === "POST") {
+        return adminFallback.loginAdmin(options.body || {});
+      }
+
+      if (path === "/auth/logout" && (options.method || "GET") === "POST") {
+        adminFallback.logoutAdmin();
+        return null;
+      }
+
+      if (path.startsWith("/conversations") && !adminFallback.readAdminSession()) {
+        throw new Error("Admin-Anmeldung erforderlich.");
+      }
+
+      if (path.startsWith("/conversations?") || path === "/conversations") {
+        const params = new URLSearchParams(path.split("?")[1] || "");
+        return adminFallback.listAdminConversations({
+          status: params.get("status") || "",
+          search: params.get("search") || ""
+        });
+      }
+
+      const conversationMatch = path.match(/^\/conversations\/([^/?]+)$/);
+      const messageMatch = path.match(/^\/conversations\/([^/]+)\/messages$/);
+      const statusMatch = path.match(/^\/conversations\/([^/]+)\/status$/);
+
+      if (conversationMatch && (options.method || "GET") === "GET") {
+        return adminFallback.getAdminConversation(conversationMatch[1]);
+      }
+
+      if (conversationMatch && (options.method || "GET") === "DELETE") {
+        return adminFallback.deleteConversation(conversationMatch[1]);
+      }
+
+      if (messageMatch && (options.method || "GET") === "POST") {
+        return adminFallback.addAdminMessage({
+          conversationId: messageMatch[1],
+          adminUser: adminFallback.readAdminSession(),
+          message: options.body?.message
+        });
+      }
+
+      if (statusMatch && (options.method || "GET") === "PATCH") {
+        return adminFallback.updateConversationStatus({
+          conversationId: statusMatch[1],
+          status: options.body?.status
+        });
+      }
+    }
+
     if (error instanceof TypeError) {
       throw new Error(
         "Die Admin-API ist nicht erreichbar. Pruefe site-config.js, CORS oder den laufenden Node-Server."
@@ -428,7 +499,12 @@ const loadConversations = async ({
       renderConversationDetail();
     }
 
-    setLiveStatus(`Zuletzt aktualisiert: ${formatTime(new Date().toISOString())}`, "info");
+    setLiveStatus(
+      adminState.transportMode === "fallback"
+        ? `Lokaler Browser-Fallback aktiv. Zuletzt aktualisiert: ${formatTime(new Date().toISOString())}`
+        : `Zuletzt aktualisiert: ${formatTime(new Date().toISOString())}`,
+      "info"
+    );
 
     if (incomingUserMessages.length > 0) {
       updateDocumentTitle(incomingUserMessages.length);

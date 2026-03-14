@@ -7,6 +7,7 @@ Landingpage fuer holidaily pools mit lokalem Konto-Bereich und einem serverseiti
 - `index.html`: Website-Frontend
 - `styles.css`: Design der Landingpage
 - `app.js`: lokale Konto-/Merkliste-/Notiz-Logik
+- `chat-local-fallback.js`: Browser-Fallback fuer GitHub Pages, falls das externe Chat-Backend nicht erreichbar ist
 - `site-config.js`: Runtime-Konfiguration fuer getrenntes Frontend-/Backend-Hosting
 - `support-chat.js`: Nutzer-Chat gegen die REST-API
 - `admin/`: getrenntes Admin-Panel fuer Support-Chats
@@ -68,6 +69,7 @@ Wichtig:
 - Der Pages-Workflow erzeugt `site-config.js` automatisch mit `BACKEND_BASE_URL`. Standard-Fallback ist `https://holidaily-chat-api-rgru.onrender.com`.
 - Falls Website/Admin auf einer anderen Domain als das Backend laufen, muessen auf dem Backend `ALLOWED_WEB_ORIGINS`, `ADMIN_COOKIE_SAME_SITE=none` und `ADMIN_COOKIE_SECURE=true` gesetzt werden.
 - Falls die Repository-Einstellung fuer Pages noch nicht aktiv ist, muss unter GitHub einmalig `Settings -> Pages -> Build and deployment -> Source -> GitHub Actions` gesetzt werden.
+- Wenn das externe Backend auf GitHub Pages nicht erreichbar ist, faellt der Chat fuer Website und Admin automatisch auf einen lokalen Browser-Speicher zurueck. Das funktioniert direkt zwischen `holidaily/` und `holidaily/admin/`, aber nur im selben Browser und nicht geraeteuebergreifend.
 
 ## Render Deploy
 
