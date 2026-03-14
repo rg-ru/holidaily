@@ -1,4 +1,4 @@
-const ADMIN_API_BASE = "/api/admin";
+const ADMIN_API_BASE = new URL("../api/admin", window.location.href).pathname;
 
 const adminElements = {
   loginView: document.querySelector("#adminLoginView"),

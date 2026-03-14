@@ -60,7 +60,7 @@ app.get("/index.html", (req, res) => {
 });
 
 app.get("/admin", (req, res) => {
-  res.sendFile(path.join(config.projectRoot, "admin", "index.html"));
+  res.redirect(302, "/admin/");
 });
 
 app.get("/admin/", (req, res) => {

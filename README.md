@@ -49,6 +49,17 @@ Die Chat-Daten laufen bewusst nicht ueber eine normale App-Datenbank, sondern ue
    - Frontend: `http://localhost:3000/`
    - Admin-Panel: `http://localhost:3000/admin/`
 
+## GitHub Pages
+
+Fuer die statische Auslieferung ueber GitHub Pages gibt es jetzt den Workflow
+`.github/workflows/deploy-pages.yml`.
+
+Wichtig:
+
+- Die Landingpage und das Admin-Frontend koennen damit als statische Dateien auf GitHub Pages veroeffentlicht werden.
+- Der Express-/SQLite-Teil laeuft nicht auf GitHub Pages. Fuer den echten Support-Chat braucht es weiter einen Node.js-Host fuer `server/index.js`.
+- Falls die Repository-Einstellung fuer Pages noch nicht aktiv ist, muss unter GitHub einmalig `Settings -> Pages -> Build and deployment -> Source -> GitHub Actions` gesetzt werden.
+
 ## REST-Endpunkte
 
 - `POST /api/chat/conversations`

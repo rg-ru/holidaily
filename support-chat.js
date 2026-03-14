@@ -1,7 +1,7 @@
 const SUPPORT_CHAT_SESSION_KEY = "holidaily-support-chat-session-v1";
 const LOCAL_ACCOUNT_STORAGE_KEY = "holidaily-local-accounts-v1";
 const LOCAL_ACCOUNT_SESSION_KEY = "holidaily-local-session-v1";
-const SUPPORT_API_BASE = "/api/chat";
+const SUPPORT_API_BASE = new URL("./api/chat", window.location.href).pathname;
 const CHAT_POLL_INTERVAL_MS = 15000;
 
 const supportElements = {
