@@ -1,9 +1,12 @@
 const motionElements = document.querySelectorAll("[data-reveal]");
 const header = document.querySelector(".site-header");
+const navToggle = document.querySelector(".nav-toggle");
+const siteHeaderActions = document.querySelector(".site-header-actions");
 const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
 const sectionLinks = navLinks
   .map((link) => ({ link, section: document.querySelector(link.getAttribute("href")) }))
   .filter(({ section }) => section);
+const headerCta = document.querySelector(".header-cta");
 const heroVisual = document.querySelector(".hero-visual");
 const accountSection = document.querySelector("#konto");
 const saveOfferButtons = Array.from(document.querySelectorAll(".save-offer-button"));
@@ -11,6 +14,7 @@ const interactiveSurfaces = document.querySelectorAll(
   ".hero-card, .hero-detail-strip, .hero-stats article, .feature-card, .offer-card, .story-card, .contact-card, .contact-method, .contact-hours, .spotlight-list article, .spotlight-metrics article, .account-highlight, .account-benefit, .account-shell, .auth-card, .account-card, .account-metric, .saved-offer-item, .admin-account, .admin-chat-workspace"
 );
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const compactNav = window.matchMedia("(max-width: 820px)");
 const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
 
 const STORAGE_KEY = "holidaily-local-accounts-v1";
@@ -90,6 +94,35 @@ const accountElements = {
 
 const revealAll = () => {
   motionElements.forEach((element) => element.classList.add("is-visible"));
+};
+
+const setMenuOpen = (isOpen) => {
+  if (!header || !navToggle || !siteHeaderActions) {
+    return;
+  }
+
+  const shouldOpen = Boolean(isOpen) && compactNav.matches;
+  header.classList.toggle("is-menu-open", shouldOpen);
+  navToggle.setAttribute("aria-expanded", String(shouldOpen));
+  navToggle.setAttribute("aria-label", shouldOpen ? "Menue schliessen" : "Menue oeffnen");
+  document.body.classList.toggle("menu-open", shouldOpen);
+  siteHeaderActions.hidden = compactNav.matches ? !shouldOpen : false;
+};
+
+const syncMenuLayout = () => {
+  if (!header || !navToggle || !siteHeaderActions) {
+    return;
+  }
+
+  if (!compactNav.matches) {
+    setMenuOpen(false);
+    siteHeaderActions.hidden = false;
+    return;
+  }
+
+  if (!header.classList.contains("is-menu-open")) {
+    siteHeaderActions.hidden = true;
+  }
 };
 
 const setFeedback = (message, tone = "info") => {
@@ -1089,7 +1122,56 @@ const queueScrollSync = () => {
 syncHeaderState();
 syncActiveNav();
 window.addEventListener("scroll", queueScrollSync, { passive: true });
-window.addEventListener("resize", queueScrollSync);
+window.addEventListener("resize", () => {
+  queueScrollSync();
+  syncMenuLayout();
+});
+
+if (typeof compactNav.addEventListener === "function") {
+  compactNav.addEventListener("change", syncMenuLayout);
+} else if (typeof compactNav.addListener === "function") {
+  compactNav.addListener(syncMenuLayout);
+}
+
+syncMenuLayout();
+
+if (navToggle && header) {
+  navToggle.addEventListener("click", () => {
+    setMenuOpen(!header.classList.contains("is-menu-open"));
+  });
+}
+
+navLinks.forEach((link) => {
+  link.addEventListener("click", () => {
+    setMenuOpen(false);
+  });
+});
+
+if (headerCta) {
+  headerCta.addEventListener("click", () => {
+    setMenuOpen(false);
+  });
+}
+
+document.addEventListener("click", (event) => {
+  if (!compactNav.matches || !header || !header.classList.contains("is-menu-open")) {
+    return;
+  }
+
+  if (event.target instanceof Node && header.contains(event.target)) {
+    return;
+  }
+
+  setMenuOpen(false);
+});
+
+window.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") {
+    return;
+  }
+
+  setMenuOpen(false);
+});
 
 initializeAccounts();
 
