@@ -1,6 +1,6 @@
-# holidaily
+# Holidaily
 
-Statische Landingpage fuer holidaily pools.
+Statische Landingpage für Holidaily pools.
 
 ## Struktur
 
@@ -12,14 +12,14 @@ Statische Landingpage fuer holidaily pools.
 
 ## Lokal starten
 
-Die Seite kann direkt im Browser ueber `index.html` geoeffnet werden.
+Die Seite kann direkt im Browser über `index.html` geöffnet werden.
 
 ## Deployment
 
-Das Projekt ist fuer statisches Hosting ueber GitHub Pages geeignet.
+Das Projekt ist für statisches Hosting über GitHub Pages geeignet.
 
 ## Links
 
-- Website: https://github.com/rg-ru/holidaily
-- E-Mail: Info@holidaily-pools.de
+- Website: https://github.com/rg-ru/Holidaily
+- E-Mail: Info@Holidaily-pools.de
 - WhatsApp: https://wa.me/491632178170
