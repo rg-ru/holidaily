@@ -519,7 +519,8 @@ h3 {
 
 .floating-whatsapp {
   position: fixed;
-  right: max(24px, calc((100vw - var(--container)) / 2 + 12px));
+  left: max(24px, calc((100vw - var(--container)) / 2 + 12px));
+  right: auto;
   bottom: 24px;
   z-index: 40;
   display: inline-flex;
@@ -1850,7 +1851,8 @@ h3 {
   }
 
   .floating-whatsapp {
-    right: 12px;
+    left: 12px;
+    right: auto;
     bottom: 12px;
     min-height: 56px;
     padding-right: 16px;
