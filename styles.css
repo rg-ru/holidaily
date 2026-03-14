@@ -1657,10 +1657,54 @@ h3 {
   gap: 16px;
 }
 
+.support-chat-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
 .admin-chat-actions {
   display: grid;
   justify-items: end;
   gap: 10px;
+}
+
+.support-chat-meta {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.support-chat-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 18px;
+}
+
+.support-chat-form,
+.support-chat-history {
+  display: grid;
+  gap: 14px;
+}
+
+.support-chat-feedback {
+  margin: 0;
+  min-height: 1.2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.support-chat-feedback.is-error {
+  color: #a63223;
+}
+
+.support-chat-feedback.is-success {
+  color: #1f734d;
+}
+
+.support-chat-feedback.is-info {
+  color: var(--blue-dark);
 }
 
 .account-help-text {
@@ -2503,6 +2547,7 @@ h3 {
   .account-dashboard-header,
   .admin-account-header,
   .admin-alert,
+  .support-chat-header,
   .chat-card-header,
   .admin-chat-header {
     flex-direction: column;
@@ -2510,6 +2555,10 @@ h3 {
   }
 
   .admin-chat-actions {
+    justify-items: start;
+  }
+
+  .support-chat-meta {
     justify-items: start;
   }
 }
@@ -2638,6 +2687,10 @@ h3 {
   }
 
   .hero-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .support-chat-layout {
     grid-template-columns: 1fr;
   }
 

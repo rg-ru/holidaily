@@ -138,6 +138,22 @@ const setFeedback = (message, tone = "info") => {
   }
 };
 
+const updateAccountSnapshot = (currentUser) => {
+  const snapshot = {
+    user: currentUser
+      ? {
+          id: currentUser.id,
+          name: currentUser.name,
+          email: currentUser.email,
+          role: currentUser.role
+        }
+      : null
+  };
+
+  window.HolidailyAccountSnapshot = snapshot;
+  window.dispatchEvent(new CustomEvent("holidaily:account-session", { detail: snapshot }));
+};
+
 const safeRead = (key) => {
   try {
     return window.localStorage.getItem(key);
@@ -759,6 +775,10 @@ const renderSavedOffers = (user) => {
 };
 
 const renderUserChat = (currentUser) => {
+  if (!accountElements.userChatStatus || !accountElements.userChatEmptyState || !accountElements.userChatThread) {
+    return;
+  }
+
   const status = getUserChatStatus(currentUser);
   applyChipState(accountElements.userChatStatus, status.label, status.variant);
 
@@ -778,6 +798,17 @@ const renderUserChat = (currentUser) => {
 };
 
 const renderAdminChatWorkspace = (currentUser, visibleAccounts) => {
+  if (
+    !accountElements.adminChatTitle ||
+    !accountElements.adminChatMeta ||
+    !accountElements.adminChatStatus ||
+    !accountElements.adminChatEmptyState ||
+    !accountElements.adminChatForm ||
+    !accountElements.adminChatThread
+  ) {
+    return;
+  }
+
   const chatAccounts = visibleAccounts;
   let selectedAccount = chatAccounts.find((account) => account.email === accountState.selectedAdminChatEmail) || null;
 
@@ -867,6 +898,17 @@ const renderAdminAlert = (pendingAccounts) => {
 };
 
 const renderAdminPanel = (currentUser) => {
+  if (
+    !accountElements.adminView ||
+    !accountElements.adminAccountCount ||
+    !accountElements.adminPendingChatCount ||
+    !accountElements.adminLockedCount ||
+    !accountElements.adminSavedCount ||
+    !accountElements.adminAccountsList
+  ) {
+    return;
+  }
+
   const isAdmin = hasAdminAccess(currentUser);
   accountElements.adminView.hidden = !isAdmin;
 
@@ -1009,6 +1051,10 @@ const renderSaveButtons = (currentUser) => {
 };
 
 const resetUserOnlyViews = () => {
+  if (!accountElements.userChatThread || !accountElements.userChatEmptyState || !accountElements.userChatStatus) {
+    return;
+  }
+
   clearElement(accountElements.userChatThread);
   accountElements.userChatThread.hidden = true;
   accountElements.userChatEmptyState.hidden = false;
@@ -1022,6 +1068,8 @@ const renderAccountState = () => {
   const isLoggedIn = Boolean(currentUser);
   const isAdmin = hasAdminAccess(currentUser);
 
+  updateAccountSnapshot(currentUser);
+
   accountElements.guestView.hidden = isLoggedIn;
   accountElements.userView.hidden = !isLoggedIn;
 
@@ -1031,8 +1079,12 @@ const renderAccountState = () => {
     accountElements.roleBadge.className = "account-role-badge is-guest";
     accountElements.statusTitle.textContent = "Gastmodus aktiv";
     accountElements.statusText.textContent =
-      "Ein Konto ist optional und wird erst benoetigt, wenn du Modelle, Notizen oder den Chat speichern willst.";
-    accountElements.adminView.hidden = true;
+      "Ein Konto ist optional und wird erst benoetigt, wenn du Modelle oder Notizen speichern willst. Der Support-Chat funktioniert separat.";
+
+    if (accountElements.adminView) {
+      accountElements.adminView.hidden = true;
+    }
+
     resetUserOnlyViews();
     renderSaveButtons(null);
 
@@ -1049,8 +1101,8 @@ const renderAccountState = () => {
   accountElements.roleBadge.classList.add(isAdmin ? "is-admin" : "is-user");
   accountElements.statusTitle.textContent = `${currentUser.name} ist angemeldet`;
   accountElements.statusText.textContent = isAdmin
-    ? "Adminzugang aktiv. Du kannst Nutzerkonten verwalten, Chats beantworten und offene Hilfeanfragen priorisieren."
-    : "Konto aktiv. Du kannst Modelle speichern, Projekt-Notizen sichern und direkt ueber die Website chatten.";
+    ? "Lokaler Demo-Admin aktiv. Support-Nachrichten werden im separaten Admin-Portal verwaltet."
+    : "Konto aktiv. Du kannst Modelle speichern, Projekt-Notizen sichern und den Support-Chat separat nutzen.";
 
   accountElements.dashboardHeading.textContent = `Hallo ${currentUser.name}`;
   accountElements.dashboardMeta.textContent = `${currentUser.email} | Konto erstellt am ${formatDate(
@@ -1233,7 +1285,7 @@ if (accountElements.signupForm) {
     setFeedback(
       pendingOfferResult && pendingOfferResult.saved
         ? `Konto erstellt und "${pendingOfferResult.label}" direkt gespeichert.`
-        : "Konto erstellt. Du kannst jetzt Modelle, Notizen und den Website-Chat nutzen.",
+        : "Konto erstellt. Du kannst jetzt Modelle, Notizen und den Support-Chat nutzen.",
       "success"
     );
   });
@@ -1272,17 +1324,11 @@ if (accountElements.loginForm) {
     }
 
     renderAccountState();
-    const pendingReplyCount = hasAdminAccess(account) ? getPendingReplyAccounts(getManagedAccounts(account)).length : 0;
     const loginMessage = pendingOfferResult && pendingOfferResult.saved
       ? `Angemeldet und "${pendingOfferResult.label}" in deiner Merkliste abgelegt.`
       : `Angemeldet als ${account.name}.`;
-    const adminHelpMessage = hasAdminAccess(account)
-      ? pendingReplyCount
-        ? ` ${pendingReplyCount} Hilfeanfrage${pendingReplyCount === 1 ? "" : "n"} warten im Website-Chat.`
-        : " Keine offenen Hilfeanfragen im Website-Chat."
-      : "";
 
-    setFeedback(`${loginMessage}${adminHelpMessage}`, "success");
+    setFeedback(loginMessage, "success");
   });
 }
 

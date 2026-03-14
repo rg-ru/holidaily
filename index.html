@@ -21,7 +21,7 @@
   <script>
     document.documentElement.classList.add("has-js", "has-motion");
   </script>
-    <link rel="stylesheet" href="styles.css?v=20260314-4">
+    <link rel="stylesheet" href="styles.css?v=20260314-5">
 </head>
   <body>
   <div class="page-shell">
@@ -251,9 +251,8 @@
               <p class="eyebrow">Optional, wenn du speichern willst</p>
               <h3>Ohne Konto weiterstoebern. Mit Konto Modelle, Projekt-Notizen und Website-Chat sichern.</h3>
               <p>
-                Diese Landingpage bleibt statisch. Deshalb werden Konten, gespeicherte Modelle und Notizen lokal in
-                diesem Browser abgelegt. Das ist praktisch fuer Entwuerfe und Demos, aber kein Ersatz fuer ein echtes
-                Backend.
+                Konten, gespeicherte Modelle und Notizen bleiben lokal in diesem Browser. Der Support-Chat laeuft
+                dagegen ueber ein eigenes Backend mit separater Chat-Datenbank, damit Anfragen sauber getrennt bleiben.
               </p>
               <div class="account-highlight-points" aria-label="Konto-Vorteile">
                 <span>Modelle direkt aus den Karten speichern</span>
@@ -289,6 +288,9 @@
                 <span>Verwaltung</span>
                 <code>Nutzer, Sperren, Loeschungen, Chat-Hilfe</code>
               </div>
+              <div class="account-form-actions">
+                <a class="button button-ghost button-small" href="/admin/">Zum Support-Login</a>
+              </div>
             </article>
           </div>
           <div class="account-shell motion-reveal motion-up" data-reveal style="--delay: 120ms;">
@@ -304,11 +306,68 @@
             </div>
             <p class="account-feedback" id="accountFeedback" role="status" aria-live="polite"></p>
 
+            <article class="account-card account-card-wide support-chat-panel">
+              <div class="support-chat-header">
+                <div>
+                  <p class="account-card-kicker">Support-Chat</p>
+                  <h3>Direkt an holidaily pools schreiben</h3>
+                  <p class="account-help-text">
+                    Diese Unterhaltung wird ueber ein separates Support-Backend mit eigener Chat-Datenbank gespeichert.
+                    Antworten des Admins erscheinen wieder direkt hier.
+                  </p>
+                </div>
+                <div class="support-chat-meta">
+                  <span class="account-chip is-subtle" id="supportChatStatus">Bereit</span>
+                  <span class="account-chip is-muted" id="supportConversationId">Neue Unterhaltung</span>
+                </div>
+              </div>
+              <div class="support-chat-layout">
+                <form class="chat-form support-chat-form" id="supportChatForm" novalidate>
+                  <label for="supportName">
+                    Name (optional)
+                    <input id="supportName" name="supportName" type="text" autocomplete="name" maxlength="120">
+                  </label>
+                  <label for="supportEmail">
+                    E-Mail (optional)
+                    <input id="supportEmail" name="supportEmail" type="email" autocomplete="email" maxlength="255">
+                  </label>
+                  <label for="supportMessage">
+                    Nachricht
+                    <textarea
+                      id="supportMessage"
+                      name="supportMessage"
+                      placeholder="Zum Beispiel: Ich interessiere mich fuer einen Family Pool und brauche Hilfe bei Groesse, Budget oder Termin."
+                    ></textarea>
+                  </label>
+                  <div class="account-form-actions">
+                    <button class="button button-primary button-small" type="submit">Nachricht senden</button>
+                    <button class="button button-ghost button-small" type="button" id="supportRefreshButton">
+                      Aktualisieren
+                    </button>
+                    <button class="button button-ghost button-small" type="button" id="supportResetButton">
+                      Neue Unterhaltung
+                    </button>
+                  </div>
+                </form>
+                <div class="support-chat-history">
+                  <p class="account-help-text" id="supportConversationMeta">
+                    Noch keine Konversation gestartet. Die erste Nachricht erzeugt automatisch eine Konversations-ID.
+                  </p>
+                  <div class="account-empty-state" id="supportChatEmptyState">
+                    Schreibe eine Nachricht, um den Support-Chat zu starten. Der Verlauf bleibt in dieser Unterhaltung
+                    erhalten.
+                  </div>
+                  <div class="chat-thread" id="supportChatThread" aria-live="polite" hidden></div>
+                  <p class="support-chat-feedback" id="supportChatFeedback" role="status" aria-live="polite"></p>
+                </div>
+              </div>
+            </article>
+
             <div class="auth-grid" id="guestView">
               <article class="auth-card">
                 <p class="account-card-kicker">Neu hier?</p>
                 <h3>Konto anlegen</h3>
-                <p>Lege ein lokales Konto an, um Modelle, Notizen und deinen Chatverlauf hier im Browser zu speichern.</p>
+                <p>Lege ein lokales Konto an, um Modelle und Notizen im Browser zu speichern. Der Support-Chat laeuft separat ueber das Backend.</p>
                 <form id="signupForm" novalidate>
                   <label for="signupName">
                     Name
@@ -330,7 +389,7 @@
               <article class="auth-card">
                 <p class="account-card-kicker">Bereits vorhanden</p>
                 <h3>Anmelden</h3>
-                <p>Melde dich an, um gespeicherte Modelle, Notizen und den Website-Chat zu nutzen.</p>
+                <p>Melde dich an, um gespeicherte Modelle und Notizen weiterzunutzen. Der Support-Chat bleibt davon getrennt.</p>
                 <form id="loginForm" novalidate>
                   <label for="loginEmail">
                     E-Mail
@@ -405,111 +464,7 @@
                   <p class="account-help-text" id="noteMeta">Noch keine Notiz gespeichert.</p>
                 </article>
 
-                <article class="account-card account-card-wide chat-card">
-                  <div class="chat-card-header">
-                    <div>
-                      <p class="account-card-kicker">Website-Chat</p>
-                      <h3>Direkt im Konto schreiben</h3>
-                    <p class="account-help-text">
-                        Schreibe hier direkt an holidaily pools. Freigegebene Supportadmins koennen im geschuetzten Bereich antworten.
-                      </p>
-                    </div>
-                    <span class="account-chip is-subtle" id="userChatStatus">Noch kein Chat</span>
-                  </div>
-                  <div class="account-empty-state" id="userChatEmptyState">
-                    Noch keine Nachricht vorhanden. Starte den Chat direkt ueber dieses Formular.
-                  </div>
-                  <div class="chat-thread" id="userChatThread" aria-live="polite"></div>
-                  <form class="chat-form" id="userChatForm">
-                    <label for="userChatMessage">
-                      Nachricht
-                      <textarea
-                        id="userChatMessage"
-                        name="userChatMessage"
-                        placeholder="Zum Beispiel: Ich interessiere mich fuer einen Family Pool und moechte zur Groesse beraten werden."
-                      ></textarea>
-                    </label>
-                    <div class="account-form-actions">
-                      <button class="button button-secondary button-small" type="submit">Nachricht senden</button>
-                    </div>
-                  </form>
-                </article>
               </div>
-
-              <article class="account-card admin-card" id="adminView" hidden>
-                <div class="admin-header">
-                  <div>
-                    <p class="account-card-kicker">Adminbereich</p>
-                    <h3>Lokale Konten auf diesem Geraet</h3>
-                    <p class="account-help-text">
-                      Diese Uebersicht zeigt nur Nutzerkonten, die in diesem Browser gespeichert wurden.
-                    </p>
-                  </div>
-                </div>
-                <div class="admin-stats">
-                  <article class="account-metric">
-                    <span>Konten</span>
-                    <strong id="adminAccountCount">0</strong>
-                  </article>
-                  <article class="account-metric">
-                    <span>Offene Hilfechats</span>
-                    <strong id="adminPendingChatCount">0</strong>
-                  </article>
-                  <article class="account-metric">
-                    <span>Gesperrte Konten</span>
-                    <strong id="adminLockedCount">0</strong>
-                  </article>
-                  <article class="account-metric">
-                    <span>Gespeicherte Modelle</span>
-                    <strong id="adminSavedCount">0</strong>
-                  </article>
-                </div>
-                <div class="admin-alert" id="adminAlert">
-                  <div>
-                    <p class="account-card-kicker">Hilfeanfragen</p>
-                    <h3 id="adminAlertTitle">Keine offenen Hilfeanfragen</h3>
-                    <p class="account-help-text" id="adminAlertText">
-                      Sobald jemand im Website-Chat schreibt, erscheint die Anfrage hier fuer den Support.
-                    </p>
-                  </div>
-                  <span class="account-chip is-subtle" id="adminAlertCount">0 offen</span>
-                </div>
-                <div class="admin-account-list" id="adminAccountsList"></div>
-                <div class="admin-chat-workspace">
-                  <div class="admin-chat-header">
-                    <div>
-                      <p class="account-card-kicker">Chatantworten</p>
-                      <h3 id="adminChatTitle">Chat auswaehlen</h3>
-                      <p class="account-help-text" id="adminChatMeta">
-                        Waehle ein Nutzerkonto aus der Liste, um den Chatverlauf zu lesen und direkt zu helfen.
-                      </p>
-                    </div>
-                    <div class="admin-chat-actions">
-                      <span class="account-chip is-subtle" id="adminChatStatus">Kein Chat aktiv</span>
-                      <button class="button button-ghost button-small" type="button" id="adminDeleteChatButton" hidden>
-                        Chat loeschen
-                      </button>
-                    </div>
-                  </div>
-                  <div class="account-empty-state" id="adminChatEmptyState">
-                    Noch kein Konto fuer den Chat ausgewaehlt.
-                  </div>
-                  <div class="chat-thread admin-chat-thread" id="adminChatThread" aria-live="polite"></div>
-                  <form class="chat-form" id="adminChatForm" hidden>
-                    <label for="adminChatMessage">
-                      Antwort
-                      <textarea
-                        id="adminChatMessage"
-                        name="adminChatMessage"
-                        placeholder="Zum Beispiel: Danke fuer deine Nachricht. Ich melde mich mit einer konkreten Empfehlung."
-                      ></textarea>
-                    </label>
-                    <div class="account-form-actions">
-                      <button class="button button-primary button-small" type="submit">Antwort senden</button>
-                    </div>
-                  </form>
-                </div>
-              </article>
             </div>
           </div>
         </div>
@@ -656,6 +611,7 @@
     </span>
     <span class="floating-whatsapp-label">WhatsApp Kontakt</span>
   </a>
-    <script src="app.js?v=20260314-4"></script>
+    <script src="app.js?v=20260314-5"></script>
+    <script src="support-chat.js?v=20260314-1"></script>
 </body>
 </html>
