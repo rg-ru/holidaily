@@ -11,6 +11,25 @@ import publicChatRouter from "./routes/public-chat.js";
 
 const app = express();
 
+const appendVaryHeader = (res, value) => {
+  const existingValue = String(res.getHeader("Vary") || "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  if (!existingValue.includes(value)) {
+    res.setHeader("Vary", [...existingValue, value].join(", "));
+  }
+};
+
+const applyCorsHeaders = (res, origin) => {
+  appendVaryHeader(res, "Origin");
+  res.setHeader("Access-Control-Allow-Origin", origin);
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Conversation-Token");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+};
+
 if (config.trustProxy) {
   app.set("trust proxy", 1);
 }
@@ -26,6 +45,31 @@ app.use(
 app.use(cookieParser());
 app.use(express.json({ limit: "20kb" }));
 app.use(express.urlencoded({ extended: false, limit: "20kb" }));
+
+app.use((req, res, next) => {
+  const requestOrigin = String(req.get("origin") || "").trim();
+  const isAllowedOrigin =
+    Boolean(requestOrigin) && config.allowedWebOrigins.includes(requestOrigin);
+
+  if (isAllowedOrigin) {
+    // Static frontends like GitHub Pages need explicit CORS + credentials to talk to the support API.
+    applyCorsHeaders(res, requestOrigin);
+  }
+
+  if (req.method === "OPTIONS") {
+    if (!requestOrigin || isAllowedOrigin) {
+      return res.status(204).send();
+    }
+
+    return res.status(403).json({
+      error: {
+        message: "Diese Origin ist fuer die Support-API nicht freigegeben."
+      }
+    });
+  }
+
+  return next();
+});
 
 app.use("/api/chat", publicChatRouter);
 app.use("/api/admin", adminChatRouter);
@@ -45,7 +89,7 @@ app.use(
   })
 );
 
-["styles.css", "app.js", "support-chat.js"].forEach((fileName) => {
+["styles.css", "app.js", "support-chat.js", "site-config.js"].forEach((fileName) => {
   app.get(`/${fileName}`, (req, res) => {
     res.sendFile(path.join(config.projectRoot, fileName));
   });

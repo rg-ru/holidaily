@@ -74,8 +74,8 @@ export const issueAdminSession = (res, adminUser) => {
 
   res.cookie(ADMIN_SESSION_COOKIE, sessionToken, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: config.isProduction,
+    sameSite: config.adminCookieSameSite,
+    secure: config.adminCookieSecure,
     path: "/",
     maxAge: config.adminSessionTtlMs
   });
@@ -84,8 +84,8 @@ export const issueAdminSession = (res, adminUser) => {
 export const clearAdminSession = (res) => {
   res.clearCookie(ADMIN_SESSION_COOKIE, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: config.isProduction,
+    sameSite: config.adminCookieSameSite,
+    secure: config.adminCookieSecure,
     path: "/"
   });
 };

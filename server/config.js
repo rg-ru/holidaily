@@ -23,6 +23,45 @@ const parseNumber = (value, fallback) => {
   return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : fallback;
 };
 
+const parseSameSite = (value, fallback = "lax") => {
+  const normalizedValue = String(value || "")
+    .trim()
+    .toLowerCase();
+
+  if (!normalizedValue) {
+    return fallback;
+  }
+
+  if (normalizedValue === "lax" || normalizedValue === "strict" || normalizedValue === "none") {
+    return normalizedValue;
+  }
+
+  throw new HttpError(
+    500,
+    "ADMIN_COOKIE_SAME_SITE muss lax, strict oder none sein."
+  );
+};
+
+const normalizeOrigin = (value) => {
+  const normalizedValue = String(value || "").trim();
+
+  if (!normalizedValue) {
+    return "";
+  }
+
+  try {
+    return new URL(normalizedValue).origin;
+  } catch (error) {
+    throw new HttpError(500, `Die Origin ${normalizedValue} ist ungueltig.`);
+  }
+};
+
+const parseOriginList = (value) =>
+  String(value || "")
+    .split(",")
+    .map((entry) => normalizeOrigin(entry))
+    .filter(Boolean);
+
 const createAdminUser = (entry) => {
   const email = normalizeEmail(entry?.email);
   const name = String(entry?.name || "").trim() || "Support Admin";
@@ -85,6 +124,12 @@ const parseAdminUsers = () => {
 
 const adminUsers = parseAdminUsers();
 const adminSessionSecret = String(process.env.ADMIN_SESSION_SECRET || "").trim();
+const adminCookieSameSite = parseSameSite(process.env.ADMIN_COOKIE_SAME_SITE, "lax");
+const adminCookieSecure = parseBoolean(
+  process.env.ADMIN_COOKIE_SECURE,
+  String(process.env.NODE_ENV || "").trim() === "production"
+);
+const allowedWebOrigins = parseOriginList(process.env.ALLOWED_WEB_ORIGINS || "");
 
 if (!adminUsers.length) {
   throw new HttpError(
@@ -100,6 +145,13 @@ if (adminSessionSecret.length < 32) {
   );
 }
 
+if (adminCookieSameSite === "none" && !adminCookieSecure) {
+  throw new HttpError(
+    500,
+    "ADMIN_COOKIE_SAME_SITE=none benoetigt ADMIN_COOKIE_SECURE=true."
+  );
+}
+
 export const config = {
   projectRoot: PROJECT_ROOT,
   port: parseNumber(process.env.PORT, 3000),
@@ -108,5 +160,8 @@ export const config = {
   chatDbPath: path.resolve(PROJECT_ROOT, process.env.CHAT_DB_PATH || "data/chat-support.sqlite"),
   adminUsers,
   adminSessionSecret,
-  adminSessionTtlMs: parseNumber(process.env.ADMIN_SESSION_TTL_HOURS, 12) * 60 * 60 * 1000
+  adminSessionTtlMs: parseNumber(process.env.ADMIN_SESSION_TTL_HOURS, 12) * 60 * 60 * 1000,
+  adminCookieSameSite,
+  adminCookieSecure,
+  allowedWebOrigins
 };

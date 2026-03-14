@@ -7,6 +7,7 @@ Landingpage fuer holidaily pools mit lokalem Konto-Bereich und einem serverseiti
 - `index.html`: Website-Frontend
 - `styles.css`: Design der Landingpage
 - `app.js`: lokale Konto-/Merkliste-/Notiz-Logik
+- `site-config.js`: Runtime-Konfiguration fuer getrenntes Frontend-/Backend-Hosting
 - `support-chat.js`: Nutzer-Chat gegen die REST-API
 - `admin/`: getrenntes Admin-Panel fuer Support-Chats
 - `server/`: Express-Backend, REST-API und Chat-DB-Anbindung
@@ -26,25 +27,31 @@ Die Chat-Daten laufen bewusst nicht ueber eine normale App-Datenbank, sondern ue
 
 1. `.env.example` nach `.env` kopieren.
 2. Admin-Zugang und `ADMIN_SESSION_SECRET` in `.env` setzen.
-3. Abhaengigkeiten installieren:
+3. Falls Website/Admin nicht ueber denselben Node-Server laufen, in `site-config.js` die Backend-URL setzen:
+
+   ```js
+   window.HolidailyRuntimeConfig.backendBaseUrl = "https://dein-backend.example.com";
+   ```
+
+4. Abhaengigkeiten installieren:
 
    ```bash
    npm install
    ```
 
-4. Optional einen Passwort-Hash erzeugen:
+5. Optional einen Passwort-Hash erzeugen:
 
    ```bash
    npm run hash:password -- DeinStarkesPasswort
    ```
 
-5. Server starten:
+6. Server starten:
 
    ```bash
    npm run dev
    ```
 
-6. Website aufrufen:
+7. Website aufrufen:
 
    - Frontend: `http://localhost:3000/`
    - Admin-Panel: `http://localhost:3000/admin/`
@@ -58,6 +65,8 @@ Wichtig:
 
 - Die Landingpage und das Admin-Frontend koennen damit als statische Dateien auf GitHub Pages veroeffentlicht werden.
 - Der Express-/SQLite-Teil laeuft nicht auf GitHub Pages. Fuer den echten Support-Chat braucht es weiter einen Node.js-Host fuer `server/index.js`.
+- Damit Nachrichten von GitHub Pages wirklich gesendet werden, muss `site-config.js` auf deine Backend-URL zeigen.
+- Falls Website/Admin auf einer anderen Domain als das Backend laufen, muessen auf dem Backend `ALLOWED_WEB_ORIGINS`, `ADMIN_COOKIE_SAME_SITE=none` und `ADMIN_COOKIE_SECURE=true` gesetzt werden.
 - Falls die Repository-Einstellung fuer Pages noch nicht aktiv ist, muss unter GitHub einmalig `Settings -> Pages -> Build and deployment -> Source -> GitHub Actions` gesetzt werden.
 
 ## REST-Endpunkte

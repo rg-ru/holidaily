@@ -1,4 +1,23 @@
-const ADMIN_API_BASE = new URL("../api/admin", window.location.href).pathname;
+const normalizeBaseUrl = (value) => {
+  const normalizedValue = String(value || "").trim();
+
+  if (!normalizedValue) {
+    return "";
+  }
+
+  try {
+    return new URL(normalizedValue, window.location.href).toString().replace(/\/+$/, "");
+  } catch (error) {
+    return "";
+  }
+};
+
+const resolveBackendBaseUrl = () => {
+  const configuredBaseUrl = normalizeBaseUrl(window.HolidailyRuntimeConfig?.backendBaseUrl);
+  return configuredBaseUrl || window.location.origin;
+};
+
+const ADMIN_API_BASE = `${resolveBackendBaseUrl()}/api/admin`;
 
 const adminElements = {
   loginView: document.querySelector("#adminLoginView"),
@@ -122,30 +141,40 @@ const setAuthenticatedView = (isAuthenticated) => {
 };
 
 const apiRequest = async (path, options = {}) => {
-  // All admin actions go through the secured REST API and rely on the HttpOnly admin session cookie.
-  const response = await fetch(`${ADMIN_API_BASE}${path}`, {
-    method: options.method || "GET",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {})
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
+  try {
+    // All admin actions go through the secured REST API and rely on the HttpOnly admin session cookie.
+    const response = await fetch(`${ADMIN_API_BASE}${path}`, {
+      method: options.method || "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined
+    });
 
-  const payload = await response.json().catch(() => null);
+    const payload = await response.json().catch(() => null);
 
-  if (response.status === 401) {
-    adminState.adminUser = null;
-    setAuthenticatedView(false);
-    throw new Error(payload?.error?.message || "Admin-Anmeldung erforderlich.");
+    if (response.status === 401) {
+      adminState.adminUser = null;
+      setAuthenticatedView(false);
+      throw new Error(payload?.error?.message || "Admin-Anmeldung erforderlich.");
+    }
+
+    if (!response.ok) {
+      throw new Error(payload?.error?.message || "API-Anfrage fehlgeschlagen.");
+    }
+
+    return payload;
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(
+        "Die Admin-API ist nicht erreichbar. Pruefe site-config.js, CORS oder den laufenden Node-Server."
+      );
+    }
+
+    throw error;
   }
-
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || "API-Anfrage fehlgeschlagen.");
-  }
-
-  return payload;
 };
 
 const renderStats = () => {

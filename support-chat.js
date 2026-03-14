@@ -1,8 +1,28 @@
 const SUPPORT_CHAT_SESSION_KEY = "holidaily-support-chat-session-v1";
 const LOCAL_ACCOUNT_STORAGE_KEY = "holidaily-local-accounts-v1";
 const LOCAL_ACCOUNT_SESSION_KEY = "holidaily-local-session-v1";
-const SUPPORT_API_BASE = new URL("./api/chat", window.location.href).pathname;
 const CHAT_POLL_INTERVAL_MS = 15000;
+
+const normalizeBaseUrl = (value) => {
+  const normalizedValue = String(value || "").trim();
+
+  if (!normalizedValue) {
+    return "";
+  }
+
+  try {
+    return new URL(normalizedValue, window.location.href).toString().replace(/\/+$/, "");
+  } catch (error) {
+    return "";
+  }
+};
+
+const resolveBackendBaseUrl = () => {
+  const configuredBaseUrl = normalizeBaseUrl(window.HolidailyRuntimeConfig?.backendBaseUrl);
+  return configuredBaseUrl || window.location.origin;
+};
+
+const SUPPORT_API_BASE = `${resolveBackendBaseUrl()}/api/chat`;
 
 const supportElements = {
   form: document.querySelector("#supportChatForm"),
@@ -323,29 +343,39 @@ const setRequestState = (isBusy) => {
 };
 
 const apiRequest = async (path, options = {}) => {
-  const response = await fetch(`${SUPPORT_API_BASE}${path}`, {
-    method: options.method || "GET",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      ...(supportState.conversationToken
-        ? {
-            "X-Conversation-Token": supportState.conversationToken
-          }
-        : {}),
-      ...(options.headers || {})
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
+  try {
+    const response = await fetch(`${SUPPORT_API_BASE}${path}`, {
+      method: options.method || "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(supportState.conversationToken
+          ? {
+              "X-Conversation-Token": supportState.conversationToken
+            }
+          : {}),
+        ...(options.headers || {})
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined
+    });
 
-  const payload = await response.json().catch(() => null);
+    const payload = await response.json().catch(() => null);
 
-  if (!response.ok) {
-    const message = payload?.error?.message || "Support-Anfrage konnte nicht verarbeitet werden.";
-    throw new Error(message);
+    if (!response.ok) {
+      const message = payload?.error?.message || "Support-Anfrage konnte nicht verarbeitet werden.";
+      throw new Error(message);
+    }
+
+    return payload;
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(
+        "Der Support-Server ist nicht erreichbar. Pruefe site-config.js oder ob der Node-Server laeuft."
+      );
+    }
+
+    throw error;
   }
-
-  return payload;
 };
 
 const fetchConversation = async ({ silent = false } = {}) => {
