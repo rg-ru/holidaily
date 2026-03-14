@@ -20,6 +20,7 @@ const resolveBackendBaseUrl = () => {
 const ADMIN_API_BASE = `${resolveBackendBaseUrl()}/api/admin`;
 const ADMIN_POLL_INTERVAL_MS = 8000;
 const adminFallback = window.HolidailySupportFallback || null;
+const forceBrowserFallback = Boolean(adminFallback?.enabled);
 
 const adminElements = {
   loginView: document.querySelector("#adminLoginView"),
@@ -229,6 +230,68 @@ const startPolling = () => {
 };
 
 const apiRequest = async (path, options = {}) => {
+  if (forceBrowserFallback) {
+    setTransportMode("fallback");
+
+    if (path === "/auth/session" && (options.method || "GET") === "GET") {
+      const adminUser = adminFallback.readAdminSession();
+
+      if (!adminUser) {
+        throw new Error("Keine aktive Admin-Sitzung.");
+      }
+
+      return { adminUser };
+    }
+
+    if (path === "/auth/login" && (options.method || "GET") === "POST") {
+      return adminFallback.loginAdmin(options.body || {});
+    }
+
+    if (path === "/auth/logout" && (options.method || "GET") === "POST") {
+      adminFallback.logoutAdmin();
+      return null;
+    }
+
+    if (path.startsWith("/conversations") && !adminFallback.readAdminSession()) {
+      throw new Error("Admin-Anmeldung erforderlich.");
+    }
+
+    if (path.startsWith("/conversations?") || path === "/conversations") {
+      const params = new URLSearchParams(path.split("?")[1] || "");
+      return adminFallback.listAdminConversations({
+        status: params.get("status") || "",
+        search: params.get("search") || ""
+      });
+    }
+
+    const conversationMatch = path.match(/^\/conversations\/([^/?]+)$/);
+    const messageMatch = path.match(/^\/conversations\/([^/]+)\/messages$/);
+    const statusMatch = path.match(/^\/conversations\/([^/]+)\/status$/);
+
+    if (conversationMatch && (options.method || "GET") === "GET") {
+      return adminFallback.getAdminConversation(conversationMatch[1]);
+    }
+
+    if (conversationMatch && (options.method || "GET") === "DELETE") {
+      return adminFallback.deleteConversation(conversationMatch[1]);
+    }
+
+    if (messageMatch && (options.method || "GET") === "POST") {
+      return adminFallback.addAdminMessage({
+        conversationId: messageMatch[1],
+        adminUser: adminFallback.readAdminSession(),
+        message: options.body?.message
+      });
+    }
+
+    if (statusMatch && (options.method || "GET") === "PATCH") {
+      return adminFallback.updateConversationStatus({
+        conversationId: statusMatch[1],
+        status: options.body?.status
+      });
+    }
+  }
+
   try {
     // All admin actions go through the secured REST API and rely on the HttpOnly admin session cookie.
     const response = await fetch(`${ADMIN_API_BASE}${path}`, {

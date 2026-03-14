@@ -3,6 +3,7 @@ const LOCAL_ACCOUNT_STORAGE_KEY = "holidaily-local-accounts-v1";
 const LOCAL_ACCOUNT_SESSION_KEY = "holidaily-local-session-v1";
 const CHAT_POLL_INTERVAL_MS = 15000;
 const supportFallback = window.HolidailySupportFallback || null;
+const forceBrowserFallback = Boolean(supportFallback?.enabled);
 
 const normalizeBaseUrl = (value) => {
   const normalizedValue = String(value || "").trim();
@@ -349,6 +350,32 @@ const setRequestState = (isBusy) => {
 };
 
 const apiRequest = async (path, options = {}) => {
+  if (forceBrowserFallback) {
+    setTransportMode("fallback");
+
+    if (path === "/conversations" && (options.method || "GET") === "POST") {
+      return supportFallback.createConversation(options.body || {});
+    }
+
+    const conversationMatch = path.match(/^\/([^/]+)$/);
+    const messageMatch = path.match(/^\/([^/]+)\/messages$/);
+
+    if (conversationMatch && (options.method || "GET") === "GET") {
+      return supportFallback.getPublicConversation({
+        conversationId: conversationMatch[1],
+        conversationToken: supportState.conversationToken
+      });
+    }
+
+    if (messageMatch && (options.method || "GET") === "POST") {
+      return supportFallback.addPublicMessage({
+        conversationId: messageMatch[1],
+        conversationToken: supportState.conversationToken,
+        ...(options.body || {})
+      });
+    }
+  }
+
   try {
     const response = await fetch(`${SUPPORT_API_BASE}${path}`, {
       method: options.method || "GET",
