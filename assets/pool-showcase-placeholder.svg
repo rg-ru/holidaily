@@ -1,0 +1,33 @@
+<svg width="960" height="640" viewBox="0 0 960 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="640" rx="56" fill="url(#sky)"/>
+  <rect y="348" width="960" height="292" fill="url(#deck)"/>
+  <path d="M150 280C150 238.026 184.026 204 226 204H734C775.974 204 810 238.026 810 280V470C810 511.974 775.974 546 734 546H226C184.026 546 150 511.974 150 470V280Z" fill="url(#pool)"/>
+  <path d="M178 304C178 277.49 199.49 256 226 256H734C760.51 256 782 277.49 782 304V442C782 468.51 760.51 490 734 490H226C199.49 490 178 468.51 178 442V304Z" fill="url(#water)"/>
+  <path d="M210 514H750" stroke="#EAF8FF" stroke-width="18" stroke-linecap="round" opacity="0.84"/>
+  <path d="M240 166C276.761 137.484 327.082 129.082 373 143C431.676 160.792 478.664 226.597 540 228C589.938 229.142 611.803 186.641 654 168C711.463 142.615 781.768 157.615 830 206" stroke="white" stroke-width="16" stroke-linecap="round" opacity="0.66"/>
+  <circle cx="194" cy="158" r="52" fill="#FFD36E"/>
+  <path d="M296 320C327.397 307.304 359.384 301 392 301C461.737 301 506.266 336.731 575.5 336.731C623.018 336.731 664.518 320.731 700 288" stroke="#BFF2FF" stroke-width="10" stroke-linecap="round" opacity="0.8"/>
+  <path d="M264 396C304.602 378.84 346.757 370 390 370C470.528 370 547.086 400.423 621 400.423C654.903 400.423 689.736 394.016 726 380" stroke="#D7F8FF" stroke-width="12" stroke-linecap="round" opacity="0.72"/>
+  <path d="M194 474L252 430" stroke="#FDF7EA" stroke-width="12" stroke-linecap="round"/>
+  <path d="M222 498L280 454" stroke="#FDF7EA" stroke-width="12" stroke-linecap="round" opacity="0.82"/>
+  <defs>
+    <linearGradient id="sky" x1="84" y1="36" x2="768" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D8ACF"/>
+      <stop offset="0.55" stop-color="#55C5F0"/>
+      <stop offset="1" stop-color="#EAF8FF"/>
+    </linearGradient>
+    <linearGradient id="deck" x1="480" y1="348" x2="480" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F9E3A5"/>
+      <stop offset="1" stop-color="#F1C96D"/>
+    </linearGradient>
+    <linearGradient id="pool" x1="152" y1="206" x2="808" y2="544" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B3C61"/>
+      <stop offset="1" stop-color="#0C567F"/>
+    </linearGradient>
+    <linearGradient id="water" x1="196" y1="262" x2="756" y2="482" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A6F0FF"/>
+      <stop offset="0.52" stop-color="#5ECFEF"/>
+      <stop offset="1" stop-color="#1AA6D7"/>
+    </linearGradient>
+  </defs>
+</svg>

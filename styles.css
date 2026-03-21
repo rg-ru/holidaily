@@ -793,6 +793,25 @@ h3 {
   background: radial-gradient(circle, rgba(246, 179, 28, 0.22), rgba(246, 179, 28, 0));
 }
 
+.hero-card-media {
+  position: relative;
+  overflow: hidden;
+  margin: -4px -4px 18px;
+  border-radius: 24px;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(145deg, rgba(10, 35, 59, 0.12), rgba(39, 184, 238, 0.24));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+    0 18px 30px rgba(7, 30, 55, 0.12);
+}
+
+.hero-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .hero-card-large h2 {
   max-width: 8.5ch;
   font-size: clamp(1.9rem, 3vw, 2.65rem);
@@ -1972,6 +1991,262 @@ h3 {
   font-size: 0.92rem;
 }
 
+body.admin-auth-open {
+  overflow: hidden;
+}
+
+.admin-auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.admin-auth-overlay[hidden] {
+  display: none;
+}
+
+.admin-auth-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(39, 184, 238, 0.18), transparent 28%),
+    rgba(7, 24, 39, 0.58);
+  backdrop-filter: blur(12px);
+}
+
+.admin-auth-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 460px);
+  display: grid;
+  gap: 18px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: 32px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(239, 247, 253, 0.94));
+  box-shadow: 0 34px 80px rgba(7, 30, 55, 0.28);
+}
+
+.admin-auth-close {
+  justify-self: end;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--muted-strong);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-auth-close:hover {
+  color: var(--navy);
+}
+
+.admin-section {
+  position: relative;
+  overflow: hidden;
+  padding-inline: 36px;
+  border: 1px solid rgba(120, 167, 198, 0.22);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(244, 250, 245, 0.98));
+  box-shadow: var(--shadow-soft);
+}
+
+.admin-section::before {
+  content: "";
+  position: absolute;
+  top: -110px;
+  left: -34px;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(39, 184, 238, 0.16), rgba(39, 184, 238, 0));
+  pointer-events: none;
+}
+
+.admin-section::after {
+  content: "";
+  position: absolute;
+  right: -70px;
+  bottom: -100px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(246, 179, 28, 0.14), rgba(246, 179, 28, 0));
+  pointer-events: none;
+}
+
+.admin-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 24px;
+}
+
+.admin-intro-card {
+  background:
+    radial-gradient(circle at var(--glow-x) var(--glow-y), rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.26)) 0, transparent 42%),
+    linear-gradient(145deg, rgba(16, 40, 31, 0.98), rgba(19, 120, 81, 0.92));
+}
+
+.admin-card {
+  gap: 22px;
+}
+
+.admin-login-form.is-logged-in .account-field {
+  display: none;
+}
+
+.admin-editor {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-preview-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-preview-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border: 1px solid rgba(120, 167, 198, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--blue-dark);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.admin-editor-list {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-image-editor-list {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.admin-editor-item {
+  --glow-alpha: 0;
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-rgb: 89 210 229;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(120, 167, 198, 0.18);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at var(--glow-x) var(--glow-y), rgb(var(--glow-rgb) / calc(var(--glow-alpha) * 0.22)) 0, transparent 42%),
+    rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.admin-editor-item-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-editor-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-editor-label {
+  color: var(--navy);
+  font-size: 1rem;
+}
+
+.admin-editor-meta {
+  color: var(--blue-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-editor-field {
+  gap: 10px;
+}
+
+.admin-editor-textarea {
+  min-height: 108px;
+}
+
+.admin-image-preview {
+  overflow: hidden;
+  border-radius: 18px;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(145deg, rgba(10, 35, 59, 0.08), rgba(39, 184, 238, 0.18));
+}
+
+.admin-image-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-image-reset {
+  justify-self: start;
+}
+
+.admin-editor-actions {
+  margin-top: 2px;
+}
+
+.admin-helper-note {
+  margin-top: 4px;
+}
+
+.admin-inline-block {
+  gap: 12px;
+}
+
+.admin-inline-note {
+  line-height: 1.7;
+}
+
+body.admin-active [data-admin-key] {
+  position: relative;
+  outline: 2px dashed rgba(0, 127, 212, 0.46);
+  outline-offset: 6px;
+  scroll-margin-top: 120px;
+  transition: outline-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+body.admin-active [data-admin-key]:hover {
+  outline-color: rgba(246, 179, 28, 0.92);
+}
+
+body.admin-active [data-admin-key]:not([data-admin-type="image"]) {
+  cursor: text;
+}
+
+body.admin-active [data-admin-key]:not([data-admin-type="image"]):focus {
+  outline-color: rgba(246, 179, 28, 0.92);
+  background: rgba(255, 243, 204, 0.62);
+  box-shadow: 0 0 0 8px rgba(246, 179, 28, 0.14);
+}
+
+body.admin-active [data-admin-type="image"] {
+  cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(246, 179, 28, 0.18);
+}
+
 @keyframes backgroundDrift {
   from {
     transform: translate3d(0, 0, 0) scale(1);
@@ -2071,6 +2346,7 @@ h3 {
 
   .hero,
   .account-shell,
+  .admin-shell,
   .spotlight-panel,
   .cta-panel,
   .feature-grid,
@@ -2141,7 +2417,8 @@ h3 {
   .split-section,
   .stories-section,
   .cta-section,
-  .account-section {
+  .account-section,
+  .admin-section {
     padding-inline: 24px;
   }
 
@@ -2165,7 +2442,8 @@ h3 {
     max-width: 280px;
   }
 
-  .account-status-row {
+  .account-status-row,
+  .admin-status-row {
     align-items: start;
     flex-direction: column;
   }
@@ -2219,7 +2497,8 @@ h3 {
   .split-section,
   .stories-section,
   .cta-section,
-  .account-section {
+  .account-section,
+  .admin-section {
     padding-inline: 18px;
   }
 
@@ -2324,7 +2603,9 @@ h3 {
   .contact-card,
   .hero-card,
   .account-intro-card,
-  .account-card {
+  .account-card,
+  .admin-intro-card,
+  .admin-card {
     padding: 22px;
     border-radius: 24px;
   }
@@ -2353,6 +2634,14 @@ h3 {
 
   .account-mode-toggle {
     width: 100%;
+  }
+
+  .admin-preview-chips {
+    display: grid;
+  }
+
+  .admin-image-editor-list {
+    grid-template-columns: 1fr;
   }
 
   .saved-model-chip,
