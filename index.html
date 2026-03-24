@@ -338,7 +338,10 @@
               </div>
               <div class="contact-method">
                 <span class="contact-method-label">WhatsApp</span>
-                <a class="contact-method-value" href="https://wa.me/491632178170">+49 163 2178170</a>
+                <button class="contact-method-button contact-chat-launch" type="button" data-chat-launch>
+                  Website-Chat
+                </button>
+                <span class="contact-method-hint">Direkter Chat auf der Website.</span>
               </div>
               <div class="contact-method">
                 <span class="contact-method-label">Adresse</span>
@@ -365,9 +368,12 @@
               </div>
             </div>
             <div class="contact-actions">
-              <a class="button button-primary" href="mailto:Info@holidaily-pools.de">E-Mail senden</a>
+              <button class="button button-primary contact-chat-launch" type="button" data-chat-launch>
+                Website-Chat
+              </button>
+              <a class="button button-secondary" href="mailto:Info@holidaily-pools.de">E-Mail senden</a>
             </div>
-            <p class="contact-note">Antworten kommen direkt und ohne Umweg über ein Formular.</p>
+            <p class="contact-note">Antworten erscheinen direkt im Website-Chat oder per WhatsApp.</p>
           </article>
         </div>
       </section>
@@ -568,6 +574,48 @@
                 <div class="admin-editor-list admin-image-editor-list" id="adminImageEditorList"></div>
               </section>
 
+              <section class="account-storage-block admin-editor-block admin-chat-block">
+                <div class="account-storage-heading">
+                  <h4>Website-Chat testen</h4>
+                  <div class="admin-chat-chip-group" aria-label="Chat Uebersicht">
+                    <span class="admin-preview-chip" id="adminChatThreadCount">0 Chats</span>
+                    <span class="admin-preview-chip" id="adminChatUnreadCount">0 offene Chats</span>
+                  </div>
+                </div>
+                <p class="account-storage-note admin-inline-note">
+                  Besucher oeffnen den Chat ueber den Chat-Button auf der Website. Antworten werden direkt im
+                  Website-Chat angezeigt.
+                </p>
+                <div class="admin-chat-shell">
+                  <div class="admin-chat-thread-list" id="adminChatThreadList"></div>
+                  <div class="admin-chat-detail">
+                    <div class="admin-chat-detail-header">
+                      <p class="account-kicker">Aktiver Chat</p>
+                      <h5 id="adminChatDetailTitle">Noch kein Chat gestartet</h5>
+                      <p class="admin-chat-detail-meta" id="adminChatDetailMeta">
+                        Sobald ein Besucher schreibt, erscheint der Verlauf hier.
+                      </p>
+                    </div>
+                    <div class="chat-message-list admin-chat-message-list" id="adminChatMessageList">
+                      <p class="account-empty-state">Noch keine Chat-Nachrichten vorhanden.</p>
+                    </div>
+                    <form class="admin-chat-reply-form" id="adminChatReplyForm" hidden>
+                      <label class="account-field">
+                        <span>Antwort an den Besucher</span>
+                        <textarea
+                          id="adminChatReplyInput"
+                          placeholder="Zum Beispiel: Danke, ich schaue mir dein Pool-Projekt an und melde mich gleich."
+                          minlength="2"
+                        ></textarea>
+                      </label>
+                      <div class="account-form-actions">
+                        <button class="button button-primary" type="submit">Antwort senden</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </section>
+
               <div class="account-form-actions admin-editor-actions">
                 <button class="button button-primary" type="button" id="adminSaveButton">Aenderungen speichern</button>
                 <button class="button button-secondary" type="button" id="adminResetButton">Original wiederherstellen</button>
@@ -631,16 +679,90 @@
       <p class="account-feedback" id="adminFeedback" role="status" aria-live="polite" hidden></p>
     </section>
   </div>
+  <button
+    class="chat-float"
+    id="testChatToggleButton"
+    data-chat-launch
+    type="button"
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    aria-controls="testChatPanel"
+    aria-label="Website-Chat oeffnen"
+  >
+    <span class="chat-float-icon" aria-hidden="true">
+      <svg viewBox="0 0 48 48" focusable="false">
+        <path
+          d="M14.4 34.1 9.4 38l1.6-6.6A15.2 15.2 0 1 1 24 39.2c-3.3 0-6.4-1-9.6-2.7Z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <circle cx="17.6" cy="23.8" r="2.2" fill="currentColor" />
+        <circle cx="24" cy="23.8" r="2.2" fill="currentColor" />
+        <circle cx="30.4" cy="23.8" r="2.2" fill="currentColor" />
+      </svg>
+    </span>
+    <span class="chat-float-badge" id="chatUnreadBadge" hidden>0</span>
+    <span class="sr-only">Website-Chat oeffnen</span>
+  </button>
   <a
     class="whatsapp-float"
     href="https://wa.me/491632178170"
     target="_blank"
     rel="noopener noreferrer"
-    aria-label="WhatsApp Kontakt öffnen"
+    aria-label="WhatsApp oeffnen"
   >
     <img src="assets/whatsapp-icon.png" alt="" width="64" height="64">
-    <span class="sr-only">WhatsApp Kontakt öffnen</span>
+    <span class="sr-only">WhatsApp oeffnen</span>
   </a>
+  <div class="test-chat-backdrop" id="testChatBackdrop" hidden></div>
+  <section
+    class="test-chat-panel"
+    id="testChatPanel"
+    hidden
+    aria-hidden="true"
+    aria-labelledby="testChatTitle"
+  >
+    <div class="test-chat-panel-header">
+      <div>
+        <p class="eyebrow">Website-Chat</p>
+        <h2 id="testChatTitle">Chat direkt auf der Website</h2>
+      </div>
+      <button class="test-chat-close" type="button" id="testChatCloseButton" aria-label="Chat schliessen">
+        Schliessen
+      </button>
+    </div>
+    <p class="test-chat-note">
+      Schreibe uns direkt hier auf der Website. Alternativ bleibt WhatsApp weiter unten erreichbar.
+    </p>
+    <p class="test-chat-status" id="testChatStatus">
+      Schreibe hier deine Nachricht. Antworten erscheinen direkt im Website-Chat.
+    </p>
+    <div class="chat-message-list test-chat-message-list" id="testChatMessages">
+      <p class="account-empty-state">Noch keine Nachrichten. Starte den Chat mit deiner ersten Frage.</p>
+    </div>
+    <form class="test-chat-form" id="testChatForm">
+      <label class="account-field">
+        <span>Name</span>
+        <input type="text" id="testChatNameInput" maxlength="40" placeholder="Dein Name">
+      </label>
+      <label class="account-field">
+        <span>Nachricht</span>
+        <textarea
+          id="testChatMessageInput"
+          placeholder="Zum Beispiel: Ich interessiere mich fuer einen Familienpool mit Abdeckung."
+          minlength="2"
+          required
+        ></textarea>
+      </label>
+      <div class="account-form-actions">
+        <button class="button button-primary" type="submit">Nachricht senden</button>
+      </div>
+      <p class="account-feedback" id="testChatFeedback" role="status" aria-live="polite" hidden></p>
+    </form>
+  </section>
   <script>
     const motionElements = document.querySelectorAll("[data-reveal]");
     const header = document.querySelector(".site-header");
@@ -697,6 +819,26 @@
     const adminResetButton = document.querySelector("#adminResetButton");
     const adminTextCount = document.querySelector("#adminTextCount");
     const adminImageCount = document.querySelector("#adminImageCount");
+    const chatToggleButton = document.querySelector("#testChatToggleButton");
+    const chatLaunchButtons = Array.from(document.querySelectorAll("[data-chat-launch]"));
+    const chatPanel = document.querySelector("#testChatPanel");
+    const chatBackdrop = document.querySelector("#testChatBackdrop");
+    const chatCloseButton = document.querySelector("#testChatCloseButton");
+    const chatStatus = document.querySelector("#testChatStatus");
+    const chatMessages = document.querySelector("#testChatMessages");
+    const chatForm = document.querySelector("#testChatForm");
+    const chatNameInput = document.querySelector("#testChatNameInput");
+    const chatMessageInput = document.querySelector("#testChatMessageInput");
+    const chatFeedback = document.querySelector("#testChatFeedback");
+    const chatUnreadBadge = document.querySelector("#chatUnreadBadge");
+    const adminChatThreadCount = document.querySelector("#adminChatThreadCount");
+    const adminChatUnreadCount = document.querySelector("#adminChatUnreadCount");
+    const adminChatThreadList = document.querySelector("#adminChatThreadList");
+    const adminChatDetailTitle = document.querySelector("#adminChatDetailTitle");
+    const adminChatDetailMeta = document.querySelector("#adminChatDetailMeta");
+    const adminChatMessageList = document.querySelector("#adminChatMessageList");
+    const adminChatReplyForm = document.querySelector("#adminChatReplyForm");
+    const adminChatReplyInput = document.querySelector("#adminChatReplyInput");
     const adminEditableElements = Array.from(document.querySelectorAll("[data-admin-key]"));
     const adminTextDefinitions = adminEditableElements
       .filter((element) => (element.dataset.adminType || "text") === "text")
@@ -725,6 +867,8 @@
     const SESSION_STORAGE_KEY = "holidaily-session-v1";
     const ADMIN_CONTENT_STORAGE_KEY = "holidaily-admin-content-v1";
     const ADMIN_SESSION_STORAGE_KEY = "holidaily-admin-session-v1";
+    const CHAT_STORAGE_KEY = "holidaily-test-chat-v1";
+    const CHAT_VISITOR_THREAD_STORAGE_KEY = "holidaily-test-chat-thread-v1";
     const ADMIN_CREDENTIALS = Object.freeze({
       name: "Daniil",
       email: "daniil.siemens@icloud.com",
@@ -734,6 +878,7 @@
     let adminDraftContent = null;
     let adminSecretTapCount = 0;
     let adminSecretTapTimer = 0;
+    let activeAdminChatThreadId = "";
 
     const revealAll = () => {
       motionElements.forEach((element) => element.classList.add("is-visible"));
@@ -988,6 +1133,14 @@
       return `note-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     };
 
+    const createChatEntityId = () => {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+
+      return `chat-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    };
+
     const setFeedback = (message, type = "") => {
       if (!accountFeedback) {
         return;
@@ -1001,6 +1154,371 @@
         accountFeedback.classList.add(type === "error" ? "is-error" : "is-success");
       }
     };
+
+    const sanitizeChatName = (value) => value.replace(/\s+/g, " ").trim().slice(0, 40);
+
+    const sanitizeChatMessage = (value) =>
+      value
+        .replace(/\u00A0/g, " ")
+        .replace(/\r\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim()
+        .slice(0, 1200);
+
+    const getTimestamp = (value) => {
+      const timestamp = Date.parse(value);
+      return Number.isNaN(timestamp) ? 0 : timestamp;
+    };
+
+    const normalizeChatMessage = (message = {}) => {
+      const text = typeof message.text === "string" ? sanitizeChatMessage(message.text) : "";
+
+      if (!text) {
+        return null;
+      }
+
+      return {
+        id: typeof message.id === "string" && message.id ? message.id : createChatEntityId(),
+        author: message.author === "admin" ? "admin" : "visitor",
+        text,
+        createdAt:
+          typeof message.createdAt === "string" && getTimestamp(message.createdAt)
+            ? message.createdAt
+            : new Date().toISOString(),
+        readByAdmin: Boolean(message.readByAdmin) || message.author === "admin",
+        readByVisitor: Boolean(message.readByVisitor) || message.author === "visitor"
+      };
+    };
+
+    const normalizeChatThread = (threadId, thread = {}) => {
+      const messages = Array.isArray(thread.messages)
+        ? thread.messages
+            .map((message) => normalizeChatMessage(message))
+            .filter((message) => message)
+            .sort((left, right) => getTimestamp(left.createdAt) - getTimestamp(right.createdAt))
+        : [];
+      const createdAt =
+        typeof thread.createdAt === "string" && getTimestamp(thread.createdAt)
+          ? thread.createdAt
+          : messages[0]?.createdAt || new Date().toISOString();
+      const updatedAt =
+        typeof thread.updatedAt === "string" && getTimestamp(thread.updatedAt)
+          ? thread.updatedAt
+          : messages[messages.length - 1]?.createdAt || createdAt;
+
+      return {
+        id: threadId,
+        visitorName: sanitizeChatName(typeof thread.visitorName === "string" ? thread.visitorName : "") || "Besucher",
+        createdAt,
+        updatedAt,
+        messages
+      };
+    };
+
+    const loadChatState = () => {
+      const stored = readStoredJson(CHAT_STORAGE_KEY, {});
+      const sourceThreads = stored?.threads && typeof stored.threads === "object" ? stored.threads : {};
+
+      return {
+        threads: Object.fromEntries(
+          Object.keys(sourceThreads).map((threadId) => [threadId, normalizeChatThread(threadId, sourceThreads[threadId])])
+        )
+      };
+    };
+
+    const saveChatState = (state) => {
+      writeStoredJson(CHAT_STORAGE_KEY, state);
+    };
+
+    const getSortedChatThreads = (state) =>
+      Object.values(state.threads).sort((left, right) => getTimestamp(right.updatedAt) - getTimestamp(left.updatedAt));
+
+    const getVisitorThreadId = () => window.sessionStorage.getItem(CHAT_VISITOR_THREAD_STORAGE_KEY) || "";
+
+    const setVisitorThreadId = (threadId) => {
+      if (!threadId) {
+        window.sessionStorage.removeItem(CHAT_VISITOR_THREAD_STORAGE_KEY);
+        return;
+      }
+
+      window.sessionStorage.setItem(CHAT_VISITOR_THREAD_STORAGE_KEY, threadId);
+    };
+
+    const getVisitorThread = (state) => {
+      const threadId = getVisitorThreadId();
+      return threadId && state.threads[threadId] ? state.threads[threadId] : null;
+    };
+
+    const countUnreadMessages = (thread, viewer) =>
+      (thread?.messages || []).filter((message) =>
+        viewer === "admin"
+          ? message.author === "visitor" && !message.readByAdmin
+          : message.author === "admin" && !message.readByVisitor
+      ).length;
+
+    const countOpenAdminThreads = (threads) =>
+      threads.filter((thread) => countUnreadMessages(thread, "admin") > 0).length;
+
+    const getChatThreadPreview = (thread) => {
+      const lastMessage = thread?.messages?.[thread.messages.length - 1];
+
+      if (!lastMessage) {
+        return "Noch keine Nachrichten.";
+      }
+
+      const preview = `${lastMessage.author === "admin" ? "Admin" : thread.visitorName}: ${lastMessage.text}`;
+      return preview.length > 92 ? `${preview.slice(0, 89)}...` : preview;
+    };
+
+    const markThreadAsRead = (thread, viewer) => {
+      if (!thread) {
+        return false;
+      }
+
+      let didChange = false;
+
+      thread.messages.forEach((message) => {
+        if (viewer === "admin" && message.author === "visitor" && !message.readByAdmin) {
+          message.readByAdmin = true;
+          didChange = true;
+        }
+
+        if (viewer === "visitor" && message.author === "admin" && !message.readByVisitor) {
+          message.readByVisitor = true;
+          didChange = true;
+        }
+      });
+
+      return didChange;
+    };
+
+    const setChatFeedback = (message, type = "") => {
+      if (!chatFeedback) {
+        return;
+      }
+
+      chatFeedback.textContent = message;
+      chatFeedback.hidden = !message;
+      chatFeedback.classList.remove("is-error", "is-success");
+
+      if (type) {
+        chatFeedback.classList.add(type === "error" ? "is-error" : "is-success");
+      }
+    };
+
+    const syncChatLaunchState = (isOpen) => {
+      chatLaunchButtons.forEach((button) => {
+        button.setAttribute("aria-expanded", String(isOpen));
+      });
+
+      if (chatToggleButton) {
+        chatToggleButton.classList.toggle("is-open", isOpen);
+      }
+    };
+
+    const openChatPanel = () => {
+      if (!chatPanel || !chatBackdrop) {
+        return;
+      }
+
+      chatPanel.hidden = false;
+      chatPanel.setAttribute("aria-hidden", "false");
+      chatBackdrop.hidden = false;
+      document.body.classList.add("chat-open");
+      syncChatLaunchState(true);
+      renderChatUi();
+
+      window.setTimeout(() => chatMessageInput?.focus(), 40);
+    };
+
+    const closeChatPanel = () => {
+      if (!chatPanel || !chatBackdrop) {
+        return;
+      }
+
+      chatPanel.hidden = true;
+      chatPanel.setAttribute("aria-hidden", "true");
+      chatBackdrop.hidden = true;
+      document.body.classList.remove("chat-open");
+      syncChatLaunchState(false);
+    };
+
+    const renderChatMessages = (container, thread, emptyMessage) => {
+      if (!container) {
+        return;
+      }
+
+      container.innerHTML = "";
+
+      if (!thread || !thread.messages.length) {
+        container.appendChild(createNode("p", "account-empty-state", emptyMessage));
+        return;
+      }
+
+      thread.messages.forEach((message) => {
+        const item = createNode("article", `chat-message is-${message.author}`);
+        const meta = createNode("div", "chat-message-meta");
+        const author = createNode("span", "", message.author === "admin" ? "Admin" : thread.visitorName);
+        const time = createNode("time", "", formatDate(message.createdAt));
+        const text = createNode("p", "chat-message-text", message.text);
+
+        time.dateTime = message.createdAt;
+        meta.append(author, time);
+        item.append(meta, text);
+        container.appendChild(item);
+      });
+    };
+
+    function renderPublicChat(state) {
+      if (!chatMessages) {
+        return false;
+      }
+
+      const currentUser = getCurrentUser();
+      const visitorThread = getVisitorThread(state);
+      let didChange = false;
+
+      if (!chatPanel?.hidden && visitorThread) {
+        didChange = markThreadAsRead(visitorThread, "visitor") || didChange;
+      }
+
+      if (chatNameInput) {
+        const fallbackName = currentUser?.name || currentUser?.email?.split("@")[0] || "";
+        const nextName = visitorThread?.visitorName || fallbackName;
+
+        if ((!chatNameInput.value || visitorThread) && nextName) {
+          chatNameInput.value = nextName;
+        }
+      }
+
+      const unreadCount = countUnreadMessages(visitorThread, "visitor");
+
+      if (chatUnreadBadge) {
+        chatUnreadBadge.hidden = unreadCount === 0;
+        chatUnreadBadge.textContent = unreadCount > 9 ? "9+" : String(unreadCount);
+      }
+
+      if (chatStatus) {
+        if (visitorThread?.messages.length) {
+          chatStatus.textContent = unreadCount
+            ? `${formatCount(unreadCount, "neue Antwort", "neue Antworten")} im Website-Chat. Letzte Aktivitaet ${formatDate(visitorThread.updatedAt)}.`
+            : `Letzte Aktivitaet ${formatDate(visitorThread.updatedAt)}. Antworten erscheinen direkt im Website-Chat.`;
+        } else {
+          chatStatus.textContent = "Schreibe hier deine Nachricht. Antworten erscheinen direkt im Website-Chat.";
+        }
+      }
+
+      renderChatMessages(chatMessages, visitorThread, "Noch keine Nachrichten. Starte den Chat mit deiner ersten Frage.");
+      return didChange;
+    }
+
+    function renderAdminChat(state) {
+      if (!adminChatThreadList || !adminChatMessageList) {
+        return false;
+      }
+
+      const threads = getSortedChatThreads(state);
+
+      if (!threads.some((thread) => thread.id === activeAdminChatThreadId)) {
+        activeAdminChatThreadId = threads[0]?.id || "";
+      }
+
+      const activeThread = activeAdminChatThreadId ? state.threads[activeAdminChatThreadId] : null;
+      let didChange = false;
+
+      if (isAdminLoggedIn() && activeThread) {
+        didChange = markThreadAsRead(activeThread, "admin") || didChange;
+      }
+
+      if (adminChatThreadCount) {
+        adminChatThreadCount.textContent = formatCount(threads.length, "Chat", "Chats");
+      }
+
+      if (adminChatUnreadCount) {
+        adminChatUnreadCount.textContent = formatCount(
+          countOpenAdminThreads(threads),
+          "offener Chat",
+          "offene Chats"
+        );
+      }
+
+      adminChatThreadList.innerHTML = "";
+
+      if (!threads.length) {
+        adminChatThreadList.appendChild(createNode("p", "account-empty-state", "Noch kein Chat gestartet."));
+      } else {
+        threads.forEach((thread) => {
+          const button = createNode("button", "admin-chat-thread");
+          const top = createNode("div", "admin-chat-thread-top");
+          const name = createNode("strong", "", thread.visitorName);
+          const meta = createNode("span", "admin-chat-thread-meta", formatDate(thread.updatedAt));
+          const preview = createNode("p", "admin-chat-thread-preview", getChatThreadPreview(thread));
+          const unreadCount = countUnreadMessages(thread, "admin");
+
+          button.type = "button";
+          button.dataset.chatThreadId = thread.id;
+          button.classList.toggle("is-active", thread.id === activeAdminChatThreadId);
+
+          top.append(name, meta);
+          button.append(top, preview);
+
+          if (unreadCount) {
+            button.appendChild(
+              createNode("span", "admin-chat-thread-badge", unreadCount > 9 ? "9+" : String(unreadCount))
+            );
+          }
+
+          adminChatThreadList.appendChild(button);
+        });
+      }
+
+      if (!activeThread) {
+        if (adminChatDetailTitle) {
+          adminChatDetailTitle.textContent = "Noch kein Chat gestartet";
+        }
+
+        if (adminChatDetailMeta) {
+          adminChatDetailMeta.textContent = "Sobald ein Besucher schreibt, erscheint der Verlauf hier.";
+        }
+
+        renderChatMessages(adminChatMessageList, null, "Noch keine Chat-Nachrichten vorhanden.");
+
+        if (adminChatReplyForm) {
+          adminChatReplyForm.hidden = true;
+        }
+
+        return didChange;
+      }
+
+      if (adminChatDetailTitle) {
+        adminChatDetailTitle.textContent = activeThread.visitorName;
+      }
+
+      if (adminChatDetailMeta) {
+        adminChatDetailMeta.textContent = `Gestartet ${formatDate(activeThread.createdAt)}. Letzte Aktivitaet ${formatDate(activeThread.updatedAt)}.`;
+      }
+
+      renderChatMessages(adminChatMessageList, activeThread, "Noch keine Chat-Nachrichten vorhanden.");
+
+      if (adminChatReplyForm) {
+        adminChatReplyForm.hidden = !isAdminLoggedIn();
+      }
+
+      return didChange;
+    }
+
+    function renderChatUi() {
+      const chatState = loadChatState();
+      const publicChanged = renderPublicChat(chatState);
+      const adminChanged = renderAdminChat(chatState);
+      const didChange = publicChanged || adminChanged;
+
+      if (didChange) {
+        saveChatState(chatState);
+        renderPublicChat(chatState);
+        renderAdminChat(chatState);
+      }
+    }
 
     const cloneAdminContent = (content) => ({
       texts: { ...content.texts },
@@ -1319,6 +1837,8 @@
       } else {
         adminDraftContent = null;
       }
+
+      renderChatUi();
     };
 
     const finalizeInlineAdminTexts = () => {
@@ -1532,6 +2052,7 @@
       renderSavedModels(currentUser);
       renderNotes(currentUser);
       updateModelButtons(currentUser);
+      renderChatUi();
     };
 
     const requireLogin = (message) => {
@@ -1866,12 +2387,43 @@
       });
     }
 
+    chatLaunchButtons.forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        if (button === chatToggleButton && !chatPanel?.hidden) {
+          closeChatPanel();
+          return;
+        }
+
+        openChatPanel();
+      });
+    });
+
+    if (chatCloseButton) {
+      chatCloseButton.addEventListener("click", () => {
+        closeChatPanel();
+      });
+    }
+
+    if (chatBackdrop) {
+      chatBackdrop.addEventListener("click", () => {
+        closeChatPanel();
+      });
+    }
+
     window.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape" || adminAuthOverlay?.hidden) {
+      if (event.key !== "Escape") {
         return;
       }
 
-      closeAdminAuthOverlay();
+      if (!chatPanel?.hidden) {
+        closeChatPanel();
+      }
+
+      if (!adminAuthOverlay?.hidden) {
+        closeAdminAuthOverlay();
+      }
     });
 
     if (adminLoginForm) {
@@ -1909,6 +2461,129 @@
 
         setAdminFeedback("Admin-Modus beendet.", "success");
         renderAdminState();
+      });
+    }
+
+    if (chatForm) {
+      chatForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const currentUser = getCurrentUser();
+        const message = sanitizeChatMessage(chatMessageInput?.value || "");
+        const fallbackName = currentUser?.name || currentUser?.email?.split("@")[0] || "Besucher";
+        const visitorName = sanitizeChatName(chatNameInput?.value || "") || fallbackName;
+
+        if (message.length < 2) {
+          setChatFeedback("Bitte schreibe eine etwas konkretere Nachricht.", "error");
+          return;
+        }
+
+        const chatState = loadChatState();
+        const sentAt = new Date().toISOString();
+        let threadId = getVisitorThreadId();
+        let thread = threadId ? chatState.threads[threadId] : null;
+
+        if (!thread) {
+          threadId = createChatEntityId();
+          setVisitorThreadId(threadId);
+          thread = {
+            id: threadId,
+            visitorName: visitorName || "Besucher",
+            createdAt: sentAt,
+            updatedAt: sentAt,
+            messages: []
+          };
+          chatState.threads[threadId] = thread;
+        }
+
+        thread.visitorName = visitorName || thread.visitorName || "Besucher";
+        thread.updatedAt = sentAt;
+        thread.messages.push({
+          id: createChatEntityId(),
+          author: "visitor",
+          text: message,
+          createdAt: sentAt,
+          readByAdmin: false,
+          readByVisitor: true
+        });
+
+        saveChatState(chatState);
+        chatForm.reset();
+
+        if (chatNameInput) {
+          chatNameInput.value = thread.visitorName;
+        }
+
+        setChatFeedback("Nachricht gesendet. Sie erscheint jetzt direkt im Admin-Chat.", "success");
+        renderChatUi();
+        chatMessageInput?.focus();
+      });
+    }
+
+    if (adminChatThreadList) {
+      adminChatThreadList.addEventListener("click", (event) => {
+        const threadButton = event.target.closest("[data-chat-thread-id]");
+
+        if (!threadButton) {
+          return;
+        }
+
+        activeAdminChatThreadId = threadButton.dataset.chatThreadId || "";
+
+        if (adminChatReplyInput) {
+          adminChatReplyInput.value = "";
+        }
+
+        renderChatUi();
+      });
+    }
+
+    if (adminChatReplyForm) {
+      adminChatReplyForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const reply = sanitizeChatMessage(adminChatReplyInput?.value || "");
+
+        if (!isAdminLoggedIn()) {
+          setAdminFeedback("Bitte zuerst den Admin-Modus freischalten.", "error");
+          return;
+        }
+
+        if (!activeAdminChatThreadId) {
+          setAdminFeedback("Bitte zuerst einen Chat auswaehlen.", "error");
+          return;
+        }
+
+        if (reply.length < 2) {
+          setAdminFeedback("Bitte schreibe eine etwas konkretere Antwort.", "error");
+          return;
+        }
+
+        const chatState = loadChatState();
+        const thread = chatState.threads[activeAdminChatThreadId];
+
+        if (!thread) {
+          setAdminFeedback("Der ausgewaehlte Chat ist nicht mehr verfuegbar.", "error");
+          renderChatUi();
+          return;
+        }
+
+        const sentAt = new Date().toISOString();
+        thread.updatedAt = sentAt;
+        thread.messages.push({
+          id: createChatEntityId(),
+          author: "admin",
+          text: reply,
+          createdAt: sentAt,
+          readByAdmin: true,
+          readByVisitor: false
+        });
+
+        saveChatState(chatState);
+        adminChatReplyForm.reset();
+        setAdminFeedback(`Antwort an ${thread.visitorName} gespeichert.`, "success");
+        renderChatUi();
+        adminChatReplyInput?.focus();
       });
     }
 
@@ -2031,6 +2706,14 @@
     setAuthMode("login");
     renderAccount();
     renderAdminState();
+
+    window.addEventListener("storage", (event) => {
+      if (event.key && event.key !== CHAT_STORAGE_KEY) {
+        return;
+      }
+
+      renderChatUi();
+    });
 
     prefersReducedMotion.addEventListener("change", (event) => {
       if (!event.matches) {
