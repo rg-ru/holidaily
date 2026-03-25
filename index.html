@@ -882,6 +882,7 @@
     let adminSecretTapCount = 0;
     let adminSecretTapTimer = 0;
     let activeAdminChatThreadId = "";
+    let lastTouchChatLaunchAt = 0;
     let chatPollTimer = 0;
     let chatSyncPromise = null;
     let chatDataSource = "local";
@@ -1485,6 +1486,15 @@
       chatBackdrop.hidden = true;
       document.body.classList.remove("chat-open");
       syncChatLaunchState(false);
+    };
+
+    const handleChatLaunch = (button) => {
+      if (button === chatToggleButton && !chatPanel?.hidden) {
+        closeChatPanel();
+        return;
+      }
+
+      openChatPanel();
     };
 
     const renderChatMessages = (container, thread, emptyMessage) => {
@@ -2591,14 +2601,19 @@
 
     chatLaunchButtons.forEach((button) => {
       button.addEventListener("click", (event) => {
-        event.preventDefault();
-
-        if (button === chatToggleButton && !chatPanel?.hidden) {
-          closeChatPanel();
+        if (Date.now() - lastTouchChatLaunchAt < 700) {
+          event.preventDefault();
           return;
         }
 
-        openChatPanel();
+        event.preventDefault();
+        handleChatLaunch(button);
+      });
+
+      button.addEventListener("touchend", (event) => {
+        lastTouchChatLaunchAt = Date.now();
+        event.preventDefault();
+        handleChatLaunch(button);
       });
     });
 
