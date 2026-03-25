@@ -68,6 +68,8 @@ Auch hier gilt:
 Das Frontend kann weiterhin statisch gehostet werden. Fuer den geraeteuebergreifenden Zugriff auf Konten, Notizen, Merkliste, Nachrichten und Admin-Aenderungen muss dann zusaetzlich `server/app.py` auf einer erreichbaren Domain laufen.
 
 - Standardmaessig nutzt das Frontend `"/api"` als Basis.
+- Wenn das Frontend statisch auf einer anderen Domain liegt, probiert es zusaetzlich automatisch `https://api.<deine-domain>/api`.
+- Fuer einen schnellen Browser-Test kannst du die API auch direkt per URL setzen, z. B. `?apiBase=https://dein-service.up.railway.app/api`. Die Seite merkt sich diesen Wert danach im Browser.
 - Fuer getrenntes Hosting kann die API-Basis ueber das Meta-Tag `<meta name="holidaily-api-base" content=\"https://deine-api-domain/api\">` oder ueber `window.HOLIDAILY_API_BASE` gesetzt werden.
 - Ohne laufende API funktionieren Login, Merkliste, Notizen, Nachrichten und Admin-Aenderungen nicht geraeteuebergreifend.
 

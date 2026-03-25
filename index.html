@@ -868,9 +868,10 @@
     const ADMIN_SESSION_STORAGE_KEY = "holidaily-admin-session-v1";
     const ADMIN_API_TOKEN_STORAGE_KEY = "holidaily-admin-api-token-v1";
     const ACCOUNT_API_TOKEN_STORAGE_KEY = "holidaily-account-api-token-v1";
+    const API_BASE_STORAGE_KEY = "holidaily-api-base-v1";
     const CHAT_STORAGE_KEY = "holidaily-test-chat-v1";
     const CHAT_VISITOR_THREAD_STORAGE_KEY = "holidaily-test-chat-thread-v1";
-    const API_BASE = (() => {
+    const DEFAULT_API_BASE = (() => {
       const configuredBase =
         (window.HOLIDAILY_API_BASE || document.querySelector('meta[name="holidaily-api-base"]')?.content || "/api").trim();
 
@@ -891,6 +892,8 @@
     let chatPollTimer = 0;
     let chatSyncPromise = null;
     let chatDataSource = "local";
+    let activeApiBase = "";
+    let apiBaseResolutionPromise = null;
 
     const revealAll = () => {
       motionElements.forEach((element) => element.classList.add("is-visible"));
@@ -1258,7 +1261,97 @@
       window.localStorage.setItem(ACCOUNT_API_TOKEN_STORAGE_KEY, token);
     };
 
-    const buildApiUrl = (path) => `${API_BASE}${path}`;
+    const getStoredApiBaseOverride = () => (window.localStorage.getItem(API_BASE_STORAGE_KEY) || "").trim();
+
+    const setStoredApiBaseOverride = (value) => {
+      const normalizedValue = typeof value === "string" ? value.trim().replace(/\/+$/, "") : "";
+
+      if (!normalizedValue) {
+        window.localStorage.removeItem(API_BASE_STORAGE_KEY);
+        return;
+      }
+
+      window.localStorage.setItem(API_BASE_STORAGE_KEY, normalizedValue);
+    };
+
+    const getApiBaseCandidates = () => {
+      const urlApiBase = new URLSearchParams(window.location.search).get("apiBase")?.trim() || "";
+
+      if (urlApiBase) {
+        setStoredApiBaseOverride(urlApiBase);
+      }
+
+      const candidates = [urlApiBase, getStoredApiBaseOverride(), DEFAULT_API_BASE];
+
+      if (DEFAULT_API_BASE.startsWith("/") && window.location.hostname) {
+        candidates.push(`${window.location.protocol}//api.${window.location.hostname}${DEFAULT_API_BASE}`);
+      }
+
+      return Array.from(
+        new Set(
+          candidates
+            .map((value) => value.trim())
+            .filter((value) => value)
+            .map((value) => value.replace(/\/+$/, ""))
+        )
+      );
+    };
+
+    const buildApiUrl = (base, path) => `${base}${path}`;
+
+    const probeApiBase = async (base) => {
+      const response = await fetch(buildApiUrl(base, "/content"), {
+        method: "GET"
+      });
+
+      if (!response.ok) {
+        const error = new Error(`API probe failed for ${base}`);
+        error.status = response.status;
+        throw error;
+      }
+
+      return base;
+    };
+
+    const resolveApiBase = async ({ force = false } = {}) => {
+      if (activeApiBase && !force) {
+        return activeApiBase;
+      }
+
+      if (apiBaseResolutionPromise && !force) {
+        return apiBaseResolutionPromise;
+      }
+
+      const candidates = getApiBaseCandidates();
+
+      apiBaseResolutionPromise = (async () => {
+        let lastError = null;
+
+        for (const candidate of candidates) {
+          try {
+            await probeApiBase(candidate);
+            activeApiBase = candidate;
+
+            if (candidate !== DEFAULT_API_BASE) {
+              setStoredApiBaseOverride(candidate);
+            }
+
+            return candidate;
+          } catch (error) {
+            lastError = error;
+          }
+        }
+
+        activeApiBase = candidates[0] || DEFAULT_API_BASE;
+        throw lastError || new Error("Keine API erreichbar.");
+      })();
+
+      try {
+        return await apiBaseResolutionPromise;
+      } finally {
+        apiBaseResolutionPromise = null;
+      }
+    };
 
     const normalizeApiChatState = (payload) => {
       const sourceThreads = Array.isArray(payload?.threads)
@@ -1290,21 +1383,43 @@
     };
 
     const requestChatApi = async (path, { method = "GET", body, admin = false } = {}) => {
-      const response = await fetch(buildApiUrl(path), {
-        method,
-        headers: buildChatApiHeaders(admin),
-        body: body ? JSON.stringify(body) : undefined
-      });
+      const executeRequest = async (base) => {
+        const response = await fetch(buildApiUrl(base, path), {
+          method,
+          headers: buildChatApiHeaders(admin),
+          body: body ? JSON.stringify(body) : undefined
+        });
 
-      const payload = await response.json().catch(() => ({}));
+        const payload = await response.json().catch(() => ({}));
 
-      if (!response.ok) {
-        const error = new Error(payload?.error || "Chat-API Fehler");
-        error.status = response.status;
-        throw error;
+        if (!response.ok) {
+          const error = new Error(payload?.error || "Chat-API Fehler");
+          error.status = response.status;
+          throw error;
+        }
+
+        return payload;
+      };
+
+      const primaryBase = await resolveApiBase();
+
+      try {
+        return await executeRequest(primaryBase);
+      } catch (error) {
+        const shouldRetry = !admin && (!error?.status || error.status === 404);
+
+        if (!shouldRetry) {
+          throw error;
+        }
+
+        const nextBase = await resolveApiBase({ force: true });
+
+        if (nextBase === primaryBase) {
+          throw error;
+        }
+
+        return executeRequest(nextBase);
       }
-
-      return payload;
     };
 
     const buildAccountApiHeaders = () => {
@@ -1321,21 +1436,43 @@
     };
 
     const requestAccountApi = async (path, { method = "GET", body } = {}) => {
-      const response = await fetch(buildApiUrl(path), {
-        method,
-        headers: buildAccountApiHeaders(),
-        body: body ? JSON.stringify(body) : undefined
-      });
+      const executeRequest = async (base) => {
+        const response = await fetch(buildApiUrl(base, path), {
+          method,
+          headers: buildAccountApiHeaders(),
+          body: body ? JSON.stringify(body) : undefined
+        });
 
-      const payload = await response.json().catch(() => ({}));
+        const payload = await response.json().catch(() => ({}));
 
-      if (!response.ok) {
-        const error = new Error(payload?.error || "Konto-API Fehler");
-        error.status = response.status;
-        throw error;
+        if (!response.ok) {
+          const error = new Error(payload?.error || "Konto-API Fehler");
+          error.status = response.status;
+          throw error;
+        }
+
+        return payload;
+      };
+
+      const primaryBase = await resolveApiBase();
+
+      try {
+        return await executeRequest(primaryBase);
+      } catch (error) {
+        const shouldRetry = !error?.status || error.status === 404;
+
+        if (!shouldRetry) {
+          throw error;
+        }
+
+        const nextBase = await resolveApiBase({ force: true });
+
+        if (nextBase === primaryBase) {
+          throw error;
+        }
+
+        return executeRequest(nextBase);
       }
-
-      return payload;
     };
 
     const applyAuthenticatedUser = (payload) => {
@@ -2830,7 +2967,12 @@
         } catch (error) {
           setStoredAdminApiToken("");
           setAdminSession(false);
-          setAdminFeedback(error?.status === 401 ? "Die Admin-Zugangsdaten stimmen nicht." : "Der zentrale Server ist gerade nicht erreichbar.", "error");
+          setAdminFeedback(
+            error?.status === 401
+              ? "Die Admin-Zugangsdaten stimmen nicht."
+              : "Der zentrale Server ist gerade nicht erreichbar. Falls Frontend und API getrennt laufen, oeffne die Seite einmal mit ?apiBase=https://dein-backend/api.",
+            "error"
+          );
         } finally {
           adminLoginButton.disabled = false;
         }
