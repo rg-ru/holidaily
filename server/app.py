@@ -485,6 +485,20 @@ class HolidailyRequestHandler(SimpleHTTPRequestHandler):
         self._send_json_headers()
         self.end_headers()
 
+    def do_HEAD(self):
+        parsed = urlparse(self.path)
+        path = parsed.path
+
+        if path == "/health":
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+
+        super().do_HEAD()
+
     def do_GET(self):
         parsed = urlparse(self.path)
         path = parsed.path
