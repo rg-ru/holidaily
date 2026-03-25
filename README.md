@@ -10,12 +10,12 @@ Landingpage fuer Holidaily pools mit lokalem Kundenkonto und einer versteckten A
 
 ## Lokal starten
 
-1. Im Projektordner einen lokalen Testserver starten:
-   `python -m http.server 4173`
+1. Im Projektordner den Holidaily-Server starten:
+   `python server/app.py`
 2. Im Browser oeffnen:
    `http://127.0.0.1:4173`
 
-Die Seite funktioniert als Testversion komplett statisch im Browser. Texte und Bilder werden lokal im Browser gespeichert.
+Die Seite wird damit zusammen mit einer kleinen Chat-API gestartet. Texte und Bilder bleiben lokal im Browser gespeichert, Chat-Nachrichten werden dagegen zentral in `server/db/chat-store.json` abgelegt und sind dadurch auf allen Admin-Geraeten sichtbar, die denselben Server nutzen.
 
 ## Adminpanel oeffnen
 

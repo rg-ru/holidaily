@@ -867,8 +867,11 @@
     const SESSION_STORAGE_KEY = "holidaily-session-v1";
     const ADMIN_CONTENT_STORAGE_KEY = "holidaily-admin-content-v1";
     const ADMIN_SESSION_STORAGE_KEY = "holidaily-admin-session-v1";
+    const ADMIN_API_TOKEN_STORAGE_KEY = "holidaily-admin-api-token-v1";
     const CHAT_STORAGE_KEY = "holidaily-test-chat-v1";
     const CHAT_VISITOR_THREAD_STORAGE_KEY = "holidaily-test-chat-thread-v1";
+    const CHAT_API_BASE = "/api";
+    const CHAT_POLL_INTERVAL_MS = 5000;
     const ADMIN_CREDENTIALS = Object.freeze({
       name: "Daniil",
       email: "daniil.siemens@icloud.com",
@@ -879,6 +882,9 @@
     let adminSecretTapCount = 0;
     let adminSecretTapTimer = 0;
     let activeAdminChatThreadId = "";
+    let chatPollTimer = 0;
+    let chatSyncPromise = null;
+    let chatDataSource = "local";
 
     const revealAll = () => {
       motionElements.forEach((element) => element.classList.add("is-visible"));
@@ -1230,6 +1236,144 @@
       writeStoredJson(CHAT_STORAGE_KEY, state);
     };
 
+    const getStoredAdminApiToken = () => window.localStorage.getItem(ADMIN_API_TOKEN_STORAGE_KEY) || "";
+
+    const setStoredAdminApiToken = (token) => {
+      if (!token) {
+        window.localStorage.removeItem(ADMIN_API_TOKEN_STORAGE_KEY);
+        return;
+      }
+
+      window.localStorage.setItem(ADMIN_API_TOKEN_STORAGE_KEY, token);
+    };
+
+    const normalizeApiChatState = (payload) => {
+      const sourceThreads = Array.isArray(payload?.threads)
+        ? Object.fromEntries(payload.threads.map((thread) => [thread.id, thread]))
+        : payload?.threads && typeof payload.threads === "object"
+          ? payload.threads
+          : payload?.thread && typeof payload.thread === "object" && payload.thread.id
+            ? { [payload.thread.id]: payload.thread }
+            : {};
+
+      return {
+        threads: Object.fromEntries(
+          Object.keys(sourceThreads).map((threadId) => [threadId, normalizeChatThread(threadId, sourceThreads[threadId])])
+        )
+      };
+    };
+
+    const buildChatApiHeaders = (needsAdmin = false) => {
+      const headers = {
+        "Content-Type": "application/json"
+      };
+      const token = getStoredAdminApiToken();
+
+      if (needsAdmin && token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      return headers;
+    };
+
+    const requestChatApi = async (path, { method = "GET", body, admin = false } = {}) => {
+      const response = await fetch(`${CHAT_API_BASE}${path}`, {
+        method,
+        headers: buildChatApiHeaders(admin),
+        body: body ? JSON.stringify(body) : undefined
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const error = new Error(payload?.error || "Chat-API Fehler");
+        error.status = response.status;
+        throw error;
+      }
+
+      return payload;
+    };
+
+    const ensureAdminApiSession = async () => {
+      const existingToken = getStoredAdminApiToken();
+
+      if (existingToken) {
+        return existingToken;
+      }
+
+      const payload = await requestChatApi("/admin/login", {
+        method: "POST",
+        body: ADMIN_CREDENTIALS
+      });
+      const nextToken = typeof payload?.token === "string" ? payload.token : "";
+
+      if (!nextToken) {
+        throw new Error("Admin-Session konnte nicht erstellt werden.");
+      }
+
+      setStoredAdminApiToken(nextToken);
+      return nextToken;
+    };
+
+    const requestAdminChatApi = async (path, options = {}) => {
+      try {
+        await ensureAdminApiSession();
+        return await requestChatApi(path, {
+          ...options,
+          admin: true
+        });
+      } catch (error) {
+        if (error?.status !== 401) {
+          throw error;
+        }
+
+        setStoredAdminApiToken("");
+        await ensureAdminApiSession();
+        return requestChatApi(path, {
+          ...options,
+          admin: true
+        });
+      }
+    };
+
+    const loadChatStateFromApi = async () => {
+      if (isAdminLoggedIn()) {
+        const payload = await requestAdminChatApi("/admin/chat/threads");
+        chatDataSource = "remote-admin";
+        return normalizeApiChatState(payload);
+      }
+
+      const threadId = getVisitorThreadId();
+
+      if (!threadId) {
+        chatDataSource = "remote-visitor";
+        return { threads: {} };
+      }
+
+      try {
+        const payload = await requestChatApi(`/chat/threads/${encodeURIComponent(threadId)}`);
+        chatDataSource = "remote-visitor";
+        return normalizeApiChatState(payload);
+      } catch (error) {
+        if (error?.status === 404) {
+          setVisitorThreadId("");
+          chatDataSource = "remote-visitor";
+          return { threads: {} };
+        }
+
+        throw error;
+      }
+    };
+
+    const loadPreferredChatState = async () => {
+      try {
+        return await loadChatStateFromApi();
+      } catch (error) {
+        chatDataSource = "local";
+        return loadChatState();
+      }
+    };
+
     const getSortedChatThreads = (state) =>
       Object.values(state.threads).sort((left, right) => getTimestamp(right.updatedAt) - getTimestamp(left.updatedAt));
 
@@ -1507,18 +1651,76 @@
       return didChange;
     }
 
-    function renderChatUi() {
-      const chatState = loadChatState();
-      const publicChanged = renderPublicChat(chatState);
-      const adminChanged = renderAdminChat(chatState);
-      const didChange = publicChanged || adminChanged;
-
-      if (didChange) {
-        saveChatState(chatState);
-        renderPublicChat(chatState);
-        renderAdminChat(chatState);
+    const syncRemoteReadState = async (state, publicChanged, adminChanged) => {
+      if (chatDataSource === "local") {
+        if (publicChanged || adminChanged) {
+          saveChatState(state);
+        }
+        return;
       }
+
+      const syncTasks = [];
+      const visitorThreadId = getVisitorThreadId();
+
+      if (publicChanged && visitorThreadId) {
+        syncTasks.push(
+          requestChatApi(`/chat/threads/${encodeURIComponent(visitorThreadId)}/read`, {
+            method: "POST"
+          }).catch(() => undefined)
+        );
+      }
+
+      if (adminChanged && activeAdminChatThreadId && isAdminLoggedIn()) {
+        syncTasks.push(
+          requestAdminChatApi(`/admin/chat/threads/${encodeURIComponent(activeAdminChatThreadId)}/read`, {
+            method: "POST"
+          })
+            .catch((error) => {
+              if (error?.status === 401) {
+                setStoredAdminApiToken("");
+              }
+            })
+        );
+      }
+
+      if (syncTasks.length) {
+        await Promise.all(syncTasks);
+      }
+    };
+
+    async function renderChatUi(options = {}) {
+      const { forceRefresh = true } = options;
+
+      if (chatSyncPromise && !forceRefresh) {
+        return chatSyncPromise;
+      }
+
+      const run = async () => {
+        const chatState = forceRefresh ? await loadPreferredChatState() : loadChatState();
+        const publicChanged = renderPublicChat(chatState);
+        const adminChanged = renderAdminChat(chatState);
+
+        if (publicChanged || adminChanged) {
+          await syncRemoteReadState(chatState, publicChanged, adminChanged);
+        }
+      };
+
+      chatSyncPromise = run().finally(() => {
+        chatSyncPromise = null;
+      });
+
+      return chatSyncPromise;
     }
+
+    const startChatPolling = () => {
+      if (chatPollTimer) {
+        window.clearInterval(chatPollTimer);
+      }
+
+      chatPollTimer = window.setInterval(() => {
+        renderChatUi({ forceRefresh: true });
+      }, CHAT_POLL_INTERVAL_MS);
+    };
 
     const cloneAdminContent = (content) => ({
       texts: { ...content.texts },
@@ -2427,7 +2629,7 @@
     });
 
     if (adminLoginForm) {
-      adminLoginForm.addEventListener("submit", (event) => {
+      adminLoginForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const name = normalizeAdminName(adminNameInput?.value || "");
@@ -2443,15 +2645,22 @@
           return;
         }
 
-        setAdminSession(true);
-        setAdminFeedback("Admin-Modus aktiviert. Texte kannst du jetzt direkt in der Seite bearbeiten.", "success");
-        renderAdminState();
+        try {
+          await requestAdminChatApi("/admin/chat/threads");
+          setAdminSession(true);
+          setAdminFeedback("Admin-Modus aktiviert. Chat und Inhalte sind jetzt freigeschaltet.", "success");
+          renderAdminState();
+          renderChatUi({ forceRefresh: true });
+        } catch (error) {
+          setAdminFeedback("Der zentrale Chat-Server ist gerade nicht erreichbar.", "error");
+        }
       });
     }
 
     if (adminLogoutButton) {
       adminLogoutButton.addEventListener("click", () => {
         setAdminSession(false);
+        setStoredAdminApiToken("");
         closeAdminAuthOverlay();
         adminSecretTapCount = 0;
 
@@ -2465,7 +2674,7 @@
     }
 
     if (chatForm) {
-      chatForm.addEventListener("submit", (event) => {
+      chatForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const currentUser = getCurrentUser();
@@ -2478,45 +2687,80 @@
           return;
         }
 
-        const chatState = loadChatState();
-        const sentAt = new Date().toISOString();
-        let threadId = getVisitorThreadId();
-        let thread = threadId ? chatState.threads[threadId] : null;
+        try {
+          const threadId = getVisitorThreadId();
+          const payload = threadId
+            ? await requestChatApi(`/chat/threads/${encodeURIComponent(threadId)}/messages`, {
+                method: "POST",
+                body: {
+                  visitorName,
+                  message
+                }
+              })
+            : await requestChatApi("/chat/threads", {
+                method: "POST",
+                body: {
+                  visitorName,
+                  message
+                }
+              });
 
-        if (!thread) {
-          threadId = createChatEntityId();
-          setVisitorThreadId(threadId);
-          thread = {
-            id: threadId,
-            visitorName: visitorName || "Besucher",
+          const thread = normalizeApiChatState(payload).threads[payload?.thread?.id || threadId];
+
+          if (thread?.id) {
+            setVisitorThreadId(thread.id);
+          }
+
+          chatForm.reset();
+
+          if (chatNameInput && thread?.visitorName) {
+            chatNameInput.value = thread.visitorName;
+          }
+
+          setChatFeedback("Nachricht gesendet. Sie ist jetzt auf allen Admin-Geraeten sichtbar.", "success");
+          await renderChatUi({ forceRefresh: true });
+          chatMessageInput?.focus();
+        } catch (error) {
+          const chatState = loadChatState();
+          const sentAt = new Date().toISOString();
+          let threadId = getVisitorThreadId();
+          let thread = threadId ? chatState.threads[threadId] : null;
+
+          if (!thread) {
+            threadId = createChatEntityId();
+            setVisitorThreadId(threadId);
+            thread = {
+              id: threadId,
+              visitorName: visitorName || "Besucher",
+              createdAt: sentAt,
+              updatedAt: sentAt,
+              messages: []
+            };
+            chatState.threads[threadId] = thread;
+          }
+
+          thread.visitorName = visitorName || thread.visitorName || "Besucher";
+          thread.updatedAt = sentAt;
+          thread.messages.push({
+            id: createChatEntityId(),
+            author: "visitor",
+            text: message,
             createdAt: sentAt,
-            updatedAt: sentAt,
-            messages: []
-          };
-          chatState.threads[threadId] = thread;
+            readByAdmin: false,
+            readByVisitor: true
+          });
+
+          saveChatState(chatState);
+          chatForm.reset();
+
+          if (chatNameInput) {
+            chatNameInput.value = thread.visitorName;
+          }
+
+          setChatFeedback("Nachricht lokal gespeichert. Der zentrale Chat-Server war nicht erreichbar.", "error");
+          await renderChatUi({ forceRefresh: false });
+          chatMessageInput?.focus();
         }
-
-        thread.visitorName = visitorName || thread.visitorName || "Besucher";
-        thread.updatedAt = sentAt;
-        thread.messages.push({
-          id: createChatEntityId(),
-          author: "visitor",
-          text: message,
-          createdAt: sentAt,
-          readByAdmin: false,
-          readByVisitor: true
-        });
-
-        saveChatState(chatState);
-        chatForm.reset();
-
-        if (chatNameInput) {
-          chatNameInput.value = thread.visitorName;
-        }
-
-        setChatFeedback("Nachricht gesendet. Sie erscheint jetzt direkt im Admin-Chat.", "success");
-        renderChatUi();
-        chatMessageInput?.focus();
       });
     }
 
@@ -2539,7 +2783,7 @@
     }
 
     if (adminChatReplyForm) {
-      adminChatReplyForm.addEventListener("submit", (event) => {
+      adminChatReplyForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const reply = sanitizeChatMessage(adminChatReplyInput?.value || "");
@@ -2559,31 +2803,26 @@
           return;
         }
 
-        const chatState = loadChatState();
-        const thread = chatState.threads[activeAdminChatThreadId];
+        try {
+          const payload = await requestAdminChatApi(`/admin/chat/threads/${encodeURIComponent(activeAdminChatThreadId)}/messages`, {
+            method: "POST",
+            body: {
+              message: reply
+            }
+          });
+          const thread = payload?.thread;
 
-        if (!thread) {
-          setAdminFeedback("Der ausgewaehlte Chat ist nicht mehr verfuegbar.", "error");
-          renderChatUi();
-          return;
+          adminChatReplyForm.reset();
+          setAdminFeedback(`Antwort an ${thread?.visitorName || "den Besucher"} gesendet.`, "success");
+          await renderChatUi({ forceRefresh: true });
+          adminChatReplyInput?.focus();
+        } catch (error) {
+          if (error?.status === 401) {
+            setStoredAdminApiToken("");
+          }
+
+          setAdminFeedback("Antwort konnte nicht an den zentralen Chat-Server gesendet werden.", "error");
         }
-
-        const sentAt = new Date().toISOString();
-        thread.updatedAt = sentAt;
-        thread.messages.push({
-          id: createChatEntityId(),
-          author: "admin",
-          text: reply,
-          createdAt: sentAt,
-          readByAdmin: true,
-          readByVisitor: false
-        });
-
-        saveChatState(chatState);
-        adminChatReplyForm.reset();
-        setAdminFeedback(`Antwort an ${thread.visitorName} gespeichert.`, "success");
-        renderChatUi();
-        adminChatReplyInput?.focus();
       });
     }
 
@@ -2706,13 +2945,15 @@
     setAuthMode("login");
     renderAccount();
     renderAdminState();
+    startChatPolling();
+    renderChatUi({ forceRefresh: true });
 
     window.addEventListener("storage", (event) => {
       if (event.key && event.key !== CHAT_STORAGE_KEY) {
         return;
       }
 
-      renderChatUi();
+      renderChatUi({ forceRefresh: false });
     });
 
     prefersReducedMotion.addEventListener("change", (event) => {

@@ -34,3 +34,6 @@ bin/
 ### Project artifacts ###
 playwright-audit/
 *.zip
+server/db/*.json
+server/**/__pycache__/
+*.pyc
