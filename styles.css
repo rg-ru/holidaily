@@ -43,6 +43,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   font-family: "Manrope", "Inter", sans-serif;
   color: var(--text);
   background:
@@ -80,6 +81,7 @@ body::after {
 }
 
 img {
+  display: block;
   max-width: 100%;
 }
 
@@ -234,6 +236,9 @@ img {
 
 .site-nav a {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   padding: 10px 0;
   color: var(--muted-strong);
   text-decoration: none;
@@ -610,7 +615,7 @@ h3 {
   place-items: center;
   width: 100%;
   height: 100%;
-  color: #ffffff;
+  color: var(--blue);
 }
 
 .chat-float-icon svg {
@@ -853,6 +858,19 @@ h3 {
   margin: 0;
   white-space: pre-wrap;
   line-height: 1.65;
+}
+
+.contact-method a,
+.contact-method-value,
+.contact-method-button,
+.contact-method-hint,
+.account-status-badge,
+.admin-preview-chip,
+.chat-message-text,
+.admin-chat-thread-preview,
+.note-text,
+.saved-model-copy span {
+  overflow-wrap: anywhere;
 }
 
 .hero-stats {
@@ -2871,10 +2889,88 @@ body.admin-active [data-admin-type="image"] {
   }
 }
 
+@media (max-width: 760px) {
+  .site-header {
+    gap: 14px;
+    padding: 14px 16px 16px;
+  }
+
+  .site-header > .button {
+    order: 4;
+    width: 100%;
+  }
+
+  .site-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .site-nav a {
+    justify-content: center;
+    padding: 12px 14px;
+    border: 1px solid rgba(84, 145, 191, 0.16);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  .site-nav a::after {
+    display: none;
+  }
+
+  .hero {
+    gap: 24px;
+  }
+
+  .hero-chip-row {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .hero-chip-row span {
+    padding: 9px 12px;
+    font-size: 0.78rem;
+  }
+
+  .hero-actions,
+  .contact-actions,
+  .account-form-actions,
+  .admin-editor-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-visual {
+    padding: 20px;
+  }
+
+  .floating-card {
+    animation: none;
+  }
+
+  .contact-person-card {
+    gap: 18px;
+  }
+
+  .contact-person-media img {
+    max-width: 240px;
+  }
+
+  .account-status-badge {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .admin-auth-dialog {
+    padding: 26px 22px;
+    border-radius: 28px;
+  }
+}
+
 @media (max-width: 640px) {
   .page-shell {
     width: min(calc(100% - 18px), var(--container));
-    padding-bottom: 68px;
+    padding-bottom: calc(152px + env(safe-area-inset-bottom, 0px));
   }
 
   .chat-float,
@@ -2924,17 +3020,27 @@ body.admin-active [data-admin-type="image"] {
   }
 
   .site-header {
+    gap: 12px;
     margin-bottom: 20px;
     padding: 14px;
     border-radius: 24px;
   }
 
+  .brand {
+    gap: 10px;
+  }
+
+  .brand-text {
+    font-size: 1rem;
+  }
+
   .site-nav {
-    gap: 10px 14px;
+    gap: 8px;
   }
 
   .site-nav a {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+    padding: 11px 12px;
   }
 
   h1 {
@@ -2958,6 +3064,8 @@ body.admin-active [data-admin-type="image"] {
   .button,
   .button-ghost {
     width: 100%;
+    min-height: 54px;
+    padding-inline: 18px;
   }
 
   .hero-actions,
@@ -3024,6 +3132,7 @@ body.admin-active [data-admin-type="image"] {
   }
 
   .hero-inline-panel {
+    margin-top: 20px;
     padding: 16px 18px;
   }
 
@@ -3077,16 +3186,40 @@ body.admin-active [data-admin-type="image"] {
     margin-top: 18px;
   }
 
+  .contact-person-media img {
+    max-width: 220px;
+    margin: 0 auto;
+  }
+
   .contact-method {
     align-items: start;
+    padding: 16px;
   }
 
   .contact-method-label {
     min-width: 100%;
   }
 
+  .contact-method a,
+  .contact-method-value,
+  .contact-method-button {
+    width: 100%;
+  }
+
+  .contact-hours,
+  .account-storage-block,
+  .admin-editor-item,
+  .admin-chat-thread,
+  .admin-chat-detail {
+    padding: 16px;
+  }
+
   .account-mode-toggle {
     width: 100%;
+  }
+
+  .account-mode-button {
+    min-height: 48px;
   }
 
   .admin-preview-chips {
@@ -3114,11 +3247,151 @@ body.admin-active [data-admin-type="image"] {
     flex-direction: column;
   }
 
+  .chat-message {
+    max-width: 100%;
+  }
+
+  .chat-message-meta,
+  .admin-chat-thread-top {
+    flex-direction: column;
+    align-items: start;
+    gap: 4px;
+  }
+
+  .admin-auth-overlay {
+    padding: 14px;
+  }
+
+  .admin-auth-dialog {
+    max-height: calc(100dvh - 28px);
+    overflow: auto;
+    padding: 22px 18px;
+    border-radius: 24px;
+  }
+
+  .test-chat-panel {
+    right: 0;
+    left: 0;
+    bottom: 0;
+    max-height: min(100dvh - 8px, 760px);
+    padding: 18px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    border-radius: 28px 28px 0 0;
+  }
+
+  .test-chat-message-list {
+    min-height: min(36vh, 280px);
+  }
+
   .trust-band {
     padding: 20px 18px;
   }
 
   .trust-band p {
     font-size: 0.94rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-shell {
+    width: min(calc(100% - 14px), var(--container));
+    padding-top: 12px;
+  }
+
+  .site-header {
+    padding: 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+  }
+
+  .brand-text {
+    font-size: 0.96rem;
+  }
+
+  .site-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .site-nav a {
+    font-size: 0.86rem;
+  }
+
+  h1 {
+    font-size: clamp(2.45rem, 13vw, 3.4rem);
+  }
+
+  .hero-chip-row span,
+  .contact-highlights span,
+  .admin-preview-chip {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .feature-card,
+  .offer-card,
+  .story-card,
+  .spotlight-panel,
+  .cta-panel,
+  .contact-card,
+  .hero-card,
+  .account-intro-card,
+  .account-card,
+  .admin-intro-card,
+  .admin-card {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .cta-panel > div:first-child {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .hero-inline-panel {
+    padding: 14px 16px 14px 18px;
+  }
+
+  .hero-detail-strip {
+    padding: 14px;
+  }
+
+  .contact-method,
+  .contact-hours,
+  .account-storage-block,
+  .admin-editor-item,
+  .admin-chat-thread,
+  .admin-chat-detail {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .chat-float,
+  .whatsapp-float {
+    width: 56px;
+    height: 56px;
+  }
+
+  .chat-float {
+    bottom: calc(max(14px, calc(env(safe-area-inset-bottom, 0px) + 8px)) + 64px);
+  }
+
+  .whatsapp-float {
+    bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+  }
+
+  .chat-float-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .test-chat-panel {
+    padding: 16px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+    border-radius: 24px 24px 0 0;
   }
 }
