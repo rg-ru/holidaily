@@ -1,0 +1,16 @@
+.git
+.github
+.idea
+.vscode
+__pycache__/
+server/__pycache__/
+server/db/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.err
+*.zip
+playwright-audit/
+panel-none.png
+holidaily-cloudflare-pages.zip
