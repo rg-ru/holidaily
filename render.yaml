@@ -5,7 +5,7 @@ services:
     plan: starter
     region: frankfurt
     autoDeploy: true
-    healthCheckPath: /
+    healthCheckPath: /health
     buildCommand: python -m py_compile server/app.py
     startCommand: python server/app.py
     envVars:

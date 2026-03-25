@@ -489,6 +489,10 @@ class HolidailyRequestHandler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
 
+        if path == "/health":
+            self._send_json({"status": "ok"})
+            return
+
         if path == "/api/content":
             self._handle_public_content()
             return
@@ -1030,7 +1034,7 @@ class HolidailyRequestHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    host = os.getenv("HOST", "127.0.0.1")
+    host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "4173"))
     server = ThreadingHTTPServer((host, port), HolidailyRequestHandler)
     print(f"Holidaily server running at http://{host}:{port}")
