@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="holidaily-api-base" content="/api">
   <title>Holidaily pools | Pools für Garten, Familie und Zuhause</title>
   <meta
     name="description"
@@ -417,7 +418,8 @@
             </div>
 
             <p class="account-card-copy" id="accountStatusText">
-              Melde dich an, um Pool-Modelle zu speichern und eigene Notizen dauerhaft auf diesem Browser zu sichern.
+              Melde dich an, um Pool-Modelle und eigene Notizen serverseitig zu speichern und auf anderen Geraeten
+              wieder aufzurufen.
             </p>
 
             <div class="account-mode-toggle" id="accountModeToggle" aria-label="Login oder Registrierung">
@@ -497,8 +499,8 @@
             </div>
 
             <p class="account-storage-note">
-              Hinweis: Da die Seite weiter statisch gehostet wird, bleiben Login, gemerkte Modelle und Notizen nur auf
-              diesem Browser und diesem Gerät gespeichert.
+              Hinweis: Login, gemerkte Modelle und Notizen werden ueber die Holidaily-API gespeichert und sind auf
+              anderen Geraeten verfuegbar, solange dieselbe API-Instanz genutzt wird.
             </p>
 
           </article>
@@ -507,16 +509,16 @@
 
       <section class="section admin-section" id="test-admin" hidden>
         <div class="section-heading motion-reveal motion-up" data-reveal>
-          <p class="eyebrow">Test-Admin</p>
-          <h2>Texte und Bilder lokal aendern und sofort in der Vorschau pruefen.</h2>
+          <p class="eyebrow">Live-Admin</p>
+          <h2>Texte und Bilder zentral aendern und auf allen Geraeten sofort pruefen.</h2>
         </div>
         <div class="admin-shell">
           <article class="account-intro-card admin-intro-card motion-reveal motion-up" data-reveal style="--delay: 0ms;">
-            <p class="eyebrow">Nur fuer die Testansicht</p>
-            <h3>Ein lokaler Admin-Modus fuer deine Vorschau.</h3>
+            <p class="eyebrow">Fuer die Live-Seite</p>
+            <h3>Ein zentraler Admin-Modus fuer deine Live-Seite.</h3>
             <p>
-              Nach dem Login kannst du markierte Inhalte direkt auf dieser Seite anpassen. Die Bearbeitung bleibt lokal
-              im Browser gespeichert, bis du spaeter entscheidest, was davon live gehen soll.
+              Nach dem Login kannst du markierte Inhalte direkt auf dieser Seite anpassen. Die Bearbeitung wird zentral
+              gespeichert und ist danach auf allen Geraeten mit derselben Live-Seite sichtbar.
             </p>
             <div class="account-benefits admin-benefits" aria-label="Admin Vorteile">
               <article>
@@ -525,11 +527,11 @@
               </article>
               <article>
                 <strong>Bilder austauschen</strong>
-                <span>Hero-Bild und Kontaktfoto koennen direkt per Upload fuer die Testansicht ersetzt werden.</span>
+                <span>Hero-Bild und Kontaktfoto koennen direkt per Upload fuer die Live-Seite ersetzt werden.</span>
               </article>
               <article>
                 <strong>Ohne Push</strong>
-                <span>Nichts wird automatisch deployed. Die Aenderungen bleiben lokal auf dieser Testseite.</span>
+                <span>Du speicherst direkt in der Live-Instanz, ohne jedes Mal neu deployen zu muessen.</span>
               </article>
             </div>
           </article>
@@ -538,21 +540,21 @@
             <div class="account-status-row admin-status-row">
               <div>
                 <p class="account-kicker">Admin Bereich</p>
-                <h3 id="adminTitle">Admin-Funktionen fuer die Testansicht</h3>
+                <h3 id="adminTitle">Admin-Funktionen fuer die Live-Seite</h3>
               </div>
               <span class="account-status-badge" id="adminStatusBadge">Freigeschaltet</span>
             </div>
 
             <p class="account-card-copy" id="adminStatusText">
               Der Admin-Zugang ist aktiv. Jetzt kannst du Texte direkt auf der Seite bearbeiten und unten Bilder fuer
-              die Testansicht austauschen.
+              die Live-Seite austauschen.
             </p>
 
             <div class="admin-editor" id="adminEditor" hidden>
               <div class="admin-preview-chips" aria-label="Admin Uebersicht">
                 <span class="admin-preview-chip" id="adminTextCount">0 Texte</span>
                 <span class="admin-preview-chip" id="adminImageCount">0 Bilder</span>
-                <span class="admin-preview-chip">Lokale Browser-Speicherung</span>
+                <span class="admin-preview-chip">Zentrale Live-Speicherung</span>
               </div>
 
               <section class="account-storage-block admin-editor-block admin-inline-block">
@@ -562,7 +564,7 @@
                 </div>
                 <p class="account-storage-note admin-inline-note">
                   Nach dem Login kannst du jeden markierten Text direkt anklicken und sofort ueberschreiben. Mit
-                  "Aenderungen speichern" bleibt der Stand lokal in dieser Testansicht erhalten.
+                  "Aenderungen speichern" wird der Stand zentral gesichert und auf allen Geraeten ausgeliefert.
                 </p>
               </section>
 
@@ -622,8 +624,8 @@
               </div>
 
               <p class="account-storage-note admin-helper-note">
-                Bilder werden fuer diese Testversion im Browser gespeichert. Fuer die Vorschau am besten optimierte JPG,
-                PNG oder WebP Dateien verwenden.
+                Bilder werden zentral gespeichert und live ausgeliefert. Fuer stabile Ladezeiten am besten optimierte
+                JPG, PNG oder WebP Dateien verwenden.
               </p>
             </div>
           </article>
@@ -863,22 +865,25 @@
         }
       }))
       .filter((definition) => definition.key);
-    const ACCOUNTS_STORAGE_KEY = "holidaily-accounts-v1";
-    const SESSION_STORAGE_KEY = "holidaily-session-v1";
-    const ADMIN_CONTENT_STORAGE_KEY = "holidaily-admin-content-v1";
     const ADMIN_SESSION_STORAGE_KEY = "holidaily-admin-session-v1";
     const ADMIN_API_TOKEN_STORAGE_KEY = "holidaily-admin-api-token-v1";
+    const ACCOUNT_API_TOKEN_STORAGE_KEY = "holidaily-account-api-token-v1";
     const CHAT_STORAGE_KEY = "holidaily-test-chat-v1";
     const CHAT_VISITOR_THREAD_STORAGE_KEY = "holidaily-test-chat-thread-v1";
-    const CHAT_API_BASE = "/api";
+    const API_BASE = (() => {
+      const configuredBase =
+        (window.HOLIDAILY_API_BASE || document.querySelector('meta[name="holidaily-api-base"]')?.content || "/api").trim();
+
+      if (!configuredBase || configuredBase === "/") {
+        return "/api";
+      }
+
+      return configuredBase.replace(/\/+$/, "");
+    })();
     const CHAT_POLL_INTERVAL_MS = 5000;
-    const ADMIN_CREDENTIALS = Object.freeze({
-      name: "Daniil",
-      email: "daniil.siemens@icloud.com",
-      password: "pools.daniil"
-    });
     let authMode = "login";
     let adminDraftContent = null;
+    let adminContentState = null;
     let adminSecretTapCount = 0;
     let adminSecretTapTimer = 0;
     let activeAdminChatThreadId = "";
@@ -1066,62 +1071,64 @@
     const normalizeEmail = (value) => value.trim().toLowerCase();
     const normalizeAdminName = (value) => value.trim().toLowerCase();
 
-    const loadAccounts = () => readStoredJson(ACCOUNTS_STORAGE_KEY, {});
+    const normalizeSavedModel = (model = {}) => {
+      const id = typeof model.id === "string" ? model.id : "";
+      const name = typeof model.name === "string" ? model.name : "";
 
-    const getSafeUserData = (userRecord = {}) => ({
-      name: typeof userRecord.name === "string" ? userRecord.name : "",
-      passwordHash: typeof userRecord.passwordHash === "string" ? userRecord.passwordHash : "",
-      savedModels: Array.isArray(userRecord.savedModels) ? userRecord.savedModels : [],
-      notes: Array.isArray(userRecord.notes) ? userRecord.notes : []
-    });
-
-    const saveAccounts = (accounts) => {
-      writeStoredJson(ACCOUNTS_STORAGE_KEY, accounts);
-    };
-
-    const getSessionEmail = () => normalizeEmail(window.localStorage.getItem(SESSION_STORAGE_KEY) || "");
-
-    const setSessionEmail = (email) => {
-      if (!email) {
-        window.localStorage.removeItem(SESSION_STORAGE_KEY);
-        return;
-      }
-
-      window.localStorage.setItem(SESSION_STORAGE_KEY, normalizeEmail(email));
-    };
-
-    const getCurrentUser = () => {
-      const sessionEmail = getSessionEmail();
-
-      if (!sessionEmail) {
-        return null;
-      }
-
-      const accounts = loadAccounts();
-      const userRecord = accounts[sessionEmail];
-
-      if (!userRecord) {
-        setSessionEmail("");
+      if (!id || !name) {
         return null;
       }
 
       return {
-        email: sessionEmail,
-        ...getSafeUserData(userRecord)
+        id,
+        name,
+        savedAt: typeof model.savedAt === "string" ? model.savedAt : new Date().toISOString()
       };
     };
 
-    const hashPassword = async (password) => {
-      if (!window.crypto || !window.crypto.subtle) {
-        return password;
+    const normalizeNote = (note = {}) => {
+      const id = typeof note.id === "string" ? note.id : "";
+      const text = typeof note.text === "string" ? note.text.trim() : "";
+
+      if (!id || text.length < 3) {
+        return null;
       }
 
-      const encodedPassword = new TextEncoder().encode(password);
-      const hashBuffer = await window.crypto.subtle.digest("SHA-256", encodedPassword);
+      return {
+        id,
+        text,
+        createdAt: typeof note.createdAt === "string" ? note.createdAt : new Date().toISOString()
+      };
+    };
 
-      return Array.from(new Uint8Array(hashBuffer))
-        .map((value) => value.toString(16).padStart(2, "0"))
-        .join("");
+    const getSafeUserData = (userRecord = {}) => {
+      const email = typeof userRecord.email === "string" ? normalizeEmail(userRecord.email) : "";
+
+      if (!email) {
+        return null;
+      }
+
+      return {
+        email,
+        name: typeof userRecord.name === "string" ? userRecord.name : "",
+        savedModels: Array.isArray(userRecord.savedModels)
+          ? userRecord.savedModels.map((model) => normalizeSavedModel(model)).filter((model) => model)
+          : [],
+        notes: Array.isArray(userRecord.notes)
+          ? userRecord.notes.map((note) => normalizeNote(note)).filter((note) => note)
+          : [],
+        createdAt: typeof userRecord.createdAt === "string" ? userRecord.createdAt : "",
+        updatedAt: typeof userRecord.updatedAt === "string" ? userRecord.updatedAt : ""
+      };
+    };
+
+    let currentUser = null;
+
+    const getCurrentUser = () => currentUser;
+
+    const setCurrentUser = (userRecord) => {
+      currentUser = getSafeUserData(userRecord);
+      return currentUser;
     };
 
     const formatCount = (count, singular, plural) => `${count} ${count === 1 ? singular : plural}`;
@@ -1131,14 +1138,6 @@
         dateStyle: "medium",
         timeStyle: "short"
       }).format(new Date(value));
-
-    const createNoteId = () => {
-      if (window.crypto && typeof window.crypto.randomUUID === "function") {
-        return window.crypto.randomUUID();
-      }
-
-      return `note-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    };
 
     const createChatEntityId = () => {
       if (window.crypto && typeof window.crypto.randomUUID === "function") {
@@ -1248,6 +1247,19 @@
       window.localStorage.setItem(ADMIN_API_TOKEN_STORAGE_KEY, token);
     };
 
+    const getStoredAccountApiToken = () => window.localStorage.getItem(ACCOUNT_API_TOKEN_STORAGE_KEY) || "";
+
+    const setStoredAccountApiToken = (token) => {
+      if (!token) {
+        window.localStorage.removeItem(ACCOUNT_API_TOKEN_STORAGE_KEY);
+        return;
+      }
+
+      window.localStorage.setItem(ACCOUNT_API_TOKEN_STORAGE_KEY, token);
+    };
+
+    const buildApiUrl = (path) => `${API_BASE}${path}`;
+
     const normalizeApiChatState = (payload) => {
       const sourceThreads = Array.isArray(payload?.threads)
         ? Object.fromEntries(payload.threads.map((thread) => [thread.id, thread]))
@@ -1278,7 +1290,7 @@
     };
 
     const requestChatApi = async (path, { method = "GET", body, admin = false } = {}) => {
-      const response = await fetch(`${CHAT_API_BASE}${path}`, {
+      const response = await fetch(buildApiUrl(path), {
         method,
         headers: buildChatApiHeaders(admin),
         body: body ? JSON.stringify(body) : undefined
@@ -1295,6 +1307,88 @@
       return payload;
     };
 
+    const buildAccountApiHeaders = () => {
+      const headers = {
+        "Content-Type": "application/json"
+      };
+      const token = getStoredAccountApiToken();
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      return headers;
+    };
+
+    const requestAccountApi = async (path, { method = "GET", body } = {}) => {
+      const response = await fetch(buildApiUrl(path), {
+        method,
+        headers: buildAccountApiHeaders(),
+        body: body ? JSON.stringify(body) : undefined
+      });
+
+      const payload = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const error = new Error(payload?.error || "Konto-API Fehler");
+        error.status = response.status;
+        throw error;
+      }
+
+      return payload;
+    };
+
+    const applyAuthenticatedUser = (payload) => {
+      if (typeof payload?.token === "string" && payload.token) {
+        setStoredAccountApiToken(payload.token);
+      }
+
+      return setCurrentUser(payload?.user);
+    };
+
+    const clearAccountSession = ({ resetForm = false } = {}) => {
+      setStoredAccountApiToken("");
+      setCurrentUser(null);
+
+      if (resetForm) {
+        accountAuthForm?.reset();
+      }
+    };
+
+    const handleAccountApiError = (error, fallbackMessage) => {
+      if (error?.status === 401) {
+        clearAccountSession({ resetForm: true });
+        setAuthMode("login");
+        renderAccount();
+        setFeedback("Deine Sitzung ist abgelaufen. Bitte logge dich erneut ein.", "error");
+        return true;
+      }
+
+      setFeedback(error?.message || fallbackMessage, "error");
+      return false;
+    };
+
+    const hydrateAccountSession = async () => {
+      if (!getStoredAccountApiToken()) {
+        setCurrentUser(null);
+        return null;
+      }
+
+      try {
+        const payload = await requestAccountApi("/account/me");
+        return setCurrentUser(payload?.user);
+      } catch (error) {
+        if (error?.status === 401) {
+          clearAccountSession({ resetForm: true });
+          setAuthMode("login");
+          return null;
+        }
+
+        setFeedback(error?.message || "Konto konnte nicht geladen werden.", "error");
+        return getCurrentUser();
+      }
+    };
+
     const ensureAdminApiSession = async () => {
       const existingToken = getStoredAdminApiToken();
 
@@ -1302,21 +1396,12 @@
         return existingToken;
       }
 
-      const payload = await requestChatApi("/admin/login", {
-        method: "POST",
-        body: ADMIN_CREDENTIALS
-      });
-      const nextToken = typeof payload?.token === "string" ? payload.token : "";
-
-      if (!nextToken) {
-        throw new Error("Admin-Session konnte nicht erstellt werden.");
-      }
-
-      setStoredAdminApiToken(nextToken);
-      return nextToken;
+      const error = new Error("Admin-Session fehlt.");
+      error.status = 401;
+      throw error;
     };
 
-    const requestAdminChatApi = async (path, options = {}) => {
+    const requestAdminApi = async (path, options = {}) => {
       try {
         await ensureAdminApiSession();
         return await requestChatApi(path, {
@@ -1329,13 +1414,13 @@
         }
 
         setStoredAdminApiToken("");
-        await ensureAdminApiSession();
-        return requestChatApi(path, {
-          ...options,
-          admin: true
-        });
+        setAdminSession(false);
+        renderAdminState();
+        throw error;
       }
     };
+
+    const requestAdminChatApi = (path, options = {}) => requestAdminApi(path, options);
 
     const loadChatStateFromApi = async () => {
       if (isAdminLoggedIn()) {
@@ -1758,29 +1843,27 @@
       )
     });
 
-    const loadAdminContent = () => {
+    const normalizeAdminContent = (content = {}) => {
       const defaults = getDefaultAdminContent();
-      const stored = readStoredJson(ADMIN_CONTENT_STORAGE_KEY, {});
 
       return {
         texts: adminTextDefinitions.reduce((accumulator, definition) => {
-          const storedValue = stored?.texts?.[definition.key];
-
+          const nextValue = content?.texts?.[definition.key];
           accumulator[definition.key] =
-            typeof storedValue === "string" ? storedValue : defaults.texts[definition.key];
+            typeof nextValue === "string" && nextValue.trim() ? nextValue.trim() : defaults.texts[definition.key];
           return accumulator;
         }, {}),
         images: adminImageDefinitions.reduce((accumulator, definition) => {
-          const storedValue = stored?.images?.[definition.key];
+          const nextValue = content?.images?.[definition.key];
 
           accumulator[definition.key] = {
             src:
-              typeof storedValue?.src === "string" && storedValue.src
-                ? storedValue.src
+              typeof nextValue?.src === "string" && nextValue.src
+                ? nextValue.src
                 : defaults.images[definition.key].src,
             alt:
-              typeof storedValue?.alt === "string"
-                ? storedValue.alt
+              typeof nextValue?.alt === "string" && nextValue.alt.trim()
+                ? nextValue.alt.trim()
                 : defaults.images[definition.key].alt
           };
           return accumulator;
@@ -1788,19 +1871,56 @@
       };
     };
 
-    const saveAdminContent = (content) => {
-      writeStoredJson(ADMIN_CONTENT_STORAGE_KEY, content);
+    const getAdminContentState = () => {
+      if (!adminContentState) {
+        adminContentState = normalizeAdminContent();
+      }
+
+      return adminContentState;
+    };
+
+    const loadAdminContent = () => cloneAdminContent(getAdminContentState());
+
+    const setAdminContentState = (content) => {
+      adminContentState = normalizeAdminContent(content);
+      return adminContentState;
+    };
+
+    const loadAdminContentFromApi = async (admin = false) => {
+      const payload = admin ? await requestAdminApi("/admin/content") : await requestChatApi("/content");
+      return setAdminContentState(payload?.content);
+    };
+
+    const saveAdminContent = async (content) => {
+      const payload = await requestAdminApi("/admin/content", {
+        method: "POST",
+        body: {
+          content
+        }
+      });
+
+      return setAdminContentState(payload?.content);
+    };
+
+    const resetAdminContent = async () => {
+      const payload = await requestAdminApi("/admin/content", {
+        method: "DELETE"
+      });
+
+      return setAdminContentState(payload?.content);
     };
 
     const applyAdminContent = (content) => {
+      const nextContent = normalizeAdminContent(content);
+
       adminTextDefinitions.forEach((definition) => {
-        const nextValue = content?.texts?.[definition.key];
+        const nextValue = nextContent.texts[definition.key];
         definition.element.textContent =
           typeof nextValue === "string" ? nextValue : definition.defaultValue;
       });
 
       adminImageDefinitions.forEach((definition) => {
-        const nextValue = content?.images?.[definition.key];
+        const nextValue = nextContent.images[definition.key];
         const nextSrc =
           typeof nextValue?.src === "string" && nextValue.src
             ? nextValue.src
@@ -1996,8 +2116,8 @@
 
       if (adminTitle) {
         adminTitle.textContent = loggedIn
-          ? "Admin-Funktionen fuer die Testansicht sind aktiv"
-          : "Admin-Funktionen fuer die Testansicht";
+          ? "Admin-Funktionen fuer die Live-Seite sind aktiv"
+          : "Admin-Funktionen fuer die Live-Seite";
       }
 
       if (adminStatusBadge) {
@@ -2007,7 +2127,7 @@
 
       if (adminStatusText) {
         adminStatusText.textContent = loggedIn
-          ? "Markierte Texte koennen jetzt direkt in der Seite bearbeitet werden. Bilder steuerst du weiter unten ueber den Test-Admin."
+          ? "Markierte Texte koennen jetzt direkt in der Seite bearbeitet werden. Bilder steuerst du weiter unten ueber den Live-Admin."
           : "Melde dich an, um Texte und Bilder zu bearbeiten und die Aenderungen direkt in der Vorschau zu sehen.";
       }
 
@@ -2021,12 +2141,12 @@
 
       if (adminNameInput) {
         adminNameInput.disabled = loggedIn;
-        adminNameInput.value = loggedIn ? ADMIN_CREDENTIALS.name : "";
+        adminNameInput.value = loggedIn ? "" : adminNameInput.value;
       }
 
       if (adminEmailInput) {
         adminEmailInput.disabled = loggedIn;
-        adminEmailInput.value = loggedIn ? ADMIN_CREDENTIALS.email : "";
+        adminEmailInput.value = loggedIn ? "" : adminEmailInput.value;
       }
 
       if (adminPasswordInput) {
@@ -2043,7 +2163,7 @@
       }
 
       if (loggedIn) {
-        adminDraftContent = cloneAdminContent(loadAdminContent());
+        adminDraftContent = cloneAdminContent(getAdminContentState());
         renderAdminEditor();
         closeAdminAuthOverlay();
       } else {
@@ -2066,32 +2186,6 @@
         adminDraftContent.texts[definition.key] = finalValue;
         definition.element.textContent = finalValue;
       });
-    };
-
-    const persistCurrentUser = (updater) => {
-      const sessionEmail = getSessionEmail();
-
-      if (!sessionEmail) {
-        return null;
-      }
-
-      const accounts = loadAccounts();
-      const currentRecord = getSafeUserData(accounts[sessionEmail]);
-      const nextRecord = updater(currentRecord);
-
-      accounts[sessionEmail] = {
-        name: nextRecord.name,
-        passwordHash: nextRecord.passwordHash,
-        savedModels: nextRecord.savedModels,
-        notes: nextRecord.notes
-      };
-
-      saveAccounts(accounts);
-
-      return {
-        email: sessionEmail,
-        ...accounts[sessionEmail]
-      };
     };
 
     const setAuthMode = (nextMode) => {
@@ -2210,14 +2304,14 @@
         accountStatusBadge.classList.toggle("is-active", isLoggedIn);
       }
 
-      if (accountStatusText) {
-        accountStatusText.textContent = isLoggedIn
-          ? "Du kannst jetzt Pool-Modelle merken, Notizen speichern und deine Auswahl später wieder aufrufen."
-          : "Melde dich an, um Pool-Modelle zu speichern und eigene Notizen dauerhaft auf diesem Browser zu sichern.";
-      }
-
       if (accountStorage) {
         accountStorage.hidden = !isLoggedIn;
+      }
+
+      if (accountStatusText) {
+        accountStatusText.textContent = isLoggedIn
+          ? "Du kannst jetzt Pool-Modelle merken, Notizen speichern und deine Auswahl auf anderen Geraeten wieder aufrufen."
+          : "Melde dich an, um Pool-Modelle und eigene Notizen serverseitig zu speichern.";
       }
 
       if (authModeToggle) {
@@ -2257,8 +2351,8 @@
 
       if (accountStorageNote) {
         accountStorageNote.textContent = isLoggedIn
-          ? "Hinweis: Die gespeicherten Inhalte liegen lokal in diesem Browser. Auf einem anderen Gerät sind sie nicht automatisch verfügbar."
-          : "Hinweis: Da die Seite weiter statisch gehostet wird, bleiben Login, gemerkte Modelle und Notizen nur auf diesem Browser und diesem Gerät gespeichert.";
+          ? "Hinweis: Deine gespeicherten Inhalte liegen jetzt auf der Holidaily-API und stehen auf anderen Geraeten bereit, solange dieselbe API verwendet wird."
+          : "Hinweis: Login, gemerkte Modelle und Notizen werden ueber die Holidaily-API gespeichert und sind dadurch nicht mehr an diesen Browser gebunden.";
       }
 
       renderSavedModels(currentUser);
@@ -2280,38 +2374,42 @@
     };
 
     saveModelButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const currentUser = getCurrentUser();
+      button.addEventListener("click", async () => {
+        const activeUser = getCurrentUser();
         const modelCard = button.closest(".offer-card");
         const modelId = button.dataset.modelId || modelCard?.dataset.modelId || "";
         const modelName = modelCard?.dataset.modelName || "Pool-Modell";
 
-        if (!currentUser) {
+        if (!activeUser) {
           requireLogin("Bitte zuerst einloggen, damit du Modelle speichern kannst.");
           return;
         }
 
-        const savedModel = currentUser.savedModels.find((model) => model.id === modelId);
+        button.disabled = true;
 
-        persistCurrentUser((userRecord) => ({
-          ...userRecord,
-          savedModels: savedModel
-            ? userRecord.savedModels.filter((model) => model.id !== modelId)
-            : [
-                ...userRecord.savedModels,
-                {
-                  id: modelId,
-                  name: modelName,
-                  savedAt: new Date().toISOString()
-                }
-              ]
-        }));
+        try {
+          const savedModel = activeUser.savedModels.find((model) => model.id === modelId);
+          const payload = await requestAccountApi("/account/saved-models/toggle", {
+            method: "POST",
+            body: {
+              id: modelId,
+              name: modelName
+            }
+          });
 
-        setFeedback(
-          savedModel ? `${modelName} wurde aus deiner Merkliste entfernt.` : `${modelName} wurde gespeichert.`,
-          "success"
-        );
-        renderAccount();
+          setCurrentUser(payload?.user);
+          setFeedback(
+            payload?.saved === false || savedModel
+              ? `${modelName} wurde aus deiner Merkliste entfernt.`
+              : `${modelName} wurde gespeichert.`,
+            "success"
+          );
+          renderAccount();
+        } catch (error) {
+          handleAccountApiError(error, "Modell konnte nicht gespeichert werden.");
+        } finally {
+          button.disabled = false;
+        }
       });
     });
 
@@ -2324,154 +2422,202 @@
     });
 
     if (accountAuthForm) {
-      accountAuthForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
+      accountAuthForm.addEventListener(
+        "submit",
+        async (event) => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
 
-        if (getCurrentUser()) {
-          return;
-        }
-
-        const email = normalizeEmail(accountEmailInput?.value || "");
-        const password = accountPasswordInput?.value || "";
-        const name = (accountNameInput?.value || "").trim();
-
-        if (!email) {
-          setFeedback("Bitte gib eine gültige E-Mail-Adresse ein.", "error");
-          return;
-        }
-
-        if (password.length < 6) {
-          setFeedback("Das Passwort muss mindestens 6 Zeichen lang sein.", "error");
-          return;
-        }
-
-        accountSubmitButton.disabled = true;
-
-        try {
-          const accounts = loadAccounts();
-          const passwordHash = await hashPassword(password);
-
-          if (authMode === "register") {
-            if (accounts[email]) {
-              setFeedback("Zu dieser E-Mail gibt es bereits ein Konto. Bitte logge dich ein.", "error");
-              return;
-            }
-
-            accounts[email] = {
-              name: name || email.split("@")[0],
-              passwordHash,
-              savedModels: [],
-              notes: []
-            };
-
-            saveAccounts(accounts);
-            setSessionEmail(email);
-            setFeedback("Konto angelegt und direkt eingeloggt.", "success");
-          } else {
-            const existingUser = accounts[email];
-
-            if (!existingUser) {
-              setFeedback("Kein Konto zu dieser E-Mail gefunden. Bitte zuerst registrieren.", "error");
-              return;
-            }
-
-            if (getSafeUserData(existingUser).passwordHash !== passwordHash) {
-              setFeedback("Das Passwort passt nicht zu diesem Konto.", "error");
-              return;
-            }
-
-            setSessionEmail(email);
-            setFeedback("Erfolgreich eingeloggt.", "success");
+          if (getCurrentUser()) {
+            return;
           }
 
-          renderAccount();
-        } finally {
-          accountSubmitButton.disabled = false;
-        }
-      });
+          const email = normalizeEmail(accountEmailInput?.value || "");
+          const password = accountPasswordInput?.value || "";
+          const name = (accountNameInput?.value || "").trim();
+
+          if (!email) {
+            setFeedback("Bitte gib eine gueltige E-Mail-Adresse ein.", "error");
+            return;
+          }
+
+          if (password.length < 6) {
+            setFeedback("Das Passwort muss mindestens 6 Zeichen lang sein.", "error");
+            return;
+          }
+
+          accountSubmitButton.disabled = true;
+
+          try {
+            const payload = await requestAccountApi(authMode === "register" ? "/account/register" : "/account/login", {
+              method: "POST",
+              body: authMode === "register" ? { email, password, name } : { email, password }
+            });
+
+            applyAuthenticatedUser(payload);
+            setFeedback(authMode === "register" ? "Konto angelegt und direkt eingeloggt." : "Erfolgreich eingeloggt.", "success");
+            renderAccount();
+          } catch (error) {
+            handleAccountApiError(error, "Anmeldung fehlgeschlagen.");
+          } finally {
+            accountSubmitButton.disabled = false;
+          }
+        },
+        true
+      );
     }
 
     if (accountLogoutButton) {
-      accountLogoutButton.addEventListener("click", () => {
-        setSessionEmail("");
-        if (accountAuthForm) {
-          accountAuthForm.reset();
-        }
-        setAuthMode("login");
-        setFeedback("Du wurdest abgemeldet.", "success");
-        renderAccount();
-      });
+      accountLogoutButton.addEventListener(
+        "click",
+        async (event) => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+
+          try {
+            await requestAccountApi("/account/logout", {
+              method: "POST"
+            });
+          } catch (error) {
+            if (error?.status && error.status !== 401) {
+              setFeedback(error?.message || "Abmeldung fehlgeschlagen.", "error");
+              return;
+            }
+          }
+
+          clearAccountSession({ resetForm: true });
+          setAuthMode("login");
+          setFeedback("Du wurdest abgemeldet.", "success");
+          renderAccount();
+        },
+        true
+      );
     }
 
     if (noteForm) {
-      noteForm.addEventListener("submit", (event) => {
-        event.preventDefault();
+      noteForm.addEventListener(
+        "submit",
+        async (event) => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
 
-        const currentUser = getCurrentUser();
-        const noteText = (noteInput?.value || "").trim();
+          const activeUser = getCurrentUser();
+          const noteText = (noteInput?.value || "").trim();
 
-        if (!currentUser) {
-          requireLogin("Bitte zuerst einloggen, damit du Notizen speichern kannst.");
-          return;
-        }
+          if (!activeUser) {
+            requireLogin("Bitte zuerst einloggen, damit du Notizen speichern kannst.");
+            return;
+          }
 
-        if (noteText.length < 3) {
-          setFeedback("Bitte schreibe eine etwas aussagekräftigere Notiz.", "error");
-          return;
-        }
+          if (noteText.length < 3) {
+            setFeedback("Bitte schreibe eine etwas aussagekraeftigere Notiz.", "error");
+            return;
+          }
 
-        persistCurrentUser((userRecord) => ({
-          ...userRecord,
-          notes: [
-            {
-              id: createNoteId(),
-              text: noteText,
-              createdAt: new Date().toISOString()
-            },
-            ...userRecord.notes
-          ]
-        }));
+          const submitButton = noteForm.querySelector('button[type="submit"]');
+          if (submitButton instanceof HTMLButtonElement) {
+            submitButton.disabled = true;
+          }
 
-        noteForm.reset();
-        setFeedback("Notiz gespeichert.", "success");
-        renderAccount();
-      });
+          try {
+            const payload = await requestAccountApi("/account/notes", {
+              method: "POST",
+              body: {
+                text: noteText
+              }
+            });
+
+            setCurrentUser(payload?.user);
+            noteForm.reset();
+            setFeedback("Notiz gespeichert.", "success");
+            renderAccount();
+          } catch (error) {
+            handleAccountApiError(error, "Notiz konnte nicht gespeichert werden.");
+          } finally {
+            if (submitButton instanceof HTMLButtonElement) {
+              submitButton.disabled = false;
+            }
+          }
+        },
+        true
+      );
     }
 
     if (savedModelList) {
-      savedModelList.addEventListener("click", (event) => {
-        const removeButton = event.target.closest("[data-remove-model-id]");
+      savedModelList.addEventListener(
+        "click",
+        async (event) => {
+          const removeButton = event.target.closest("[data-remove-model-id]");
 
-        if (!removeButton) {
-          return;
-        }
+          if (!removeButton) {
+            return;
+          }
 
-        persistCurrentUser((userRecord) => ({
-          ...userRecord,
-          savedModels: userRecord.savedModels.filter((model) => model.id !== removeButton.dataset.removeModelId)
-        }));
+          event.preventDefault();
+          event.stopImmediatePropagation();
 
-        setFeedback("Modell aus der Merkliste entfernt.", "success");
-        renderAccount();
-      });
+          const activeUser = getCurrentUser();
+          const modelId = removeButton.dataset.removeModelId || "";
+          const savedModel = activeUser?.savedModels.find((model) => model.id === modelId);
+
+          if (!activeUser || !savedModel) {
+            return;
+          }
+
+          removeButton.disabled = true;
+
+          try {
+            const payload = await requestAccountApi("/account/saved-models/toggle", {
+              method: "POST",
+              body: {
+                id: savedModel.id,
+                name: savedModel.name
+              }
+            });
+
+            setCurrentUser(payload?.user);
+            setFeedback("Modell aus der Merkliste entfernt.", "success");
+            renderAccount();
+          } catch (error) {
+            handleAccountApiError(error, "Modell konnte nicht entfernt werden.");
+          } finally {
+            removeButton.disabled = false;
+          }
+        },
+        true
+      );
     }
 
     if (noteList) {
-      noteList.addEventListener("click", (event) => {
-        const removeButton = event.target.closest("[data-note-id]");
+      noteList.addEventListener(
+        "click",
+        async (event) => {
+          const removeButton = event.target.closest("[data-note-id]");
 
-        if (!removeButton) {
-          return;
-        }
+          if (!removeButton) {
+            return;
+          }
 
-        persistCurrentUser((userRecord) => ({
-          ...userRecord,
-          notes: userRecord.notes.filter((note) => note.id !== removeButton.dataset.noteId)
-        }));
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          removeButton.disabled = true;
 
-        setFeedback("Notiz gelöscht.", "success");
-        renderAccount();
-      });
+          try {
+            const payload = await requestAccountApi(`/account/notes/${encodeURIComponent(removeButton.dataset.noteId || "")}`, {
+              method: "DELETE"
+            });
+
+            setCurrentUser(payload?.user);
+            setFeedback("Notiz geloescht.", "success");
+            renderAccount();
+          } catch (error) {
+            handleAccountApiError(error, "Notiz konnte nicht geloescht werden.");
+          } finally {
+            removeButton.disabled = false;
+          }
+        },
+        true
+      );
     }
 
     adminEditableElements.forEach((element) => {
@@ -2651,23 +2797,42 @@
         const email = normalizeEmail(adminEmailInput?.value || "");
         const password = adminPasswordInput?.value || "";
 
-        if (
-          name !== normalizeAdminName(ADMIN_CREDENTIALS.name) ||
-          email !== normalizeEmail(ADMIN_CREDENTIALS.email) ||
-          password !== ADMIN_CREDENTIALS.password
-        ) {
-          setAdminFeedback("Die Admin-Zugangsdaten stimmen nicht.", "error");
+        if (!name || !email || !password) {
+          setAdminFeedback("Bitte alle Admin-Zugangsdaten eingeben.", "error");
           return;
         }
 
+        adminLoginButton.disabled = true;
+
         try {
-          await requestAdminChatApi("/admin/chat/threads");
+          const payload = await requestChatApi("/admin/login", {
+            method: "POST",
+            body: {
+              name,
+              email,
+              password
+            }
+          });
+
+          const token = typeof payload?.token === "string" ? payload.token : "";
+
+          if (!token) {
+            throw new Error("Admin-Token fehlt.");
+          }
+
+          setStoredAdminApiToken(token);
           setAdminSession(true);
+          await loadAdminContentFromApi(true);
+          applyAdminContent(getAdminContentState());
           setAdminFeedback("Admin-Modus aktiviert. Chat und Inhalte sind jetzt freigeschaltet.", "success");
           renderAdminState();
           renderChatUi({ forceRefresh: true });
         } catch (error) {
-          setAdminFeedback("Der zentrale Chat-Server ist gerade nicht erreichbar.", "error");
+          setStoredAdminApiToken("");
+          setAdminSession(false);
+          setAdminFeedback(error?.status === 401 ? "Die Admin-Zugangsdaten stimmen nicht." : "Der zentrale Server ist gerade nicht erreichbar.", "error");
+        } finally {
+          adminLoginButton.disabled = false;
         }
       });
     }
@@ -2922,46 +3087,78 @@
     }
 
     if (adminSaveButton) {
-      adminSaveButton.addEventListener("click", () => {
+      adminSaveButton.addEventListener("click", async () => {
         if (!adminDraftContent) {
           return;
         }
 
+        adminSaveButton.disabled = true;
+
         try {
           finalizeInlineAdminTexts();
-          saveAdminContent(adminDraftContent);
-          setAdminFeedback("Die Test-Aenderungen wurden lokal in diesem Browser gespeichert.", "success");
+          const savedContent = await saveAdminContent(adminDraftContent);
+          applyAdminContent(savedContent);
+          adminDraftContent = cloneAdminContent(savedContent);
+          setAdminFeedback("Die Aenderungen wurden zentral gespeichert und sind jetzt auf allen Geraeten sichtbar.", "success");
           renderAdminState();
         } catch (error) {
-          setAdminFeedback("Speichern fehlgeschlagen. Bitte kleinere Bilder verwenden oder den Browser-Speicher leeren.", "error");
+          setAdminFeedback(error?.status === 401 ? "Admin-Sitzung abgelaufen. Bitte erneut einloggen." : "Speichern fehlgeschlagen.", "error");
+        } finally {
+          adminSaveButton.disabled = false;
         }
       });
     }
 
     if (adminResetButton) {
-      adminResetButton.addEventListener("click", () => {
+      adminResetButton.addEventListener("click", async () => {
         if (!window.confirm("Willst du alle Admin-Aenderungen fuer diese Testseite zuruecksetzen?")) {
           return;
         }
 
+        adminResetButton.disabled = true;
+
         try {
-          adminDraftContent = cloneAdminContent(getDefaultAdminContent());
-          applyAdminContent(adminDraftContent);
-          saveAdminContent(adminDraftContent);
+          const resetContent = await resetAdminContent();
+          adminDraftContent = cloneAdminContent(resetContent);
+          applyAdminContent(resetContent);
           renderAdminState();
-          setAdminFeedback("Die Testseite wurde auf den Ausgangsstand zurueckgesetzt.", "success");
+          setAdminFeedback("Die Testseite wurde zentral auf den Ausgangsstand zurueckgesetzt.", "success");
         } catch (error) {
-          setAdminFeedback("Zuruecksetzen fehlgeschlagen.", "error");
+          setAdminFeedback(error?.status === 401 ? "Admin-Sitzung abgelaufen. Bitte erneut einloggen." : "Zuruecksetzen fehlgeschlagen.", "error");
+        } finally {
+          adminResetButton.disabled = false;
         }
       });
     }
 
-    applyAdminContent(loadAdminContent());
-    setAuthMode("login");
-    renderAccount();
-    renderAdminState();
-    startChatPolling();
-    renderChatUi({ forceRefresh: true });
+    const initializePage = async () => {
+      try {
+        await loadAdminContentFromApi(false);
+      } catch (error) {
+        setAdminContentState(getDefaultAdminContent());
+      }
+
+      applyAdminContent(getAdminContentState());
+      setAuthMode("login");
+      renderAccount();
+      renderAdminState();
+      startChatPolling();
+      renderChatUi({ forceRefresh: true });
+      await hydrateAccountSession();
+      if (isAdminLoggedIn() && getStoredAdminApiToken()) {
+        try {
+          await loadAdminContentFromApi(true);
+          applyAdminContent(getAdminContentState());
+        } catch (error) {
+          setStoredAdminApiToken("");
+          setAdminSession(false);
+        }
+      }
+      renderAccount();
+      renderChatUi({ forceRefresh: true });
+    };
+
+    void initializePage();
 
     window.addEventListener("storage", (event) => {
       if (event.key && event.key !== CHAT_STORAGE_KEY) {
