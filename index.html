@@ -894,6 +894,7 @@
     let chatDataSource = "local";
     let activeApiBase = "";
     let apiBaseResolutionPromise = null;
+    let hasPromptedForApiBase = false;
 
     const revealAll = () => {
       motionElements.forEach((element) => element.classList.add("is-visible"));
@@ -1274,6 +1275,43 @@
       window.localStorage.setItem(API_BASE_STORAGE_KEY, normalizedValue);
     };
 
+    const normalizeApiBaseInput = (value) => {
+      const trimmedValue = typeof value === "string" ? value.trim() : "";
+
+      if (!trimmedValue) {
+        return "";
+      }
+
+      const withProtocol = /^https?:\/\//i.test(trimmedValue) ? trimmedValue : `https://${trimmedValue}`;
+      const normalizedValue = withProtocol.replace(/\/+$/, "");
+
+      return normalizedValue.endsWith("/api") ? normalizedValue : `${normalizedValue}/api`;
+    };
+
+    const promptForApiBase = (reason = "") => {
+      if (hasPromptedForApiBase) {
+        return "";
+      }
+
+      hasPromptedForApiBase = true;
+      const message = [
+        reason || "Die zentrale API ist nicht erreichbar.",
+        "",
+        "Bitte die oeffentliche Backend-URL eingeben, zum Beispiel:",
+        "https://dein-service.up.railway.app/api"
+      ].join("\n");
+      const userInput = window.prompt(message, getStoredApiBaseOverride() || "");
+      const normalizedValue = normalizeApiBaseInput(userInput || "");
+
+      if (!normalizedValue) {
+        return "";
+      }
+
+      setStoredApiBaseOverride(normalizedValue);
+      activeApiBase = normalizedValue;
+      return normalizedValue;
+    };
+
     const getApiBaseCandidates = () => {
       const urlApiBase = new URLSearchParams(window.location.search).get("apiBase")?.trim() || "";
 
@@ -1331,6 +1369,7 @@
           try {
             await probeApiBase(candidate);
             activeApiBase = candidate;
+            hasPromptedForApiBase = false;
 
             if (candidate !== DEFAULT_API_BASE) {
               setStoredApiBaseOverride(candidate);
@@ -1343,6 +1382,15 @@
         }
 
         activeApiBase = candidates[0] || DEFAULT_API_BASE;
+        const promptedBase = promptForApiBase("Die zentrale API konnte nicht automatisch gefunden werden.");
+
+        if (promptedBase) {
+          await probeApiBase(promptedBase);
+          activeApiBase = promptedBase;
+          hasPromptedForApiBase = false;
+          return promptedBase;
+        }
+
         throw lastError || new Error("Keine API erreichbar.");
       })();
 
