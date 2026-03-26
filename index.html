@@ -871,6 +871,9 @@
     const API_BASE_STORAGE_KEY = "holidaily-api-base-v1";
     const CHAT_STORAGE_KEY = "holidaily-test-chat-v1";
     const CHAT_VISITOR_THREAD_STORAGE_KEY = "holidaily-test-chat-thread-v1";
+    const KNOWN_API_BASE_FALLBACKS = [
+      "https://holidaily-live-production-a69a.up.railway.app/api"
+    ];
     const DEFAULT_API_BASE = (() => {
       const configuredBase =
         (window.HOLIDAILY_API_BASE || document.querySelector('meta[name="holidaily-api-base"]')?.content || "/api").trim();
@@ -1319,7 +1322,7 @@
         setStoredApiBaseOverride(urlApiBase);
       }
 
-      const candidates = [urlApiBase, getStoredApiBaseOverride(), DEFAULT_API_BASE];
+      const candidates = [urlApiBase, getStoredApiBaseOverride(), DEFAULT_API_BASE, ...KNOWN_API_BASE_FALLBACKS];
 
       if (DEFAULT_API_BASE.startsWith("/") && window.location.hostname) {
         candidates.push(`${window.location.protocol}//api.${window.location.hostname}${DEFAULT_API_BASE}`);

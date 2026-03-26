@@ -62,6 +62,9 @@ Auch hier gilt:
 
 - Ohne Volume gehen die Daten bei Redeploys verloren.
 - Frontend und API laufen am einfachsten gemeinsam auf derselben Railway-Domain.
+- Der aktuelle Railway-Service ist unter `https://holidaily-live-production-a69a.up.railway.app` erreichbar, sobald ein gueltiges Deployment aktiv ist.
+- Falls GitHub Pages parallel noch aktiv ist, probiert das Frontend diesen Railway-Host automatisch als API-Fallback.
+- Fuer die finale Live-Domain darf `holidaily.pool-traeume-bueber.de` nicht weiter auf GitHub Pages zeigen, sonst bleibt HTTPS kaputt.
 
 ## Statisches Hosting mit externer API
 
