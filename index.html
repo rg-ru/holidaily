@@ -871,9 +871,7 @@
     const API_BASE_STORAGE_KEY = "holidaily-api-base-v1";
     const CHAT_STORAGE_KEY = "holidaily-test-chat-v1";
     const CHAT_VISITOR_THREAD_STORAGE_KEY = "holidaily-test-chat-thread-v1";
-    const KNOWN_API_BASE_FALLBACKS = [
-      "https://holidaily-pools.up.railway.app/api"
-    ];
+    const KNOWN_API_BASE_FALLBACKS = [];
     const DEFAULT_API_BASE = (() => {
       const configuredBase =
         (window.HOLIDAILY_API_BASE || document.querySelector('meta[name="holidaily-api-base"]')?.content || "/api").trim();
