@@ -41,6 +41,7 @@ Auch hier gilt:
 
 - Ohne Volume gehen die Daten bei Redeploys verloren.
 - Frontend und API laufen am einfachsten gemeinsam auf derselben Railway-Domain.
+- Die aktuelle Website-Domain ist `https://holidaily-pools.up.railway.app`.
 - Railway vergibt dem Service eine `*.up.railway.app`-Domain, ueber die du das Deployment zuerst testen solltest.
 - Wenn du die Live-Domain nutzt, muessen ihre DNS-Eintraege auf Railway zeigen und nicht auf ein altes statisches Hosting.
 
@@ -77,5 +78,6 @@ Es gibt noch keine echte Benutzerverwaltung, kein Datenbank-Backend und keine fe
 ## Links
 
 - Repository: https://github.com/rg-ru/holidaily
+- Website: https://holidaily-pools.up.railway.app
 - E-Mail: Info@Holidaily-pools.de
 - WhatsApp: https://wa.me/491632178170
